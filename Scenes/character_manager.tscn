@@ -1,0 +1,8 @@
+[gd_scene load_steps=2 format=3 uid="uid://c8awhkot2crdr"]
+
+[ext_resource type="Script" uid="uid://bnld04vrssx2w" path="res://Scripts/character_manager.gd" id="1_ei6qn"]
+
+[node name="Character_Manager" type="TileMapLayer"]
+script = ExtResource("1_ei6qn")
+
+[connection signal="worker_created" from="." to="." method="_on_worker_created"]

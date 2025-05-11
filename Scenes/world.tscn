@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://v0ym835y7gf7"]
+
+[ext_resource type="PackedScene" uid="uid://buaonr7qjcjv1" path="res://Scenes/layer_manager.tscn" id="1_a02cp"]
+
+[node name="World" type="Node2D"]
+
+[node name="Layer_Manager" parent="." instance=ExtResource("1_a02cp")]

@@ -1,0 +1,248 @@
+[gd_scene load_steps=24 format=4 uid="uid://v0ym835y7gf7"]
+
+[ext_resource type="Script" uid="uid://dvhpidy7evf2n" path="res://Scripts/layer_manager.tres.gd" id="1_k7acu"]
+[ext_resource type="Texture2D" uid="uid://cng36l0geclbr" path="res://Assets/Sprites/MiniWorldSprites/Ground/TexturedGrass.png" id="2_go701"]
+[ext_resource type="Texture2D" uid="uid://2q4lqlnm7bfa" path="res://Assets/Sprites/MiniWorldSprites/Ground/Shore.png" id="3_k7acu"]
+[ext_resource type="Texture2D" uid="uid://dy0winpqugd6o" path="res://Assets/Sprites/MiniWorldSprites/Ground/Grass.png" id="4_5v1tr"]
+[ext_resource type="Texture2D" uid="uid://iy7ctpgjlos7" path="res://Assets/Sprites/MiniWorldSprites/Ground/DeadGrass.png" id="5_0fj1v"]
+[ext_resource type="Texture2D" uid="uid://2en01n58n6uc" path="res://Assets/Sprites/MiniWorldSprites/Ground/Winter.png" id="6_ikia7"]
+[ext_resource type="Texture2D" uid="uid://bfeh7gsql68od" path="res://Assets/Sprites/MiniWorldSprites/Ground/Cliff-Water.png" id="7_7yui6"]
+[ext_resource type="Texture2D" uid="uid://b42gx1brwpvnv" path="res://Assets/Sprites/MiniWorldSprites/Ground/Cliff.png" id="8_c5t2i"]
+
+[sub_resource type="GDScript" id="GDScript_o06y3"]
+script/source = "extends Node2D
+
+@onready var ground = $Layer_Manager/Ground
+
+# Called when the node enters the scene tree for the first time.
+func _ready():
+	pass # Replace with function body.
+	
+# Called every frame. 'delta' is the elapsed time since the previous frame.
+func _process(delta):
+	pass
+
+
+func get_ground():
+	return ground
+	
+"
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_k7acu"]
+texture = ExtResource("3_k7acu")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_5v1tr"]
+sources/0 = SubResource("TileSetAtlasSource_k7acu")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5v1tr"]
+texture = ExtResource("3_k7acu")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_0fj1v"]
+sources/0 = SubResource("TileSetAtlasSource_5v1tr")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_5a7ea"]
+texture = ExtResource("2_go701")
+0:0/next_alternative_id = 3
+0:0/0 = 0
+1:0/next_alternative_id = 2
+1:0/0 = 0
+2:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_e0ngr"]
+texture = ExtResource("3_k7acu")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_kn0ld"]
+texture = ExtResource("4_5v1tr")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hgpy0"]
+texture = ExtResource("5_0fj1v")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_t2t4p"]
+texture = ExtResource("6_ikia7")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+5:0/0 = 0
+6:0/0 = 0
+7:0/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0pcbe"]
+texture = ExtResource("7_7yui6")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_axeuq"]
+texture = ExtResource("8_c5t2i")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+0:8/0 = 0
+1:8/0 = 0
+2:8/0 = 0
+3:8/0 = 0
+4:8/0 = 0
+5:8/0 = 0
+6:8/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_8j60k"]
+sources/0 = SubResource("TileSetAtlasSource_5a7ea")
+sources/1 = SubResource("TileSetAtlasSource_e0ngr")
+sources/2 = SubResource("TileSetAtlasSource_kn0ld")
+sources/3 = SubResource("TileSetAtlasSource_hgpy0")
+sources/4 = SubResource("TileSetAtlasSource_t2t4p")
+sources/5 = SubResource("TileSetAtlasSource_0pcbe")
+sources/6 = SubResource("TileSetAtlasSource_axeuq")
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_0fj1v"]
+texture = ExtResource("7_7yui6")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_ikia7"]
+sources/0 = SubResource("TileSetAtlasSource_0fj1v")
+
+[node name="World" type="Node2D"]
+script = SubResource("GDScript_o06y3")
+
+[node name="Layer_Manager" type="Node" parent="."]
+script = ExtResource("1_k7acu")
+
+[node name="Water" type="TileMapLayer" parent="Layer_Manager"]
+tile_set = SubResource("TileSet_5v1tr")
+
+[node name="Shore" type="TileMapLayer" parent="Layer_Manager"]
+tile_set = SubResource("TileSet_0fj1v")
+
+[node name="Ground" type="TileMapLayer" parent="Layer_Manager"]
+tile_map_data = PackedByteArray("AAD//wEAAQAEAAAAAAD//wIAAQAEAAAAAAD//wMAAQAEAAAAAAD//wQAAQAEAAAAAAD//wUAAQAEAAAAAAD//wYAAQAEAAAAAAD//wcAAQAEAAAAAAD//wgAAQAEAAAAAAD//wkAAgAAAAAAAAD//woAAgAAAAAAAAAAAAEABQAAAAAAAAAAAAIABQAAAAEAAAAAAAMABQAAAAEAAAAAAAQABQAAAAEAAAAAAAUABQAAAAEAAAAAAAYABQAAAAEAAAAAAAcABQAAAAQAAAAAAAgABQAAAAQAAAAAAAkABQAAAAQAAAAAAAoABQAAAAQAAAABAAEAAQACAAAAAAABAAIAAgACAAAAAAABAAMAAgACAAAAAAABAAQAAgACAAAAAAABAAUAAgACAAAAAAABAAYAAgACAAAAAAABAAcAAgACAAAAAAABAAgAAgACAAAAAAABAAkAAgACAAAAAAABAAoAAgACAAAAAAACAAEAAQABAAAAAAACAAIAAQABAAAAAAACAAMAAQABAAAAAAACAAQAAQABAAAAAAACAAUAAQABAAAAAAACAAYAAQABAAAAAAACAAcAAQABAAAAAAACAAgAAQABAAAAAAACAAkAAQABAAAAAAACAAoAAQABAAAAAAADAAEAAQAAAAAAAAADAAIAAQAAAAAAAAADAAMAAQAAAAAAAAADAAQAAQAAAAAAAAADAAUAAQAAAAAAAAADAAYAAQAAAAAAAAADAAcAAQAAAAAAAAADAAgAAQAAAAAAAAADAAkAAQAAAAAAAAADAAoAAQAAAAAAAAD+/woABQACAAAAAAD+/wsABQACAAEAAAD+/wwABQACAAIAAAD//wsAAgAAAAAAAAD//wwAAgAAAAAAAAD//w0AAgAAAAAAAAAAAAsABQAAAAIAAAAAAAwAAgAAAAAAAAAAAA0AAgAAAAAAAAABAAsABQADAAEAAAABAAwABQAAAAEAAAABAA0AAgAAAAAAAAD//w4AAQAEAAAAAAAAAA4AAgAAAAAAAAD+/w4AAQAEAAAAAAD+/w0AAgAAAAAAAAD+/wkAAgAAAAAAAAD9/wkAAgACAAAAAAD9/w0AAgAAAAAAAAD8/w0AAgAAAAAAAAD8/wwABQAAAAIAAAD7/w0AAgAAAAAAAAD7/wwAAgAAAAAAAAD7/wsAAgAAAAAAAAD7/woAAgAAAAAAAAD7/wkAAgAAAAAAAAD8/wgAAQAEAAAAAAD8/wkAAgAAAAAAAAD7/wgAAQAEAAAAAAD9/wgAAQAEAAAAAAD+/wgAAQAEAAAAAAD6/w4AAQAEAAAAAAD7/w4AAQAEAAAAAAD8/w4AAQAEAAAAAAD9/w4AAQAEAAAAAAD6/wcAAQAEAAAAAAD6/wgAAQAEAAAAAAD6/wkAAQAEAAAAAAD6/woAAQAEAAAAAAD6/wsAAQAEAAAAAAD6/wwAAQAEAAAAAAD6/w0AAQAEAAAAAAD7/wcAAQAEAAAAAAD8/wcAAQAEAAAAAAD9/wcAAQAEAAAAAAD+/wcAAQAEAAAAAAD9/woABQABAAAAAAD8/woABQAAAAAAAAD8/wsABQAAAAEAAAD9/wwABQABAAIAAAD9/wsAAgACAAAAAAAEAAoAAgAEAAAAAAAEAAkAAgAEAAAAAAAEAAgAAgAEAAAAAAAEAAcAAgAEAAAAAAAEAAYAAgAEAAAAAAAEAAUAAgADAAAAAAAEAAQAAgADAAAAAAAEAAMAAgADAAAAAAAEAAIAAgADAAAAAAAEAAEAAgADAAAAAAD4/xIAAQAEAAAAAAD5/xIAAQADAAAAAAD6/xIAAQACAAAAAAD7/xIAAQABAAAAAAD8/xIAAQAAAAAAAAD4/xMAAQAEAAAAAAD5/xMAAQADAAAAAAD6/xMABQAAAAQAAAD7/xMAAgABAAAAAAD8/xMAAAABAAAAAAD9/xMAAAACAAAAAAA=")
+tile_set = SubResource("TileSet_8j60k")
+
+[node name="Cliffs" type="TileMapLayer" parent="Layer_Manager"]
+tile_set = SubResource("TileSet_ikia7")
+
+[connection signal="matrix_created" from="Layer_Manager" to="." method="_on_layer_manager_matrix_created"]
+[connection signal="ready" from="Layer_Manager" to="." method="_on_layer_manager_ready"]
