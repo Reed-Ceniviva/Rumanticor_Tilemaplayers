@@ -17,9 +17,6 @@ var father : bool = false
 const WORKER = preload("res://Scenes/Characters/worker.tscn")
 @onready var world_character_manager : character_manager = $".."
 @onready var animated_sprite_2d : AnimatedSprite2D = $AnimatedSprite2D
-@onready var ground : TileMapLayer = $"../../Ground"
-@onready var trees : TileMapLayer = $"../../Trees"
-@onready var buildings : TileMapLayer = $"../../Building_Manager/Buildings"
 @onready var world_layer_manager : layer_manager = $"../.."
 
 #var astar_grid : AStarGrid2D
@@ -43,7 +40,7 @@ func _physics_process(delta):
 		print("Tasks ID: " , tasks[0])
 		print("Logs: ", inventory["wood"])
 		if(current_id_path.size() > 0):
-			position = ground.map_to_local(current_id_path.front())
+			position = world_layer_manager.tm_layers["ground"].map_to_local(current_id_path.front())
 			current_id_path = current_id_path.slice(1)
 		if(tasks[0] == 1):#blindly move ~ idle
 			if (inventory["wood"] >= 5):#if you have enough wood to build a hut, build a hut
@@ -90,8 +87,7 @@ func _physics_process(delta):
 
 func blindly_move(): # State 1
 	animated_sprite_2d.play("default")
-	var ground_qt = world_layer_manager.get_ground_qt()
-	var surroundings : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius_quadtree(ground_qt, map_location, 1)
+	var surroundings : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius("ground", map_location, 1)
 	for i in range(surroundings.size()):
 		if surroundings[i] == map_location:
 			surroundings.remove_at(i)
@@ -121,18 +117,9 @@ func move_to(target_pos : Vector2i, enter : bool = false): # sets the current ID
 
 #func look_around(target_qt):
 
-func locate_closest_in_quadtree(target_qt : quad_tree_node, distance : int = sight_distance):
-	var tree_qt = world_layer_manager.get_tree_qt()
-	var surroundings = world_layer_manager.get_non_empty_cells_in_radius_quadtree(target_qt, map_location, distance)
-	if surroundings.size() > 0:
-		return get_closest_point(map_location, surroundings)
-	else:
-		return null
-
-
 func locate_tree(distance : int = sight_distance):
-	var tree_qt = world_layer_manager.get_tree_qt()
-	var surroundings : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius_quadtree(tree_qt, map_location, distance)
+	#var tree_qt = world_layer_manager.get_tree_qt()
+	var surroundings : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius("trees", map_location, distance)
 	if surroundings.size() > 0:
 		return get_closest_point(map_location, surroundings)
 	else:
@@ -161,18 +148,16 @@ func chop_tree(): #state 3
 		
 func build_hut():
 	print("building hut")
-	var ground_qt = world_layer_manager.get_ground_qt()
-	var surroundings : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius_quadtree(ground_qt, map_location, 1)
+	var surroundings : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius("ground", map_location, 1)
 	for i in surroundings:
-		if i != map_location and buildings.get_cell_atlas_coords(i) == Vector2i(-1,-1):
+		if i != map_location and world_layer_manager.tm_layers["buildings"].get_cell_atlas_coords(i) == Vector2i(-1,-1):
 			animated_sprite_2d.play("chop")
 			world_layer_manager.hut_built(i)
 			inventory["wood"] = inventory["wood"] - 5
 			return i         
   
 func locate_hut(distance : int = sight_distance):
-	var building_qt = world_layer_manager.get_building_qt()
-	var local_huts : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius_quadtree(building_qt, map_location, distance)
+	var local_huts : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius("buildings", map_location, distance)
 	if local_huts.size() > 0 :
 		return get_closest_point(map_location, local_huts)
 	else:
@@ -189,11 +174,11 @@ func move_to_hut():
 
 func make_baby(): #state 4
 	print("baking baby")
-	var building_cells = buildings.get_used_cells()
+	var building_cells = world_layer_manager.tm_layers["buildings"].get_used_cells()
 	if building_cells.has(map_location): #if worker has arrived to a building
 		var new_worker = WORKER.instantiate()
 		var to_the_right = Vector2i(1,0)
-		new_worker.position = ground.map_to_local(map_location + to_the_right)
+		new_worker.position = world_layer_manager.tm_layers["ground"].map_to_local(map_location + to_the_right)
 		get_parent().add_child(new_worker)
 		return true
 	elif current_id_path.is_empty():
@@ -224,7 +209,7 @@ func get_closest_point(target: Vector2i, points: Array[Vector2i]) -> Vector2i:
 		return target
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
-	map_location = ground.local_to_map(position)
+	map_location = world_layer_manager.tm_layers["ground"].local_to_map(position)
 
 func get_age():
 	return age

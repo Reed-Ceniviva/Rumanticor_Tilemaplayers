@@ -89,7 +89,7 @@ autoplay = "default"
 script = ExtResource("3_y0uuc")
 metadata/_custom_type_script = "uid://cmvsl2d5ci2b2"
 
-[node name="Node" type="Node" parent="state_machine"]
+[node name="idle" type="Node" parent="state_machine"]
 script = SubResource("GDScript_wervc")
 
 [connection signal="animation_looped" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_animation_looped"]

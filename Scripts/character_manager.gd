@@ -32,18 +32,6 @@ func find_ground() -> Vector2i:
 func get_astar():
 	return astar_grid
 
-#instantiates the first worker once the tilemaps are queryable 
-func _on_layer_manager_quadtree_created():
-	print("quadtree created")
-	trees_created += 1
-	print(trees_created)
-	if trees_created == 3: # all quadtrees created
-		print("creating initial worker")
-		var new_worker = WORKER.instantiate()
-		new_worker.position = ground.map_to_local(find_ground())
-		add_child(new_worker)
-		worker_created.emit()
-
 #this is fucking horrible
 func build_traversable_tilemap(traversable_layers : Array[String] = ["Ground","Shore"]) -> TileMapLayer:
 	#different characters will be able to travers different tiles and that list will likely change if
@@ -83,3 +71,11 @@ func _on_worker_created(): #prepare pathfinding
 			for j in range(traversable_tml.position.y , ground.get_used_rect().size.y):
 				var is_blocked = !traversable_qt.has(Vector2i(i,j))
 				astar_grid.set_point_solid(Vector2i(i,j), is_blocked)
+
+
+func _on_layer_manager_world_created():
+		print("creating initial worker")
+		var new_worker = WORKER.instantiate()
+		new_worker.position = ground.map_to_local(find_ground())
+		add_child(new_worker)
+		worker_created.emit()

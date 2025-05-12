@@ -263,11 +263,10 @@ tile_set = SubResource("TileSet_461vt")
 
 [node name="Character_Manager" parent="." instance=ExtResource("9_f5k6d")]
 
-[node name="Building_Manager" type="Node" parent="."]
+[node name="Building_Manager" type="TileMapLayer" parent="."]
 
 [node name="Buildings" type="TileMapLayer" parent="Building_Manager"]
 tile_set = SubResource("TileSet_24hkg")
 
 [connection signal="matrix_created" from="." to="." method="_on_matrix_created"]
-[connection signal="quadtree_created" from="." to="Character_Manager" method="_on_layer_manager_quadtree_created"]
-[connection signal="tile_map_filled" from="." to="." method="_on_tile_map_filled"]
+[connection signal="world_created" from="." to="Character_Manager" method="_on_layer_manager_world_created"]

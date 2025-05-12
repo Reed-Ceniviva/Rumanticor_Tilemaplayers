@@ -7,6 +7,17 @@ class_name Statemachine extends Node
 	return initial_state if initial_state != null else get_child(0)
 ).call()
 
+#priorities of life for a worker:
+# 1 : Procreate : if they are able to they will stop what they are doing to make more of themselves
+# 2 : Build Shelter : if they have the materials for it, they will build shelter for themselves or their offspring
+# @ : Connect homes : Build paths between shelters 
+# @ : Build Port/Docks : Build a port/docks on the coast to launch a boat from
+# @ : Build a Boat : Build a Boat at the Port
+# @ : Build Mine : a building to collect stone from
+# @ : Build Well : a building to collect water from
+# @ : Collect Resources :
+	# @ : Wood : from trees
+
 func _ready() -> void:
 	# Give every state a reference to the state machine.
 	for child in get_children():
