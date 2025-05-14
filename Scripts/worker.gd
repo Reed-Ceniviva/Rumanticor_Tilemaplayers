@@ -45,9 +45,15 @@ func _physics_process(delta):
 		print("Tasks: " , tasks)
 		print("Wood Logs: ", inventory["wood"])
 		print("Current Path:", current_id_path)
-		if(current_id_path.size() > 0):
+		if(current_id_path.size() > 0): # if we were moving somewhere, continue moving there
 			position = world_layer_manager.tm_layers["ground"].map_to_local(current_id_path.front())
 			current_id_path = current_id_path.slice(1)
+			
+		if(inventory["wood"] >= 5):
+			build_hut()
+			
+			
+			
 		if(tasks[0] == 1):#blindly move ~ idle : if other priorities are met
 			if (inventory["wood"] >= 5):#if you have enough wood to build a hut, build a hut
 				build_hut()
@@ -69,7 +75,7 @@ func _physics_process(delta):
 				tasks.remove_at(0)
 				tasks.append(1)
 		elif(tasks[0] == 3): #chop Tree
-			if locate_tree(1): #while a tree is 1 cell away
+			if locate_tree(1): #when a tree is 1 cell away
 				chop_tree()
 				tasks.remove_at(0) #move randomly looking for a tree after chopping
 				tasks.append(1)
@@ -86,9 +92,8 @@ func _physics_process(delta):
 				print("arrived to no hut")
 				tasks.clear()
 				tasks.append(1)
-				
 		else:				#idle
-			pass
+			tasks[0] = 1
 
 ##Moving Functions : Functions that access the current id path
 func blindly_move(): # State 1
@@ -106,6 +111,10 @@ func blindly_move(): # State 1
 			
 #func directional_move(direction : int):
 	
+#sets the current id path equal to an array of vector2i locations making up a valid path to target pos
+#uses the character manager astargrid2d for path generation
+#takes an optional variable enter(bool) for whether to include the target pos in the path
+#returns void
 func move_to(target_pos : Vector2i, enter : bool = false): # sets the current ID path to arrive at a neighboring tile of target_pos
 	current_id_path.clear()
 	animated_sprite_2d.play("default")
@@ -121,7 +130,11 @@ func move_to(target_pos : Vector2i, enter : bool = false): # sets the current ID
 
 #func look_around(target_qt):
 
-func locate_tree(distance : int = sight_distance):
+#finds a non-empty tree tile in radius distance from the worker
+#sets destination equal to the closest tree
+#returns true if a tree is in radius distance from the worker
+#returns false otherwise
+func locate_tree(distance : int = sight_distance) -> bool:
 	#var tree_qt = world_layer_manager.get_tree_qt()
 	var surroundings : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius("trees", map_location, distance)
 	surroundings.erase(map_location)
@@ -131,9 +144,12 @@ func locate_tree(distance : int = sight_distance):
 	else:
 		return false
 	
-#should combine state 2 and 3 so that it works like state 4    
-func move_to_tree(): # state 2
-	var nearby_tree = locate_tree()
+
+#function using functions
+#if locate tree returns true calls move_to on destination
+#returns true if locate tree returns true
+#returns false otherwise  
+func move_to_tree() -> bool: # state 2
 	if locate_tree():
 		move_to(destination)
 		return true
@@ -141,7 +157,10 @@ func move_to_tree(): # state 2
 		print("no tree in sight")
 		return false
 
-func chop_tree(): #state 3
+#if there is a tree adjacent to the worker, it plays the chop animation, handles changing the tilemap data, and adjusts inventory
+#returns true if there is a tree to chop
+#returns false if there is no adjacent tree
+func chop_tree() -> bool: #state 3
 	if locate_tree(1):
 		animated_sprite_2d.play("chop")
 		world_layer_manager.tree_chopped(destination)
@@ -151,7 +170,10 @@ func chop_tree(): #state 3
 		print("no tree to chop")
 		return false
 		
-func build_hut():
+#picks a random spot around the worker that does not contain a building and builds a hut
+#returns true if a hut is built on a valid spot,
+#returns false if no valid spot is found
+func build_hut() -> bool:
 	print("building hut")
 	var surroundings : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius("ground", map_location, 1)
 	for i in surroundings:
@@ -159,17 +181,25 @@ func build_hut():
 			animated_sprite_2d.play("chop")
 			world_layer_manager.hut_built(i)
 			inventory["wood"] = inventory["wood"] - 5
-			return i         
-  
-func locate_hut(distance : int = sight_distance):
+			return true    
+	return false     
+
+#checks for a non-empty building tile in radius of distance from map-location, defualts to sight_distance
+#returns true if there is a hut in radius distance and sets destination equal to the closest location
+#returns false if no hut is in radius distance
+func locate_hut(distance : int = sight_distance) -> bool:
 	var local_huts : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius("buildings", map_location, distance)
 	if local_huts.size() > 0 :
 		destination = get_closest_point(map_location, local_huts)
 		return true
 	else:
+		print("no hut is sight")
 		return false     
 	
-func move_to_hut():
+#might be a pointless function
+#calls locate hut and if successful calls move_to on distination with enter=true
+#returns false if locate hut returns false
+func move_to_hut() -> bool:
 	if locate_hut():
 		move_to(destination, true)
 		return true
@@ -177,6 +207,7 @@ func move_to_hut():
 		print("no hut in sight")
 		return false
 
+#this needs to be rewritten
 func make_baby(): #state 4
 	print("baking baby")
 	var building_cells = world_layer_manager.tm_layers["buildings"].get_used_cells()
@@ -196,12 +227,11 @@ func make_baby(): #state 4
 		move_to_hut()
 		return false
 
+#takes a Vector2i position and and Array of Vector2i and returns the closest point in the array to the target
+# if the array is empty or only contains the target location, returns the target location
 func get_closest_point(target: Vector2i, points: Array[Vector2i]) -> Vector2i:
 	if points.has(target):
-		for i in range(points.size()):
-			if points[i] == target:
-				points.remove_at(i)
-				break
+		points.erase(target)
 	if points.size() > 0:
 		var closest = points[0]
 		var min_dist_sq = target.distance_squared_to(closest)
@@ -212,6 +242,7 @@ func get_closest_point(target: Vector2i, points: Array[Vector2i]) -> Vector2i:
 				closest = point
 		return closest
 	else:
+		print("no closest point, returning starting position")
 		return target
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _process(delta):
