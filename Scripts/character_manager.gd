@@ -32,19 +32,19 @@ func find_ground() -> Vector2i:
 func get_astar():
 	return astar_grid
 
-#this is fucking horrible
 func build_traversable_tilemap(traversable_layers : Array[String] = ["Ground","Shore"]) -> TileMapLayer:
 	#different characters will be able to travers different tiles and that list will likely change if
 	#say a creature learns how to swim, that one worker should be able to move in water tiles without
 	#everyone else being able to yet
+	#think i've decided that this is the followers level controller so all the followers having the same capabilities makes sense
 	print("building traversable tilemap")
 	var traversable_tilemap = TileMapLayer.new()
 	var rect = ground.get_used_rect()
-	for y in range(rect.position.y, rect.position.y + rect.size.y):
-		for x in range(rect.position.x, rect.position.x + rect.size.x):
-			var pos_check = Vector2i(x,y)
-			for layer_name in traversable_layers:
-				var layer : TileMapLayer = get_node(("../".insert(3, layer_name) ))
+	for layer_name in traversable_layers:
+		var layer : TileMapLayer = get_node(("../".insert(3, layer_name) ))
+		for y in range(rect.position.y, rect.position.y + rect.size.y):
+			for x in range(rect.position.x, rect.position.x + rect.size.x):
+				var pos_check = Vector2i(x,y)
 				if layer.get_cell_tile_data(pos_check) != null:
 					traversable_tilemap.set_cell(
 					pos_check,

@@ -180,25 +180,23 @@ func build_tml_quadtree(reference: TileMapLayer) -> quad_tree_node:
 		
 	var min_pos = used_cells[0]
 	var max_pos = used_cells[0]
-
+	
 # Find map bounds
 	for cell in used_cells:
 		min_pos = Vector2i(min(min_pos.x, cell.x), min(min_pos.y, cell.y))
 		max_pos = Vector2i(max(max_pos.x, cell.x), max(max_pos.y, cell.y))
-
+		
 	var rect = Rect2i(min_pos, max_pos - min_pos + Vector2i(1,1))
-
+	
 	var target_qt = quad_tree_node.new(rect)
 	for cell in used_cells:
 		target_qt.insert(cell)
 	return target_qt
 
 func get_non_empty_cells_in_radius_quadtree(quad_tree: quad_tree_node, center: Vector2i, radius: int) -> Array[Vector2i]:
-	#print("getting non empty cells in: ", String(quad_tree.name) , "\nat position: " , center, " \n in the radius of : ", radius)
 	var result: Array[Vector2i] = []
 	if quad_tree != null:
 		quad_tree.query_circle(center, radius, result)
-	#print("result: ",result)
 	return result
 
 func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radius: int) -> Array[Vector2i]:
@@ -206,5 +204,4 @@ func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radi
 	var quad_tree = layer_quadtrees[layer_name]
 	if quad_tree != null:
 		quad_tree.query_circle(center, radius, result)
-	#print("result: ",result)
 	return result
