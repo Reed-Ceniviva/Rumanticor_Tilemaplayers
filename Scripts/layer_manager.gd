@@ -198,7 +198,7 @@ func get_non_empty_cells_in_radius_quadtree(quad_tree: quad_tree_node, center: V
 	var result: Array[Vector2i] = []
 	if quad_tree != null:
 		quad_tree.query_circle(center, radius, result)
-	print("result: ",result)
+	#print("result: ",result)
 	return result
 
 func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radius: int) -> Array[Vector2i]:
@@ -206,5 +206,5 @@ func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radi
 	var quad_tree = layer_quadtrees[layer_name]
 	if quad_tree != null:
 		quad_tree.query_circle(center, radius, result)
-	print("result: ",result)
+	#print("result: ",result)
 	return result
