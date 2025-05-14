@@ -54,18 +54,19 @@ func _physics_process(delta):
 			position = world_layer_manager.tm_layers["ground"].map_to_local(current_id_path.front())
 			current_id_path = current_id_path.slice(1)
 			
-		if(inventory["wood"] >= 5 and home_location != Vector2i.ZERO):#build a hut
+		if(inventory["wood"] >= 5 and home_location == Vector2i.ZERO):#build a hut
 			if build_hut():
 				home_location = destination
 			else:
 				wander()
-		elif(father <= 5 and home_location != Vector2i.ZERO and age > 18 and age >= last_birth+birth_delay): #reproduce
+		elif(father <= 5 and home_location != Vector2i.ZERO and age > 30 and age >= last_birth+birth_delay): #reproduce
 			if current_id_path.is_empty():
 				if locate_hut(1):
 					reproduce()
 					last_birth = age
 				else:
-					move_to(home_location)
+					if move_to(home_location) == false:
+						wander()
 		elif(inventory["wood"] < 5): #Collect more wood
 			if current_id_path.is_empty():
 				if locate_tree(1):
@@ -73,6 +74,8 @@ func _physics_process(delta):
 				else:
 					if ! move_to_tree():
 						wander()
+		else:
+			wander()
 			
 		#if(tasks[0] == 1):#blindly move ~ idle : if other priorities are met
 			#if (inventory["wood"] >= 5):#if you have enough wood to build a hut, build a hut
@@ -116,6 +119,7 @@ func _physics_process(delta):
 			#tasks[0] = 1
 
 func wander():
+	print("wandering")
 	if wander_start+wander_delay < time:
 		wander_dir = randi()%4
 		wander_start = time
@@ -123,13 +127,13 @@ func wander():
 
 ##Moving Functions : Functions that access the current id path
 func blindly_move(direction : int = -1): # State 1
-	print("blindly move called")
+	#print("blindly move called")
 	animated_sprite_2d.play("default")
 	var surroundings : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius("ground", map_location, 1)
 	surroundings.erase(map_location)
 	if surroundings.size() > 0:
 		if direction == -1 or surroundings.size()-1 < (direction): # if there is no given direction or the character is unable to move in that direction
-			var random_pick : Vector2i = surroundings[randi()%surroundings.size()-1]
+			var random_pick : Vector2i = surroundings[randi()%surroundings.size()]
 			move_to(random_pick, true)
 		else:
 			move_to(surroundings[direction],true)
@@ -142,7 +146,7 @@ func blindly_move(direction : int = -1): # State 1
 #uses the character manager astargrid2d for path generation
 #takes an optional variable enter(bool) for whether to include the target pos in the path
 #returns void
-func move_to(target_pos : Vector2i, enter : bool = false): # sets the current ID path to arrive at a neighboring tile of target_pos
+func move_to(target_pos : Vector2i, enter : bool = false) -> bool: # sets the current ID path to arrive at a neighboring tile of target_pos
 	current_id_path.clear()
 	animated_sprite_2d.play("default")
 	var start_pos = map_location
@@ -152,7 +156,9 @@ func move_to(target_pos : Vector2i, enter : bool = false): # sets the current ID
 	
 	if id_path.is_empty() == false:
 		current_id_path = id_path
+		return true
 	else:
+		return false
 		print("trying to move to current location")
 
 #func look_around(target_qt):
@@ -169,6 +175,7 @@ func locate_tree(distance : int = sight_distance) -> bool:
 		destination = get_closest_point(map_location, surroundings)
 		return true
 	else:
+		print("no tree in sight")
 		return false
 	
 
@@ -181,7 +188,6 @@ func move_to_tree() -> bool: # state 2
 		move_to(destination)
 		return true
 	else:
-		print("no tree in sight")
 		return false
 
 #if there is a tree adjacent to the worker, it plays the chop animation, handles changing the tilemap data, and adjusts inventory
@@ -211,6 +217,7 @@ func build_hut() -> bool:
 			world_layer_manager.hut_built(i)
 			inventory["wood"] = inventory["wood"] - 5
 			return true    
+	print("nowhere to build hut")
 	return false     
 
 #checks for a non-empty building tile in radius of distance from map-location, defualts to sight_distance
@@ -222,7 +229,7 @@ func locate_hut(distance : int = sight_distance) -> bool:
 		destination = get_closest_point(map_location, local_huts)
 		return true
 	else:
-		print("no hut is sight")
+		print("no hut in sight")
 		return false     
 	
 #might be a pointless function
@@ -233,7 +240,6 @@ func move_to_hut() -> bool:
 		move_to(destination, true)
 		return true
 	else:
-		print("no hut in sight")
 		return false
 
 func reproduce():
@@ -244,25 +250,6 @@ func reproduce():
 	father += 1
 	return true
 
-#this needs to be rewritten
-func make_baby(): #state 4
-	print("baking baby")
-	var building_cells = world_layer_manager.tm_layers["buildings"].get_used_cells()
-	world_layer_manager.get_non_empty_cells_in_radius("buildings", map_location, 1)
-	if building_cells.has(map_location): #if worker has arrived to a building
-		var new_worker = WORKER.instantiate()
-		var to_the_right = Vector2i(1,0)
-		new_worker.position = world_layer_manager.tm_layers["ground"].map_to_local(map_location + to_the_right)
-		get_parent().add_child(new_worker)
-		return true
-	elif current_id_path.is_empty():
-		move_to_hut()
-	elif building_cells.has(current_id_path.back()):
-		#on the way to the hut
-		pass
-	else:
-		move_to_hut()
-		return false
 
 #takes a Vector2i position and and Array of Vector2i and returns the closest point in the array to the target
 # if the array is empty or only contains the target location, returns the target location
