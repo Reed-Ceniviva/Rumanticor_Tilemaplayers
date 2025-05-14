@@ -99,8 +99,8 @@ func blindly_move(): # State 1
 	if surroundings.size() > 0:
 		var random_pick = randi()%surroundings.size()
 		#current_id_path.remove_at(0)
-		current_id_path.set(0,surroundings[random_pick])
-		#move_to(surroundings[random_pick], true)
+		#current_id_path.set(0,surroundings[random_pick])
+		move_to(surroundings[random_pick], true)
 	else:
 		print("nowhere to move")
 			
