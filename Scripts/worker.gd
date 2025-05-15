@@ -10,7 +10,7 @@ var time = 0.0
 @export var movedelay = 0.25
 var nextmove = 0.0
 var sight_distance = 32
-var father : int = 0
+var offspring : Array[worker]
 var last_birth = 0
 var birth_delay = 18
 var wander_start = 0
@@ -39,6 +39,10 @@ func _ready():
 	inventory["wood"] = 0
 	birth_delay = randi()%(18-2) + 2
 	home_location = Vector2i.ZERO
+	var names = world_character_manager.get_first_names()
+	var names_size = names.size()
+	set_char_name(names[randi()%names_size])
+	set_sex(randi()%2)
 
 #get rid of tasks till a real task system is needed
 #clean up code to use the new move to function
@@ -59,7 +63,7 @@ func _physics_process(delta):
 				home_location = destination
 			else:
 				wander()
-		elif(father <= 5 and home_location != Vector2i.ZERO and age > 30 and age >= last_birth+birth_delay): #reproduce
+		elif(offspring.size() <= 5 and home_location != Vector2i.ZERO and age > 30 and age >= last_birth+birth_delay): #reproduce
 			if current_id_path.is_empty():
 				if locate_hut(1):
 					reproduce()
@@ -77,47 +81,8 @@ func _physics_process(delta):
 		else:
 			wander()
 			
-		#if(tasks[0] == 1):#blindly move ~ idle : if other priorities are met
-			#if (inventory["wood"] >= 5):#if you have enough wood to build a hut, build a hut
-				#build_hut()
-			#elif (locate_hut() != false and time > 30 and !father): # if this worker is ready to be a father and is near a hut
-				#tasks.remove_at(0)
-				#tasks.append(4)
-			#else:
-				#if locate_tree(): # if while moving around randomly you see a tree, move to that tree
-					#tasks.remove_at(0)
-					#tasks.append(2)
-				#else:
-					#blindly_move()
-		#elif(tasks[0] == 2): 	#move to tree 
-			#if locate_tree(): # if there is a tree in sight
-				#move_to(destination)
-				#tasks.remove_at(0)
-				#tasks.append(3)
-			#else: # if no tree in sight move around randomly
-				#tasks.remove_at(0)
-				#tasks.append(1)
-		#elif(tasks[0] == 3): #chop Tree
-			#if locate_tree(1): #when a tree is 1 cell away
-				#chop_tree()
-				#tasks.remove_at(0) #move randomly looking for a tree after chopping
-				#tasks.append(1)
-			#elif current_id_path.size() == 0: # if we are done moving and there is no tree around cancel chopping the tree and walk blindly
-				#print("arrived to no tree")
-				#tasks.clear()
-				#tasks.append(1)
-		#elif(tasks[0] == 4): #reproduce
-			#if(make_baby()):
-				#father = true
-				#tasks.clear()
-				#tasks.append(2)
-			#elif current_id_path.size() == 0:
-				#print("arrived to no hut")
-				#tasks.clear()
-				#tasks.append(1)
-		#else:				#idle
-			#tasks[0] = 1
 
+#controlled blindly moving
 func wander():
 	print("wandering")
 	if wander_start+wander_delay < time:
@@ -133,7 +98,9 @@ func blindly_move(direction : int = -1): # State 1
 	surroundings.erase(map_location)
 	if surroundings.size() > 0:
 		if direction == -1 or surroundings.size()-1 < (direction): # if there is no given direction or the character is unable to move in that direction
-			var random_pick : Vector2i = surroundings[randi()%surroundings.size()]
+			print("invalid move")
+			pass
+			var random_pick : Vector2i = surroundings[0]
 			move_to(random_pick, true)
 		else:
 			move_to(surroundings[direction],true)
@@ -242,14 +209,35 @@ func move_to_hut() -> bool:
 	else:
 		return false
 
+#creates new worker and adds them to this workers offspring
 func reproduce():
 	var new_worker = WORKER.instantiate()
 	var to_the_right = Vector2i(1,0)
 	new_worker.position = world_layer_manager.tm_layers["ground"].map_to_local(map_location + to_the_right)
 	get_parent().add_child(new_worker)
-	father += 1
+	offspring.append(new_worker)
 	return true
 
+func get_extended_offspring_mine() -> Array[worker]:
+	var all_offspring : Array[worker]
+	for child in offspring:
+		all_offspring.append(child)
+		all_offspring += child.get_extended_offspring()
+	return all_offspring
+
+func get_extended_offspring(visited : Dictionary = {}) -> Array:
+	var all_offspring = []
+	
+	for child in offspring:
+		if child == self:
+			continue  # Prevent self-reference (extreme safety)
+		if child in visited:
+			continue  # Already visited, skip to prevent duplicates or circular loops
+		visited[child] = true  # Mark as visited
+		all_offspring.append(child)
+		all_offspring += child.get_extended_offspring(visited)  # Recurse
+	
+	return all_offspring
 
 #takes a Vector2i position and and Array of Vector2i and returns the closest point in the array to the target
 # if the array is empty or only contains the target location, returns the target location

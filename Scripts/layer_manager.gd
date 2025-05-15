@@ -205,3 +205,27 @@ func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radi
 	if quad_tree != null:
 		quad_tree.query_circle(center, radius, result)
 	return result
+
+func build_traversable_tilemap(traversable_layers : Array = ["ground","shore"], obstical_layers : Array = ["trees"]) -> TileMapLayer:
+	print("building traversable tilemap")
+	var traversable_tilemap = TileMapLayer.new()
+	var rect = tm_layers["ground"].get_used_rect()
+	var obsticles : Dictionary[String, Array]
+	var tree_obsticles = tm_layers[obstical_layers[0]].get_used_cells()
+	for layer_name in traversable_layers:
+		var layer : TileMapLayer = tm_layers[layer_name]
+		for y in range(rect.position.y, rect.position.y + rect.size.y):
+			for x in range(rect.position.x, rect.position.x + rect.size.x):
+				var pos_check = Vector2i(x,y)
+				var is_obsticle : bool
+				for obs_layer in obstical_layers:
+					if layer_quadtrees[obs_layer].has(pos_check):
+						is_obsticle = true
+				if layer.get_cell_tile_data(pos_check) != null and not is_obsticle :
+					traversable_tilemap.set_cell(
+					pos_check,
+					layer.get_cell_source_id(pos_check),
+					layer.get_cell_atlas_coords(pos_check),
+					layer.get_cell_alternative_tile(pos_check)
+				)
+	return traversable_tilemap

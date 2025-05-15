@@ -1,5 +1,11 @@
 class_name character_manager extends Node
 
+var FIRST_NAMES = ["Reed", "Trevor", "George", "Lindsey", "Nick", "David", "Alexander", "Rolland", 
+"Marie", "Joseph", "Gail", "Audry", "Ryan", "Cory", "Zach", "William", "James", "Jack", "Jacob",
+"Bonnie", "Moo", "Dianne", "Bill", "Mario", "JD", "Jason", "Frank", "Rachel", "Cindy", "Peggy", 
+"Charlene", "Charmaine", "Dave", "Davey", "Owen", "Steven", "Jamie", "Cody", "Brody", "Emma", 
+"Julia", "Brendan", "Lueis", "Warner", "Hazel", "Bryce", "Mason", "Lauren", "Michele"]
+
 @onready var world_layer_manager : layer_manager = $".."
 @onready var ground : TileMapLayer = $"../Ground" 
 @onready var shore : TileMapLayer = $"../Shore"
@@ -17,6 +23,9 @@ func _ready():
 func _process(delta):
 	pass
 
+func get_first_names() -> Array:
+	return FIRST_NAMES
+
 func find_ground() -> Vector2i:
 	print("finding ground")
 	var valid_pos = Vector2i(-1,-1)
@@ -32,7 +41,8 @@ func find_ground() -> Vector2i:
 func get_astar():
 	return astar_grid
 
-func build_traversable_tilemap(traversable_layers : Array[String] = ["Ground","Shore"]) -> TileMapLayer:
+#should switch to using this function in layer_manager 
+func build_traversable_tilemap(traversable_layers : Array[String] = ["ground","shore"]) -> TileMapLayer:
 	#different characters will be able to travers different tiles and that list will likely change if
 	#say a creature learns how to swim, that one worker should be able to move in water tiles without
 	#everyone else being able to yet
@@ -40,12 +50,14 @@ func build_traversable_tilemap(traversable_layers : Array[String] = ["Ground","S
 	print("building traversable tilemap")
 	var traversable_tilemap = TileMapLayer.new()
 	var rect = ground.get_used_rect()
+	#var tree_obsticles = world_layer_manager.tm_layers["trees"].get_used_cells()
 	for layer_name in traversable_layers:
-		var layer : TileMapLayer = get_node(("../".insert(3, layer_name) ))
+		var layer : TileMapLayer = world_layer_manager.tm_layers[layer_name]
 		for y in range(rect.position.y, rect.position.y + rect.size.y):
 			for x in range(rect.position.x, rect.position.x + rect.size.x):
 				var pos_check = Vector2i(x,y)
-				if layer.get_cell_tile_data(pos_check) != null:
+				#var is_obsticle = tree_obsticles.has(pos_check)
+				if layer.get_cell_tile_data(pos_check) != null : #and not is_obsticle
 					traversable_tilemap.set_cell(
 					pos_check,
 					layer.get_cell_source_id(pos_check),
@@ -65,7 +77,7 @@ func _on_worker_created(): #prepare pathfinding
 		astar_grid.update()
 		if !astar_grid.region.get_area() > 0:
 			print("astar grid not defined")
-		var traversable_tml = build_traversable_tilemap()
+		var traversable_tml = world_layer_manager.build_traversable_tilemap()
 		var traversable_qt = world_layer_manager.build_tml_quadtree(traversable_tml)
 		for i in range(traversable_tml.position.x , ground.get_used_rect().size.x):
 			for j in range(traversable_tml.position.y , ground.get_used_rect().size.y):

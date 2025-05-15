@@ -1,4 +1,4 @@
-[gd_scene load_steps=32 format=3 uid="uid://buaonr7qjcjv1"]
+[gd_scene load_steps=33 format=3 uid="uid://buaonr7qjcjv1"]
 
 [ext_resource type="Script" uid="uid://c1iny50805neq" path="res://Scripts/layer_manager.gd" id="1_pfwod"]
 [ext_resource type="Texture2D" uid="uid://2q4lqlnm7bfa" path="res://Assets/Sprites/MiniWorldSprites/Ground/Shore.png" id="2_f5k6d"]
@@ -11,6 +11,7 @@
 [ext_resource type="PackedScene" uid="uid://c8awhkot2crdr" path="res://Scenes/character_manager.tscn" id="9_f5k6d"]
 [ext_resource type="Texture2D" uid="uid://bjxp7dsg0f1gc" path="res://Assets/Sprites/MiniWorldSprites/Nature/Trees.png" id="9_nut35"]
 [ext_resource type="Texture2D" uid="uid://sxuwot43328e" path="res://Assets/Sprites/MiniWorldSprites/Buildings/Wood/Huts.png" id="10_nut35"]
+[ext_resource type="Script" uid="uid://cnj147a2ymce4" path="res://Scripts/building_manager.gd" id="11_461vt"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nut35"]
 texture = ExtResource("2_f5k6d")
@@ -264,9 +265,11 @@ tile_set = SubResource("TileSet_461vt")
 [node name="Character_Manager" parent="." instance=ExtResource("9_f5k6d")]
 
 [node name="Building_Manager" type="TileMapLayer" parent="."]
+script = ExtResource("11_461vt")
 
 [node name="Buildings" type="TileMapLayer" parent="Building_Manager"]
 tile_set = SubResource("TileSet_24hkg")
 
 [connection signal="matrix_created" from="." to="." method="_on_matrix_created"]
 [connection signal="world_created" from="." to="Character_Manager" method="_on_layer_manager_world_created"]
+[connection signal="worker_created" from="Character_Manager" to="Building_Manager" method="_on_character_manager_worker_created"]
