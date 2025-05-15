@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://by7rx0im2ngkn"]
+
+[ext_resource type="Script" uid="uid://c0xq48kwv6s8k" path="res://Scripts/component_systems/entities/entity_worker.gd" id="1_dmrem"]
+
+[node name="entity_worker" type="Node2D"]
+script = ExtResource("1_dmrem")
