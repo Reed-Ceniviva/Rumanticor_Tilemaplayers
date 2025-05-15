@@ -47,6 +47,19 @@ const TOPL_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(0,3)
 const TOPR_WATER_CLIFF_SOURCE_ID = 0
 const TOPR_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(2,3)
 
+const ROADS_SOURCE_ID = 0
+const ROADS_VERTICAL_ATLAS_POS = Vector2i(0,0)
+const ROADS_HORIZONTAl_ATLAS_POS = Vector2i(1,0)
+const ROADS_4WAY_ATLAS_POS = Vector2i(2,0)
+const ROADS_LB_CORNER_ATLAS_POS = Vector2i(3,0)
+const ROADS_RB_CORNER_ATLAS_POS = Vector2i(4,0)
+const ROADS_LTB_INT_ATLAS_POS = Vector2i(0,1)
+const ROADS_LRB_INT_ATLAS_POS = Vector2i(1,1)
+const ROADS_RTB_INT_ATLAS_POS = Vector2i(2,1)
+const ROADS_LT_CORNER_ATLAS_POS = Vector2i(3,1)
+const ROADS_RT_CORNER_ATLAS_POS = Vector2i(4,1)
+const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
+
 
 @export_group("World Parameters")
 @export_subgroup("Size")
@@ -109,7 +122,8 @@ func tree_chopped(tree_loc : Vector2i):
 func hut_built(hut_loc : Vector2i):
 	#print("hut built: adjusting tilemap and quadtree")
 	tm_layers["buildings"].set_cell(hut_loc, 0, Vector2i(1,0))
-	layer_quadtrees["buildings"] = build_tml_quadtree(tm_layers["buildings"])
+	layer_quadtrees["buildings"].insert(hut_loc)
+	#layer_quadtrees["buildings"] = build_tml_quadtree(tm_layers["buildings"])
 	
 func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2) -> Array:
 	print("generating perlin matrix for elevations")
@@ -171,12 +185,56 @@ func fill_ground_layers(elevation_matrix):
 			else:
 				print()
 
+func build_road(road_location : Vector2i):
+	if layer_quadtrees["roads"].has(road_location):
+		print("road already exists")
+		update_road(road_location)
+	else:
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_4WAY_ATLAS_POS)
+		layer_quadtrees["roads"].insert(road_location)
+		update_road(road_location)
+	
+
+func update_road(road_location : Vector2i):
+	var adjacent_roads = get_non_empty_cells_in_radius("roads",road_location,1)
+	var left = road_location + Vector2i.LEFT
+	var right = road_location + Vector2i.RIGHT
+	var top = road_location + Vector2i.UP
+	var bot = road_location + Vector2i.DOWN
+	adjacent_roads.erase(road_location)
+	if adjacent_roads.size() == 0:
+		pass
+	elif adjacent_roads.size() == 4:
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_4WAY_ATLAS_POS)
+	elif adjacent_roads.has(left) and adjacent_roads.has(right) and adjacent_roads.has(top):
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_LRT_INT_ATLAS_POS)
+	elif adjacent_roads.has(left) and adjacent_roads.has(right) and adjacent_roads.has(bot):
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_LRB_INT_ATLAS_POS)
+	elif adjacent_roads.has(left) and adjacent_roads.has(top) and adjacent_roads.has(bot):
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_LTB_INT_ATLAS_POS)
+	elif adjacent_roads.has(right) and adjacent_roads.has(top) and adjacent_roads.has(bot):
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_RTB_INT_ATLAS_POS)
+	elif adjacent_roads.has(left) and adjacent_roads.has(top):
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_LT_CORNER_ATLAS_POS)
+	elif adjacent_roads.has(left) and adjacent_roads.has(bot):
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_LB_CORNER_ATLAS_POS)
+	elif adjacent_roads.has(right) and adjacent_roads.has(top):
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_RT_CORNER_ATLAS_POS)
+	elif adjacent_roads.has(right) and adjacent_roads.has(bot):
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_RB_CORNER_ATLAS_POS)
+	elif adjacent_roads.has(right) or adjacent_roads.has(left):
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_HORIZONTAl_ATLAS_POS)
+	elif adjacent_roads.has(top) or adjacent_roads.has(bot):
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_VERTICAL_ATLAS_POS)
+	else:
+		pass
+
 #builds a quadtreenode based on a tilemaplayer
 func build_tml_quadtree(reference: TileMapLayer) -> quad_tree_node:
 	print("building quadtree based on a tilemaplayer") 
 	var used_cells = reference.get_used_cells()
 	if used_cells.is_empty(): #create an empty quadtree if the tilemaplayer is empty
-		return quad_tree_node.new(reference.get_used_rect())
+		return quad_tree_node.new(tm_layers["ground"].get_used_rect()) #need to use a rect that contains all possible points cause im lazy rn
 		
 	var min_pos = used_cells[0]
 	var max_pos = used_cells[0]
@@ -206,12 +264,12 @@ func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radi
 		quad_tree.query_circle(center, radius, result)
 	return result
 
-func build_traversable_tilemap(traversable_layers : Array = ["ground","shore"], obstical_layers : Array = ["trees"]) -> TileMapLayer:
+func build_traversable_tilemap(traversable_layers : Array = ["ground","shore"], obstical_layers : Array = []) -> TileMapLayer:
 	print("building traversable tilemap")
 	var traversable_tilemap = TileMapLayer.new()
 	var rect = tm_layers["ground"].get_used_rect()
 	var obsticles : Dictionary[String, Array]
-	var tree_obsticles = tm_layers[obstical_layers[0]].get_used_cells()
+	#var tree_obsticles = tm_layers[obstical_layers[0]].get_used_cells()
 	for layer_name in traversable_layers:
 		var layer : TileMapLayer = tm_layers[layer_name]
 		for y in range(rect.position.y, rect.position.y + rect.size.y):

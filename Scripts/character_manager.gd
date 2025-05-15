@@ -10,8 +10,6 @@ var FIRST_NAMES = ["Reed", "Trevor", "George", "Lindsey", "Nick", "David", "Alex
 @onready var ground : TileMapLayer = $"../Ground" 
 @onready var shore : TileMapLayer = $"../Shore"
 const WORKER = preload("res://Scenes/Characters/worker.tscn")
-var trees_created = 0
-var workers_created = 0
 var astar_grid : AStarGrid2D : get = get_astar
 var traversable : TileMapLayer
 signal worker_created
@@ -41,7 +39,9 @@ func find_ground() -> Vector2i:
 func get_astar():
 	return astar_grid
 
-#should switch to using this function in layer_manager 
+#should switch to using this function in layer_manager but need to figure why the commented out stuff isnt working, results in the worker not being able to see trees
+# when the traversable is only used for the astargrid2d pathfinding, but trees not being valid spots means you cant navigate to them, so this should be handled where blocking is set
+# for the astargrid rather than for the tilemap its built off of
 func build_traversable_tilemap(traversable_layers : Array[String] = ["ground","shore"]) -> TileMapLayer:
 	#different characters will be able to travers different tiles and that list will likely change if
 	#say a creature learns how to swim, that one worker should be able to move in water tiles without
@@ -66,10 +66,11 @@ func build_traversable_tilemap(traversable_layers : Array[String] = ["ground","s
 				)
 	return traversable_tilemap
 
+#i guess since blocking all trees would mean that you cant path towards them
+# the debris can be blocked, really the path should be a straight shot and then the worker adjusting the path as obsticals are encountered
 func _on_worker_created(): #prepare pathfinding 
 	print("worker created")
-	if(workers_created < 1):
-		workers_created += 1
+	if(astar_grid == null):
 		astar_grid = AStarGrid2D.new()
 		astar_grid.region = ground.get_used_rect()
 		astar_grid.cell_size = Vector2(16,16)
@@ -91,3 +92,48 @@ func _on_layer_manager_world_created():
 		new_worker.position = ground.map_to_local(find_ground())
 		add_child(new_worker)
 		worker_created.emit()
+
+func upgrade_to_employed() -> Node:
+	var new_worker = preload("res://Scenes/Characters/employed_worker.tscn").instantiate()
+	
+	# Transfer important data
+	new_worker.health = self.health
+	new_worker.sex = self.sex
+	new_worker.char_name = self.char_name
+	new_worker.strength = self.strength
+	new_worker.age = self.age
+	new_worker.time = self.time
+	new_worker.movedelay = self.movedelay
+	new_worker.sight_distance = self.sight_distance
+	new_worker.last_birth = self.last_birth
+	new_worker.birth_delay = self.birth_delay
+	new_worker.wander_start = self.wander_start
+	new_worker.wander_dir = self.wander_dir
+	new_worker.wander_delay = self.wander_delay
+	
+	new_worker.current_id_path = self.current_id_path.duplicate()
+	new_worker.walking = self.walking
+	new_worker.destination = self.destination
+	new_worker.home = self.home
+	new_worker.inventory = self.inventory.duplicate()
+	new_worker.map_location = self.map_location
+	
+	# Transfer offspring
+	for child in self.offspring:
+		new_worker.offspring.append(child)
+	
+	# Transfer position in scene
+	new_worker.position = self.position
+	new_worker.rotation = self.rotation
+	new_worker.scale = self.scale
+	
+	# Attach to scene and replace
+	var parent = self.get_parent()
+	var index = self.get_index()
+	parent.remove_child(self)
+	parent.add_child(new_worker)
+	parent.move_child(new_worker, index)
+	
+	self.queue_free()
+	
+	return new_worker

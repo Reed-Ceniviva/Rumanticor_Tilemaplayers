@@ -1,0 +1,77 @@
+[gd_scene load_steps=11 format=3 uid="uid://cuixqkitf83qj"]
+
+[ext_resource type="Texture2D" uid="uid://dms6nvjosi08e" path="res://Assets/Sprites/MiniWorldSprites/Characters/Workers/CyanWorker/FarmerCyan.png" id="1_pce7q"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_f31ch"]
+atlas = ExtResource("1_pce7q")
+region = Rect2(0, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_sukah"]
+atlas = ExtResource("1_pce7q")
+region = Rect2(16, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lhwcq"]
+atlas = ExtResource("1_pce7q")
+region = Rect2(32, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cecii"]
+atlas = ExtResource("1_pce7q")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_u4fa4"]
+atlas = ExtResource("1_pce7q")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_8njmo"]
+atlas = ExtResource("1_pce7q")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_e13k0"]
+atlas = ExtResource("1_pce7q")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_cn1eu"]
+atlas = ExtResource("1_pce7q")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_h1xks"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_f31ch")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_sukah")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lhwcq")
+}],
+"loop": true,
+"name": &"chop",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cecii")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_u4fa4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_8njmo")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_e13k0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_cn1eu")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="blue_worker_animated_sprite_2d" type="AnimatedSprite2D"]
+sprite_frames = SubResource("SpriteFrames_h1xks")
+animation = &"chop"
+autoplay = "default"

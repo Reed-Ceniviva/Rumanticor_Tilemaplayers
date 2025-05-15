@@ -1,4 +1,4 @@
-[gd_scene load_steps=33 format=3 uid="uid://buaonr7qjcjv1"]
+[gd_scene load_steps=36 format=3 uid="uid://buaonr7qjcjv1"]
 
 [ext_resource type="Script" uid="uid://c1iny50805neq" path="res://Scripts/layer_manager.gd" id="1_pfwod"]
 [ext_resource type="Texture2D" uid="uid://2q4lqlnm7bfa" path="res://Assets/Sprites/MiniWorldSprites/Ground/Shore.png" id="2_f5k6d"]
@@ -12,6 +12,7 @@
 [ext_resource type="Texture2D" uid="uid://bjxp7dsg0f1gc" path="res://Assets/Sprites/MiniWorldSprites/Nature/Trees.png" id="9_nut35"]
 [ext_resource type="Texture2D" uid="uid://sxuwot43328e" path="res://Assets/Sprites/MiniWorldSprites/Buildings/Wood/Huts.png" id="10_nut35"]
 [ext_resource type="Script" uid="uid://cnj147a2ymce4" path="res://Scripts/building_manager.gd" id="11_461vt"]
+[ext_resource type="Texture2D" uid="uid://bi585guk81slr" path="res://Assets/Sprites/MiniWorldSprites/Ground/Road.png" id="13_3jqb2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nut35"]
 texture = ExtResource("2_f5k6d")
@@ -230,6 +231,23 @@ texture = ExtResource("9_nut35")
 [sub_resource type="TileSet" id="TileSet_461vt"]
 sources/0 = SubResource("TileSetAtlasSource_8mjgm")
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_ti1v7"]
+texture = ExtResource("13_3jqb2")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+0:2/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_x47hx"]
+sources/0 = SubResource("TileSetAtlasSource_ti1v7")
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3jqb2"]
 texture = ExtResource("10_nut35")
 0:0/0 = 0
@@ -261,6 +279,11 @@ tile_set = SubResource("TileSet_3jqb2")
 
 [node name="Debris" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_461vt")
+
+[node name="Ground_Decoration" type="TileMapLayer" parent="."]
+
+[node name="Roads" type="TileMapLayer" parent="Ground_Decoration"]
+tile_set = SubResource("TileSet_x47hx")
 
 [node name="Character_Manager" parent="." instance=ExtResource("9_f5k6d")]
 

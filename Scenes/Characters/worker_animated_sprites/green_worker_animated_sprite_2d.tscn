@@ -1,0 +1,77 @@
+[gd_scene load_steps=11 format=3 uid="uid://bd1y00utc3wsc"]
+
+[ext_resource type="Texture2D" uid="uid://cxvdxia7uyb1o" path="res://Assets/Sprites/MiniWorldSprites/Characters/Workers/LimeWorker/FarmerLime.png" id="1_0ka37"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1ply2"]
+atlas = ExtResource("1_0ka37")
+region = Rect2(0, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_wuitm"]
+atlas = ExtResource("1_0ka37")
+region = Rect2(16, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_lakb7"]
+atlas = ExtResource("1_0ka37")
+region = Rect2(32, 128, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_enby0"]
+atlas = ExtResource("1_0ka37")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_hbytd"]
+atlas = ExtResource("1_0ka37")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_up5t8"]
+atlas = ExtResource("1_0ka37")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ftgtm"]
+atlas = ExtResource("1_0ka37")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ui6kj"]
+atlas = ExtResource("1_0ka37")
+region = Rect2(64, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_f65su"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_1ply2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_wuitm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_lakb7")
+}],
+"loop": true,
+"name": &"chop",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_enby0")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_hbytd")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_up5t8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ftgtm")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ui6kj")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="green_worker_animated_sprite_2d" type="AnimatedSprite2D"]
+sprite_frames = SubResource("SpriteFrames_f65su")
+animation = &"chop"
+autoplay = "default"

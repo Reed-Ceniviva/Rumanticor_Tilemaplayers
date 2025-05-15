@@ -21,14 +21,14 @@ var wander_delay = 10
 
 const WORKER = preload("res://Scenes/Characters/worker.tscn")
 @onready var world_character_manager : character_manager = $".."
-@onready var animated_sprite_2d : AnimatedSprite2D = $AnimatedSprite2D
+@onready var animated_sprite_2d : AnimatedSprite2D = self.get_child(0)
 @onready var world_layer_manager : layer_manager = $"../.."
 
 #var astar_grid : AStarGrid2D
 var current_id_path : Array[Vector2i]
 var walking : bool = false
 var destination : Vector2i
-var home_location : Vector2i
+var home : building
 
 var inventory : Dictionary
 
@@ -38,7 +38,6 @@ var map_location : Vector2i
 func _ready():
 	inventory["wood"] = 0
 	birth_delay = randi()%(18-2) + 2
-	home_location = Vector2i.ZERO
 	var names = world_character_manager.get_first_names()
 	var names_size = names.size()
 	set_char_name(names[randi()%names_size])
@@ -48,29 +47,40 @@ func _ready():
 #clean up code to use the new move to function
 #watch out for places where im calling functions over and over rather than just stepping forward through the process simply
 func _physics_process(delta):
+	pass_time(delta)
+	worker_life()
+
+func pass_time(delta):
 	time += delta
 	age = time
+
+func worker_life():
 	if health > 0 and time > nextmove: #while worker is alive and there is something to do
 		nextmove = movedelay + time
-		print("Wood Logs: ", inventory["wood"])
-		print("Current Path:", current_id_path)
+		#print("Wood Logs: ", inventory["wood"])
+		#print("Current Path:", current_id_path)
 		if(current_id_path.size() > 0): # if we were moving somewhere, continue moving there
 			position = world_layer_manager.tm_layers["ground"].map_to_local(current_id_path.front())
 			current_id_path = current_id_path.slice(1)
 			
-		if(inventory["wood"] >= 5 and home_location == Vector2i.ZERO):#build a hut
+		if(inventory["wood"] >= 5 and home == null):#build a hut
 			if build_hut():
-				home_location = destination
+				home = building.new(destination)
 			else:
 				wander()
-		elif(offspring.size() <= 5 and home_location != Vector2i.ZERO and age > 30 and age >= last_birth+birth_delay): #reproduce
+		elif(offspring.size() < 3 and home != null and age > 18 and age >= last_birth+birth_delay): #reproduce
 			if current_id_path.is_empty():
 				if locate_hut(1):
 					reproduce()
 					last_birth = age
 				else:
-					if move_to(home_location) == false:
+					if move_to(home.location) == false:
 						wander()
+		elif(home != null and home.get_inventory("wood") < home.max_inventory and inventory["wood"] > 0):
+			if locate_hut(1):
+				inventory["wood"] = home.insert_inventory("wood",inventory["wood"])
+			if move_to(home.location) == false:
+				wander()
 		elif(inventory["wood"] < 5): #Collect more wood
 			if current_id_path.is_empty():
 				if locate_tree(1):
@@ -80,11 +90,9 @@ func _physics_process(delta):
 						wander()
 		else:
 			wander()
-			
-
 #controlled blindly moving
 func wander():
-	print("wandering")
+	#print("wandering")
 	if wander_start+wander_delay < time:
 		wander_dir = randi()%4
 		wander_start = time
@@ -142,7 +150,7 @@ func locate_tree(distance : int = sight_distance) -> bool:
 		destination = get_closest_point(map_location, surroundings)
 		return true
 	else:
-		print("no tree in sight")
+		#print("no tree in sight")
 		return false
 	
 
@@ -196,9 +204,19 @@ func locate_hut(distance : int = sight_distance) -> bool:
 		destination = get_closest_point(map_location, local_huts)
 		return true
 	else:
-		print("no hut in sight")
+		#print("no hut in sight")
 		return false     
 	
+
+func locate_nearest_in(layer_name : String, distance : int = sight_distance) -> bool:
+	var local_locations : Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius(layer_name, map_location, distance)
+	if local_locations.size() > 0 :
+		destination = get_closest_point(map_location, local_locations)
+		return true
+	else:
+		print("no non-empty tile in " , layer_name , " within distance: " , distance)
+		return false 
+
 #might be a pointless function
 #calls locate hut and if successful calls move_to on distination with enter=true
 #returns false if locate hut returns false
@@ -216,6 +234,7 @@ func reproduce():
 	new_worker.position = world_layer_manager.tm_layers["ground"].map_to_local(map_location + to_the_right)
 	get_parent().add_child(new_worker)
 	offspring.append(new_worker)
+	birth_delay = randi()%(18-2) + 2
 	return true
 
 func get_extended_offspring_mine() -> Array[worker]:
