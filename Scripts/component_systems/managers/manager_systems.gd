@@ -1,15 +1,17 @@
+# system_manager.gd
 extends Node
-class_name manager_systems
+class_name manager_system
 
-var systems : Array = []
+#var system_movement_instance: system_movement
 
 func _ready():
-	# Register all systems you want to use here
-	systems.append(system_health.new())
-	#systems.append(WanderSystem.new())
-	systems.append(system_movement.new())
+	#system_movement_instance = system_movement.new()
+	#system_movement_instance.world_layer_manager = get_node("/root/WorldLayerManager")
+	#system_movement_instance.astar_grid = get_node("/root/WorldCharacterManager").astar_grid
+	#add_child(system_movement_instance)
+	pass
 
-func update_all(workers : Array, delta : float):
-	for system in systems:
-		for worker in workers:
-			system.update(worker, delta)
+func _process(delta: float):
+	for entity in get_tree().get_nodes_in_group("ecs_entities"):
+		#system_movement_instance.process_entity(entity, delta)
+		pass

@@ -16,19 +16,30 @@ var traversable : TileMapLayer
 signal worker_created
 
 var system_movement_instance: system_movement
+var system_sight_instance: system_sight
 
 func _ready():
 	system_movement_instance = system_movement.new()
 	system_movement_instance.world_layer_manager = world_layer_manager
-	#system_movement_instance.astar_grid = astar_grid
 	add_child(system_movement_instance)
+	system_sight_instance = system_sight.new(world_layer_manager)
+	add_child(system_sight_instance)
 
 func _process(delta: float):
 	for entity in get_tree().get_nodes_in_group("ecs_entities"):
-		system_movement_instance.process_entity(entity, delta)
+		print(entity.get_meta_list())
+		if entity.has_meta("component_sight"):
+			if entity.get_meta("component_sight").target_tile != Vector2i(-1,-1):
+				print("target tile: " , entity.get_meta("component_sight").target_tile)
+				system_movement_instance.process_entity(entity, delta)
+			else:
+				system_movement_instance.move_to(entity, system_sight_instance.locate_nearest_in(entity, "trees"))
 
 func get_first_names() -> Array:
 	return FIRST_NAMES
+
+func get_rand_name() -> String:
+	return FIRST_NAMES.pick_random()
 
 func find_ground() -> Vector2i:
 	print("finding ground")
@@ -92,11 +103,14 @@ func _on_worker_created(): #prepare pathfinding
 				astar_grid.set_point_solid(Vector2i(i,j), is_blocked)
 		system_movement_instance.astar_grid = astar_grid
 
+#func generate_char_stats(entity : entity_worker):
+	
 
 func _on_layer_manager_world_created():
 		print("creating initial worker")
 		var new_entity_worker = ENTITY_WORKER.instantiate() # will add itself as a child of this node
+		new_entity_worker.setup(world_layer_manager)
 		#var new_worker = WORKER.instantiate()
+		add_child(new_entity_worker)
 		new_entity_worker.position = ground.map_to_local(find_ground())
-		#add_child(new_worker)
 		worker_created.emit()

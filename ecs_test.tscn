@@ -1,0 +1,17 @@
+[gd_scene load_steps=5 format=3 uid="uid://cq1iubxfjahfj"]
+
+[ext_resource type="PackedScene" uid="uid://ll1gtb5o4xf3" path="res://Scenes/camera_controller.tscn" id="1_b1dsr"]
+[ext_resource type="PackedScene" uid="uid://buaonr7qjcjv1" path="res://Scenes/layer_manager.tscn" id="2_btb8w"]
+[ext_resource type="Script" uid="uid://ddfc5veoykm28" path="res://driver.gd" id="3_e6sh1"]
+[ext_resource type="PackedScene" uid="uid://by7rx0im2ngkn" path="res://Scenes/Characters/ECS/Entities/entity_worker.tscn" id="4_1qpo3"]
+
+[node name="ECS Test" type="Node2D"]
+
+[node name="Camera2D" parent="." instance=ExtResource("1_b1dsr")]
+
+[node name="Layer_Manager" parent="." instance=ExtResource("2_btb8w")]
+
+[node name="Driver" type="Node" parent="."]
+script = ExtResource("3_e6sh1")
+
+[node name="entity_worker" parent="Driver" instance=ExtResource("4_1qpo3")]

@@ -1,13 +1,35 @@
 extends Node2D
-class_name Worker
+class_name entity_worker
 
-var components : Dictionary = {}
+const ComponentMovement = preload("uid://be61wtxi23xna")
+const ComponentSight = preload("uid://31t41o312j1g")
+const ComponentCharstats = preload("uid://ck7f0jmx20ak5")
 
-func add_component(component):
-	components[component.get_class()] = component
+var my_layer_manager
+var my_movement_component
+var my_sight_component
+var my_char_stats
 
-func get_component(component_class):
-	return components.get(component_class, null)
+## sets up necassary data for the worker entity
+## @param _layer_manager The layer_manager for the world
+## sets the component values according to worker defualts
+func setup(_layer_manager: layer_manager):
+	my_layer_manager = _layer_manager
+	my_sight_component = ComponentSight.new()
+	my_sight_component.setup(32)
+	my_movement_component = ComponentMovement.new()
+	my_movement_component.setup(0.25)
+	my_char_stats = ComponentCharstats.new()
+	var char_manager = get_parent()
+	if char_manager is manager_character:
+		my_char_stats.char_name = char_manager.get_rand_name()
+	my_char_stats.sex = randi()%2
+	set_meta("component_sight", my_sight_component)
+	set_meta("component_movement", my_movement_component)
+	set_meta("component_charstats", my_char_stats)
+	
+	
 
-func has_component(component_class):
-	return components.has(component_class)
+func _ready():
+	add_to_group("ecs_entities")
+	

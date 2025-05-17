@@ -75,7 +75,6 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 @export var elevation_varience = 0.5 #controls the amount of varience in elevation in the world
 @export_subgroup("Feature Variance")
 @export var tree_density = 200#1 in x grass tiles have trees
-@export var hut_density = 100
  
 #variables derived from world parameters
 var shore_line = sea_level - beach_offset

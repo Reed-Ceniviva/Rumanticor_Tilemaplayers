@@ -20,7 +20,7 @@ var wander_delay = 10
 #enum {IDLE, WALKING, MAKING, GETTING, WONDER}
 
 const WORKER = preload("res://Scenes/Characters/worker.tscn")
-@onready var world_character_manager : character_manager = $".."
+@onready var world_character_manager : manager_character = $".."
 @onready var animated_sprite_2d : AnimatedSprite2D = self.get_child(0)
 @onready var world_layer_manager : layer_manager = $"../.."
 

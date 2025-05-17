@@ -4,20 +4,20 @@ var astar_grid : AStarGrid2D
 var workers_created = 0
 var roadable_tml : TileMapLayer
 var roadable_qt : quad_tree_node
-@onready var layer_manager = $".."
+@onready var _layer_manager = $".."
 
 func _on_character_manager_worker_created():
 	if(workers_created < 1):
 		workers_created += 1
 		astar_grid = AStarGrid2D.new()
-		astar_grid.region = layer_manager.tm_layers["ground"].get_used_rect()
+		astar_grid.region = _layer_manager.tm_layers["ground"].get_used_rect()
 		astar_grid.cell_size = Vector2(16,16)
 		astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 		astar_grid.update()
 		if !astar_grid.region.get_area() > 0:
 			print("astar grid not defined")
-		roadable_tml = layer_manager.build_traversable_tilemap(["ground"],["trees","debris"])
-		roadable_qt = layer_manager.build_tml_quadtree(roadable_tml)
+		roadable_tml = _layer_manager.build_traversable_tilemap(["ground"],["trees","debris"])
+		roadable_qt = _layer_manager.build_tml_quadtree(roadable_tml)
 		for i in range(roadable_tml.position.x , roadable_tml.get_used_rect().size.x):
 			for j in range(roadable_tml.position.y , roadable_tml.get_used_rect().size.y):
 				var is_blocked = !roadable_qt.has(Vector2i(i,j))
