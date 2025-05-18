@@ -19,3 +19,10 @@ func update(entity):
 		if current_task.is_complete(entity):
 			current_task.on_finish(entity)
 			start_next_task(entity)
+
+func process_tasks(entity):
+	if task_queue.size() == 0:
+		return
+	var current_task = task_queue[0]
+	if current_task.execute(entity):
+		task_queue.pop_front()

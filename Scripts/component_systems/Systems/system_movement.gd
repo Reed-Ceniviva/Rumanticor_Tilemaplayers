@@ -6,7 +6,7 @@ var world_layer_manager
 var astar_grid
 
 
-func process_entity(entity: Node2D, delta: float) -> void:
+func process_entity(entity: entity_worker, delta: float) -> void:
 	if not entity.has_meta("component_movement"):
 		return
 	
@@ -22,23 +22,28 @@ func process_entity(entity: Node2D, delta: float) -> void:
 	
 	if movement.current_id_path.size() > 0:
 		#print("entity moved")
+		entity._animated_sprite_2d.play("default")
 		var next_tile = movement.current_id_path.pop_front()
+		var next_location = world_layer_manager.tm_layers["ground"].map_to_local(next_tile)
 		entity.map_location = next_tile
-		entity.position = world_layer_manager.tm_layers["ground"].map_to_local(next_tile)
+		entity.position = next_location
 		
 
 func move_to(entity: Node2D, target_pos: Vector2i, enter: bool = false) -> bool:
 	if not entity.has_meta("component_movement"):
+		print("entity has no movement component")
 		return false
 	
 	var movement = entity.get_meta("component_movement")
 	if movement == null:
+		print("entity has null movement component")
 		return false
 	
 	movement.current_id_path.clear()
 	
 	var ground_layer = world_layer_manager.tm_layers.get("ground", null)
 	if ground_layer == null:
+		print("null ground layer")
 		return false
 	
 	var start_pos = ground_layer.local_to_map(entity.position)
@@ -52,5 +57,5 @@ func move_to(entity: Node2D, target_pos: Vector2i, enter: bool = false) -> bool:
 		if entity.has_meta("component_sight"):
 			entity.get_meta("component_sight").target_tile = target_pos
 		return true
-	
+	print("no path to target or pathing to current position")
 	return false

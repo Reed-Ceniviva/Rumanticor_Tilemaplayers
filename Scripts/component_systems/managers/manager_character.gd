@@ -18,24 +18,30 @@ signal worker_created
 var system_movement_instance: system_movement
 var system_sight_instance: system_sight
 
+var locate_tree = task_locate_tree.new()
+var move_to
+var chop_tree = task_chop_tree.new()
+
 func _ready():
 	system_movement_instance = system_movement.new()
 	system_movement_instance.world_layer_manager = world_layer_manager
 	add_child(system_movement_instance)
 	system_sight_instance = system_sight.new(world_layer_manager)
 	add_child(system_sight_instance)
+	move_to = task_move_to_target.new(system_movement_instance)
 
 func _process(delta: float):
 	for entity in get_tree().get_nodes_in_group("ecs_entities"):
-		print(entity.get_meta_list())
+		#print(entity.get_meta_list())
 		if entity.has_meta("component_tasks"):
-			process_tasks(entity)
-		if entity.has_meta("component_sight"):
-			if entity.get_meta("component_sight").target_tile != Vector2i(-1,-1):
-				print("target tile: " , entity.get_meta("component_sight").target_tile)
-				system_movement_instance.process_entity(entity, delta)
-			else:
-				system_movement_instance.move_to(entity, system_sight_instance.locate_nearest_in(entity, "trees"))
+			if entity.get_meta("component_tasks").task_queue.size() == 0:
+				collect_wood(entity)
+			entity.get_meta("component_tasks").process_tasks(entity)
+		if entity.has_meta("component_movement"):
+			system_movement_instance.process_entity(entity, delta)
+
+func collect_wood(entity : entity_worker):
+	entity.get_meta("component_tasks").task_queue.append_array([locate_tree, move_to, chop_tree])
 
 func get_first_names() -> Array:
 	return FIRST_NAMES
@@ -119,9 +125,9 @@ func _on_layer_manager_world_created():
 		print("creating initial worker")
 		var new_entity_worker = ENTITY_WORKER.instantiate() # will add itself as a child of this node
 		new_entity_worker.setup(world_layer_manager)
-		#var new_worker = WORKER.instantiate()
-		add_child(new_entity_worker)
 		var start_pos = find_ground()
-		
+		new_entity_worker.get_meta("component_sight").target_tile = start_pos
+		add_child(new_entity_worker)
 		new_entity_worker.position = ground.map_to_local(start_pos)
+		new_entity_worker.map_location = start_pos
 		worker_created.emit()

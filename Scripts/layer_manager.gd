@@ -113,10 +113,10 @@ func get_elevation_matrix():
 
 func tree_chopped(tree_loc : Vector2i):
 	#print("tree chopped: adjusting tilemap and quadtree")
-	var i = 0
 	tm_layers["trees"].set_cell(tree_loc,-1,Vector2i(-1,-1))
 	layer_quadtrees["trees"].remove(tree_loc)
 	tm_layers["debris"].set_cell(tree_loc,0,Vector2i(0,0))
+	layer_quadtrees["debris"].insert(tree_loc)
 
 func hut_built(hut_loc : Vector2i):
 	#print("hut built: adjusting tilemap and quadtree")
@@ -160,7 +160,6 @@ func fill_water_cliffs():
 				tm_layers["cliffs"].set_cell(pos,BOT_WATER_CLIFF_SOURCE_ID, BOT_WATER_CLIFF_TILE_ATLAS_POS)
 	
 func fill_ground_layers(elevation_matrix):
-	#var tree_hit = 0
 	print("filling ground tilemaplayers")
 	for i in range(world_x):
 		for j in range(world_y):
@@ -261,6 +260,8 @@ func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radi
 	var quad_tree = layer_quadtrees[layer_name]
 	if quad_tree != null:
 		quad_tree.query_circle(center, radius, result)
+	else:
+		print("quad tree is null returning empty array")
 	return result
 
 func build_traversable_tilemap(traversable_layers : Array = ["ground","shore"], obstical_layers : Array = []) -> TileMapLayer:
