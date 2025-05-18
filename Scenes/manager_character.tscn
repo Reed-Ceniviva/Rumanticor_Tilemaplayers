@@ -4,3 +4,5 @@
 
 [node name="Character_Manager" type="TileMapLayer"]
 script = ExtResource("1_keb4v")
+
+[connection signal="worker_created" from="." to="." method="_on_worker_created"]

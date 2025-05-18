@@ -5,6 +5,7 @@ class_name system_movement
 var world_layer_manager
 var astar_grid
 
+
 func process_entity(entity: Node2D, delta: float) -> void:
 	if not entity.has_meta("component_movement"):
 		return
@@ -22,7 +23,9 @@ func process_entity(entity: Node2D, delta: float) -> void:
 	if movement.current_id_path.size() > 0:
 		#print("entity moved")
 		var next_tile = movement.current_id_path.pop_front()
+		entity.map_location = next_tile
 		entity.position = world_layer_manager.tm_layers["ground"].map_to_local(next_tile)
+		
 
 func move_to(entity: Node2D, target_pos: Vector2i, enter: bool = false) -> bool:
 	if not entity.has_meta("component_movement"):

@@ -19,6 +19,16 @@ config/icon="res://icon.svg"
 
 enabled=PackedStringArray("res://addons/wfc/plugin.cfg")
 
+[file_customization]
+
+folder_colors={
+"res://Scripts/component_systems/Systems/": "purple",
+"res://Scripts/component_systems/Tasks/": "yellow",
+"res://Scripts/component_systems/components/": "green",
+"res://Scripts/component_systems/entities/": "blue",
+"res://Scripts/component_systems/managers/": "pink"
+}
+
 [rendering]
 
 textures/canvas_textures/default_texture_filter=0

@@ -28,6 +28,8 @@ func _ready():
 func _process(delta: float):
 	for entity in get_tree().get_nodes_in_group("ecs_entities"):
 		print(entity.get_meta_list())
+		if entity.has_meta("component_tasks"):
+			process_tasks(entity)
 		if entity.has_meta("component_sight"):
 			if entity.get_meta("component_sight").target_tile != Vector2i(-1,-1):
 				print("target tile: " , entity.get_meta("component_sight").target_tile)
@@ -40,6 +42,13 @@ func get_first_names() -> Array:
 
 func get_rand_name() -> String:
 	return FIRST_NAMES.pick_random()
+
+func process_tasks(entity : entity_worker):
+	var tasks = entity.get_meta("component_tasks")
+	if tasks.current_task:
+		tasks.update(entity)
+	elif tasks.task_queue.size() > 0:
+		tasks.start_next_task(entity)
 
 func find_ground() -> Vector2i:
 	print("finding ground")
@@ -112,5 +121,7 @@ func _on_layer_manager_world_created():
 		new_entity_worker.setup(world_layer_manager)
 		#var new_worker = WORKER.instantiate()
 		add_child(new_entity_worker)
-		new_entity_worker.position = ground.map_to_local(find_ground())
+		var start_pos = find_ground()
+		
+		new_entity_worker.position = ground.map_to_local(start_pos)
 		worker_created.emit()
