@@ -13,12 +13,19 @@ func execute(entity) -> bool:
 	
 	#print(manager.tm_layers["trees"].get_used_cells())
 	#print("current pos : " , current_pos , " | sight distance: " , sight_component.sight_distance)
-	var trees = manager.get_non_empty_cells_in_radius("trees", current_pos, sight_component.sight_distance)
-	print(trees)
-	trees.erase(current_pos)
+	var buildings = manager.get_non_empty_cells_in_radius("buildings", current_pos, 1)
+	var home_location : Vector2i = entity.get_meta("component_family").home
+	var entity_inventory : component_inventory = entity.get_meta("component_inventory")
+	print(buildings)
+	buildings.erase(current_pos)
 	
-	if trees.size() > 0:
-		sight_component.target_tile = sight_component.get_closest_point(current_pos, trees)
-		return true
-	print("no tree found")
+	if buildings.has(home_location):
+		var home_info = manager.building_data.get_cell_data(home_location)
+		home_info.get_or_add("wood")
+		if entity_inventory.has_item("wood"):
+			home_info.set("wood", entity_inventory.get_item_count("wood"))
+			entity_inventory.remove_item("wood", entity_inventory.get_item_count("wood"))
+			return true
+		else:
+			print("no wood to store in the house")
 	return false

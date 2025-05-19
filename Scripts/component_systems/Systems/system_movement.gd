@@ -44,7 +44,7 @@ func move_to(entity: Node2D, target_pos: Vector2i, enter: bool = false) -> bool:
 	if not enter and id_path.size() > 0:
 		id_path = id_path.slice(0, id_path.size() - 1)
 	
-	if id_path.size() > 0:
+	if id_path.size() >= 0:
 		movement.current_id_path = id_path
 		if entity.has_meta("component_sight"):
 			entity.get_meta("component_sight").target_tile = target_pos

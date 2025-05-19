@@ -18,6 +18,7 @@ func execute(entity) -> bool:
 	if current_pos.distance_to(target_pos) <= 1 and inventory_component.get_item_count("wood") >= 5:
 		entity._animated_sprite_2d.play("chop")
 		manager.hut_built(target_pos)
+		entity.get_meta("component_family").home = target_pos
 		inventory_component.remove_item("wood",5)
 		return true
 

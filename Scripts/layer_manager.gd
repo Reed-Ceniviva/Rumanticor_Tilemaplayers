@@ -268,26 +268,34 @@ func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radi
 		print("quad tree is null returning empty array")
 	return result
 
-func build_traversable_tilemap(traversable_layers : Array = ["ground","shore"], obstical_layers : Array = []) -> TileMapLayer:
+func build_traversable_tilemap(traversable_layers: Array = ["ground", "shore"], obstical_layers: Array = []) -> TileMapLayer:
 	print("building traversable tilemap")
-	var traversable_tilemap = TileMapLayer.new()
-	var rect = tm_layers["ground"].get_used_rect()
-	var obsticles : Dictionary[String, Array]
-	#var tree_obsticles = tm_layers[obstical_layers[0]].get_used_cells()
+
+	var traversable_tilemap := TileMapLayer.new()
+
+	# Step 1: Combine all traversable cells
+	var traversable_cells := {}
+
 	for layer_name in traversable_layers:
-		var layer : TileMapLayer = tm_layers[layer_name]
-		for y in range(rect.position.y, rect.position.y + rect.size.y):
-			for x in range(rect.position.x, rect.position.x + rect.size.x):
-				var pos_check = Vector2i(x,y)
-				var is_obsticle : bool
-				for obs_layer in obstical_layers:
-					if layer_quadtrees[obs_layer].has(pos_check):
-						is_obsticle = true
-				if layer.get_cell_tile_data(pos_check) != null and not is_obsticle :
-					traversable_tilemap.set_cell(
-					pos_check,
-					layer.get_cell_source_id(pos_check),
-					layer.get_cell_atlas_coords(pos_check),
-					layer.get_cell_alternative_tile(pos_check)
-				)
+		var layer: TileMapLayer = tm_layers[layer_name]
+		for cell in layer.get_used_cells():
+			traversable_cells[cell] = layer  # Save reference to layer for source/tile info
+
+	# Step 2: Mark all obstacle cells
+	var blocked_cells := {}
+	for obs_layer in obstical_layers:
+		for cell in tm_layers[obs_layer].get_used_cells():
+			blocked_cells[cell] = true
+
+	# Step 3: Filter and add to traversable_tilemap
+	for cell_pos in traversable_cells.keys():
+		if not blocked_cells.has(cell_pos):
+			var layer = traversable_cells[cell_pos]
+			traversable_tilemap.set_cell(
+				cell_pos,
+				layer.get_cell_source_id(cell_pos),
+				layer.get_cell_atlas_coords(cell_pos),
+				layer.get_cell_alternative_tile(cell_pos)
+			)
+
 	return traversable_tilemap

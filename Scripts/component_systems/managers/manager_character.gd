@@ -26,6 +26,7 @@ var build_hut = task_build_hut.new()
 var locate_building_location = task_locate_building_location.new()
 var go_home = task_go_home.new()
 var reproduce = task_worker_reproduce.new()
+var store_wood = task_store_wood.new()
 
 func _ready():
 	#create and add movement system
@@ -36,6 +37,7 @@ func _ready():
 	system_sight_instance = system_sight.new(world_layer_manager)
 	add_child(system_sight_instance)
 	move_to.setup(system_movement_instance)
+	go_home.setup(system_movement_instance)
 	
 
 func _process(delta: float):
@@ -48,30 +50,40 @@ func _process(delta: float):
 		var stats : component_charstats = entity.get_meta("component_charstats")
 		if stats == null:
 			return
-		
+		#returns until the worker is able to take an action again
 		stats.next_action_time -= delta
 		if stats.next_action_time > 0:
 			return
-			
 		stats.next_action_time = stats.action_delay
+		
 		if entity.has_meta("component_inventory") and entity.has_meta("component_tasks") and entity.has_meta("component_family"):
 			var entity_inventory : component_inventory = entity.get_meta("component_inventory")
 			var entity_tasks : component_tasks = entity.get_meta("component_tasks")
 			var entity_family : component_family = entity.get_meta("component_family")
 			if entity_tasks.task_queue.size() == 0:
+				print("worker: " , stats.char_name, " | ", entity_tasks.current_task, " | ")
 				print(entity_inventory.get_item_count("wood"))
-				if entity_inventory.get_item_count("wood") >= 5 and entity_family.home == Vector2i(-1,-1):
-					build_home(entity)
+				if entity_inventory.get_item_count("wood") >= entity_inventory.max_capacity:
+					if  entity_family.home == Vector2i(-1,-1):
+						build_home(entity)
+					else:
+						store_wood_at_home(entity)
 				else:
-					
-					collect_wood(entity)
+					if  entity_family.home != Vector2i(-1,-1):
+						if world_layer_manager.building_data.get_cell_data(entity_family.home).get_or_add("wood",0) >= 5 and entity_family.offspring.size() < 3:
+							start_family(entity)
+						else:
+							collect_wood(entity)
+					else:
+						collect_wood(entity)
 			else:
 				entity.get_meta("component_tasks").process_tasks(entity)
 		if entity.has_meta("component_movement"):
 			system_movement_instance.process_entity(entity, delta)
 
 func collect_wood(entity : entity_worker):
-	entity.get_meta("component_tasks").task_queue.append_array([locate_tree, move_to, chop_tree])
+	if entity.has_meta("component_tasks"):
+		entity.get_meta("component_tasks").task_queue.append_array([locate_tree, move_to, chop_tree])
 	#entity.get_meta("component_tasks").task_queue.append_array([locate_tree])
 	#entity.get_meta("component_tasks").task_queue.append_array([move_to])
 	#entity.get_meta("component_tasks").task_queue.append_array([chop_tree])
@@ -80,8 +92,16 @@ func build_home(entity : entity_worker):
 	if entity.has_meta("component_tasks"):
 		entity.get_meta("component_tasks").task_queue.append_array([locate_building_location, build_hut])
 
-
-
+func start_family(entity : entity_worker):
+	if entity.has_meta("component_tasks"):
+		entity.get_meta("component_tasks").task_queue.append_array([go_home,reproduce])
+	
+func store_wood_at_home(entity : entity_worker):
+		if entity.has_meta("component_tasks"):
+			entity.get_meta("component_tasks").task_queue.append_array([go_home,store_wood])
+	
+	
+	
 func get_first_names() -> Array:
 	return FIRST_NAMES
 
@@ -110,55 +130,41 @@ func find_ground() -> Vector2i:
 func get_astar():
 	return astar_grid
 
-#should switch to using this function in layer_manager but need to figure why the commented out stuff isnt working, results in the worker not being able to see trees
-# when the traversable is only used for the astargrid2d pathfinding, but trees not being valid spots means you cant navigate to them, so this should be handled where blocking is set
-# for the astargrid rather than for the tilemap its built off of
-func build_traversable_tilemap(traversable_layers : Array[String] = ["ground","shore"]) -> TileMapLayer:
-	#different characters will be able to travers different tiles and that list will likely change if
-	#say a creature learns how to swim, that one worker should be able to move in water tiles without
-	#everyone else being able to yet
-	#think i've decided that this is the followers level controller so all the followers having the same capabilities makes sense
-	print("building traversable tilemap")
-	var traversable_tilemap = TileMapLayer.new()
-	var rect = ground.get_used_rect()
-	#var tree_obsticles = world_layer_manager.tm_layers["trees"].get_used_cells()
-	for layer_name in traversable_layers:
-		var layer : TileMapLayer = world_layer_manager.tm_layers[layer_name]
-		for y in range(rect.position.y, rect.position.y + rect.size.y):
-			for x in range(rect.position.x, rect.position.x + rect.size.x):
-				var pos_check = Vector2i(x,y)
-				#var is_obsticle = tree_obsticles.has(pos_check)
-				if layer.get_cell_tile_data(pos_check) != null : #and not is_obsticle
-					traversable_tilemap.set_cell(
-					pos_check,
-					layer.get_cell_source_id(pos_check),
-					layer.get_cell_atlas_coords(pos_check),
-					layer.get_cell_alternative_tile(pos_check)
-				)
-	return traversable_tilemap
 
 #i guess since blocking all trees would mean that you cant path towards them
 # the debris can be blocked, really the path should be a straight shot and then the worker adjusting the path as obsticals are encountered
-func _on_worker_created(): #prepare pathfinding 
+func _on_worker_created(): # Prepare pathfinding
 	print("worker created")
-	if(astar_grid == null):
+
+	if astar_grid == null:
 		astar_grid = AStarGrid2D.new()
-		astar_grid.region = ground.get_used_rect()
-		astar_grid.cell_size = Vector2(16,16)
+
+		var used_rect = ground.get_used_rect()
+		if used_rect.get_area() <= 0:
+			push_warning("AStar grid region is empty")
+			return
+
+		astar_grid.region = used_rect
+		astar_grid.cell_size = Vector2(16, 16)
 		astar_grid.diagonal_mode = AStarGrid2D.DIAGONAL_MODE_NEVER
 		astar_grid.update()
-		if !astar_grid.region.get_area() > 0:
-			print("astar grid not defined")
+
 		var traversable_tml = world_layer_manager.build_traversable_tilemap()
 		var traversable_qt = world_layer_manager.build_tml_quadtree(traversable_tml)
-		for i in range(traversable_tml.position.x , ground.get_used_rect().size.x):
-			for j in range(traversable_tml.position.y , ground.get_used_rect().size.y):
-				var is_blocked = !traversable_qt.has(Vector2i(i,j))
-				astar_grid.set_point_solid(Vector2i(i,j), is_blocked)
+
+		var start_x = used_rect.position.x
+		var end_x = start_x + used_rect.size.x
+		var start_y = used_rect.position.y
+		var end_y = start_y + used_rect.size.y
+
+		for y in range(start_y, end_y):
+			for x in range(start_x, end_x):
+				var pos := Vector2i(x, y)
+				var is_blocked := !traversable_qt.has(pos)
+				astar_grid.set_point_solid(pos, is_blocked)
+
 		system_movement_instance.astar_grid = astar_grid
 
-#func generate_char_stats(entity : entity_worker):
-	
 
 func _on_layer_manager_world_created():
 		print("creating initial worker")

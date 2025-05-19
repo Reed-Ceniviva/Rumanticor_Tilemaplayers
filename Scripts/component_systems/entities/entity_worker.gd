@@ -37,10 +37,9 @@ func setup(_layer_manager: layer_manager):
 	var char_manager = get_parent()
 	var char_name : String
 	var char_sex : bool
-	if char_manager is manager_character:
-		char_name = char_manager.get_rand_name()
+	char_name = my_char_stats.FIRST_NAMES.pick_random()
 	char_sex = randi()%2
-	my_char_stats.setup(char_name,char_sex,0)
+	my_char_stats.setup(char_name,char_sex,0.0, 0.25, 0.0)
 	
 	#give the worker processing
 	my_tasks = ComponentTasks.new()
