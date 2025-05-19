@@ -18,30 +18,69 @@ signal worker_created
 var system_movement_instance: system_movement
 var system_sight_instance: system_sight
 
+#create needed tasks for workers
 var locate_tree = task_locate_tree.new()
-var move_to
+var move_to = task_move_to_target.new()
 var chop_tree = task_chop_tree.new()
+var build_hut = task_build_hut.new()
+var locate_building_location = task_locate_building_location.new()
+var go_home = task_go_home.new()
+var reproduce = task_worker_reproduce.new()
 
 func _ready():
+	#create and add movement system
 	system_movement_instance = system_movement.new()
 	system_movement_instance.world_layer_manager = world_layer_manager
 	add_child(system_movement_instance)
+	#create and add sight system
 	system_sight_instance = system_sight.new(world_layer_manager)
 	add_child(system_sight_instance)
-	move_to = task_move_to_target.new(system_movement_instance)
+	move_to.setup(system_movement_instance)
+	
 
 func _process(delta: float):
 	for entity in get_tree().get_nodes_in_group("ecs_entities"):
 		#print(entity.get_meta_list())
-		if entity.has_meta("component_tasks"):
-			if entity.get_meta("component_tasks").task_queue.size() == 0:
-				collect_wood(entity)
-			entity.get_meta("component_tasks").process_tasks(entity)
+		
+		if not entity.has_meta("component_charstats"):
+			return
+		
+		var stats : component_charstats = entity.get_meta("component_charstats")
+		if stats == null:
+			return
+		
+		stats.next_action_time -= delta
+		if stats.next_action_time > 0:
+			return
+			
+		stats.next_action_time = stats.action_delay
+		if entity.has_meta("component_inventory") and entity.has_meta("component_tasks") and entity.has_meta("component_family"):
+			var entity_inventory : component_inventory = entity.get_meta("component_inventory")
+			var entity_tasks : component_tasks = entity.get_meta("component_tasks")
+			var entity_family : component_family = entity.get_meta("component_family")
+			if entity_tasks.task_queue.size() == 0:
+				print(entity_inventory.get_item_count("wood"))
+				if entity_inventory.get_item_count("wood") >= 5 and entity_family.home == Vector2i(-1,-1):
+					build_home(entity)
+				else:
+					
+					collect_wood(entity)
+			else:
+				entity.get_meta("component_tasks").process_tasks(entity)
 		if entity.has_meta("component_movement"):
 			system_movement_instance.process_entity(entity, delta)
 
 func collect_wood(entity : entity_worker):
 	entity.get_meta("component_tasks").task_queue.append_array([locate_tree, move_to, chop_tree])
+	#entity.get_meta("component_tasks").task_queue.append_array([locate_tree])
+	#entity.get_meta("component_tasks").task_queue.append_array([move_to])
+	#entity.get_meta("component_tasks").task_queue.append_array([chop_tree])
+
+func build_home(entity : entity_worker):
+	if entity.has_meta("component_tasks"):
+		entity.get_meta("component_tasks").task_queue.append_array([locate_building_location, build_hut])
+
+
 
 func get_first_names() -> Array:
 	return FIRST_NAMES

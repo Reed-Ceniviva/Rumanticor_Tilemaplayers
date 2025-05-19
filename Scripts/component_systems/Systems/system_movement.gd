@@ -11,14 +11,6 @@ func process_entity(entity: entity_worker, delta: float) -> void:
 		return
 	
 	var movement = entity.get_meta("component_movement")
-	if movement == null:
-		return
-	
-	movement.next_move_time -= delta
-	if movement.next_move_time > 0:
-		return
-	
-	movement.next_move_time = movement.move_delay
 	
 	if movement.current_id_path.size() > 0:
 		#print("entity moved")

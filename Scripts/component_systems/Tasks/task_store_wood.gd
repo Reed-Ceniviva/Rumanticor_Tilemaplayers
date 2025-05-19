@@ -1,8 +1,8 @@
 extends task
-class_name task_locate_tree
+class_name task_store_wood
 
 func execute(entity) -> bool:
-	print("attempting locate tree")
+	print("attempting locate adjacent building")
 	var sight_component : component_sight = entity.get_meta("component_sight")
 	var manager : layer_manager = entity.my_layer_manager
 	if not sight_component or not manager:

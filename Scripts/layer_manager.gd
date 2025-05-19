@@ -85,6 +85,7 @@ var offset = Vector2i(0,0)
 
 var tm_layers : Dictionary[String, TileMapLayer]
 var layer_quadtrees : Dictionary[String, quad_tree_node]
+var building_data = manager_cells.new()
 
 var elevation_matrix = [] : get = get_elevation_matrix
 
@@ -121,6 +122,9 @@ func tree_chopped(tree_loc : Vector2i):
 func hut_built(hut_loc : Vector2i):
 	#print("hut built: adjusting tilemap and quadtree")
 	tm_layers["buildings"].set_cell(hut_loc, 0, Vector2i(1,0))
+	building_data.set_cell_data(hut_loc, {"status" : "built"})
+	var building_inventory = component_inventory.new().setup()
+	building_data.set_cell_data(hut_loc, {"component_inventory" : building_inventory})
 	layer_quadtrees["buildings"].insert(hut_loc)
 	#layer_quadtrees["buildings"] = build_tml_quadtree(tm_layers["buildings"])
 	
