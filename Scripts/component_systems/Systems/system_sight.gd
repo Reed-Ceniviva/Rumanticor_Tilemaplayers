@@ -11,7 +11,6 @@ func locate_nearest_in(entity: Node2D, layer_name: String, distance: int = 0 )->
 		return Vector2i(-1, -1)
 
 	var sight : component_sight = entity.get_meta("component_sight")
-	var movement : component_movement = entity.get_meta("component_movement")
 
 	var map_location = world_layer_manager.tm_layers["ground"].local_to_map(entity.position)
 	var non_empty_cells: Array[Vector2i] = world_layer_manager.get_non_empty_cells_in_radius(layer_name, map_location, sight.sight_distance)

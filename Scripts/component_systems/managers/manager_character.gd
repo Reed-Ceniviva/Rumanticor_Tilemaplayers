@@ -41,28 +41,34 @@ func _ready():
 	
 
 func _process(delta: float):
+	#print(get_tree().get_nodes_in_group("ecs_entities"))
 	for entity in get_tree().get_nodes_in_group("ecs_entities"):
 		#print(entity.get_meta_list())
 		
 		if not entity.has_meta("component_charstats"):
-			return
+			continue
 		
 		var stats : component_charstats = entity.get_meta("component_charstats")
 		if stats == null:
-			return
+			continue
 		#returns until the worker is able to take an action again
 		stats.next_action_time -= delta
 		if stats.next_action_time > 0:
-			return
+			continue
 		stats.next_action_time = stats.action_delay
 		
 		if entity.has_meta("component_inventory") and entity.has_meta("component_tasks") and entity.has_meta("component_family"):
 			var entity_inventory : component_inventory = entity.get_meta("component_inventory")
 			var entity_tasks : component_tasks = entity.get_meta("component_tasks")
 			var entity_family : component_family = entity.get_meta("component_family")
-			if entity_tasks.task_queue.size() == 0:
-				print("worker: " , stats.char_name, " | ", entity_tasks.current_task, " | ")
-				print(entity_inventory.get_item_count("wood"))
+			print("ecs_entities: " , get_tree().get_nodes_in_group("ecs_entities"))
+			print("worker: " , stats.char_name, " | ", entity_tasks.task_queue.size(), " | ")
+			if entity_tasks.task_queue.size() > 0:
+				print("task type: " ,entity_tasks.task_queue[0].task_type)
+			print("current path: " , entity.get_meta("component_movement").current_id_path)
+			print("action delay: " , entity.get_meta("component_charstats").action_delay, " | next action time: " , entity.get_meta("component_charstats").next_action_time)
+			if entity_tasks.task_queue.size() == 0 and entity.get_meta("component_movement").current_id_path.size() == 0:
+				#print(entity_inventory.get_item_count("wood"))
 				if entity_inventory.get_item_count("wood") >= entity_inventory.max_capacity:
 					if  entity_family.home == Vector2i(-1,-1):
 						build_home(entity)
@@ -70,13 +76,14 @@ func _process(delta: float):
 						store_wood_at_home(entity)
 				else:
 					if  entity_family.home != Vector2i(-1,-1):
-						if world_layer_manager.building_data.get_cell_data(entity_family.home).get_or_add("wood",0) >= 5 and entity_family.offspring.size() < 3:
+						if world_layer_manager.building_data.get_cell_data(entity_family.home).get_or_add("wood",0) >= 5 and entity_family.offspring.size() < 1:
 							start_family(entity)
 						else:
 							collect_wood(entity)
 					else:
 						collect_wood(entity)
 			else:
+				entity.get_meta("component_tasks").update(entity)
 				entity.get_meta("component_tasks").process_tasks(entity)
 		if entity.has_meta("component_movement"):
 			system_movement_instance.process_entity(entity, delta)

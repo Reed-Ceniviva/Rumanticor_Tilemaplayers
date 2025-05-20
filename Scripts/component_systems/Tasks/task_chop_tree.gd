@@ -2,6 +2,7 @@ extends task
 class_name task_chop_tree
 
 func execute(entity) -> bool:
+	task_type = "chop_tree"
 	var sight_component = entity.get_meta("component_sight")
 	var inventory_component = entity.get_meta("component_inventory")
 	if sight_component == null or sight_component.target_tile == Vector2i(-1, -1):

@@ -2,6 +2,7 @@ extends task
 class_name task_locate_building_location
 
 func execute(entity) -> bool:
+	task_type = "locate_building_location"
 	print("attempting locate building location")
 	var sight_component : component_sight = entity.get_meta("component_sight")
 	var manager : layer_manager = entity.my_layer_manager

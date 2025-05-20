@@ -4,6 +4,7 @@ class_name task_go_home
 var movement_system: system_movement
 
 func setup(_movement_system : system_movement):
+	task_type = "go_home"
 	movement_system = _movement_system
 
 func execute(entity) -> bool:

@@ -4,6 +4,7 @@ class_name task_move_to_target
 var movement_system: system_movement
 
 func setup(_movement_system : system_movement):
+	task_type = "move_to_target"
 	movement_system = _movement_system
 
 func execute(entity) -> bool:
