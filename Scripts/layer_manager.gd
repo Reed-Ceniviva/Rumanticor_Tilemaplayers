@@ -49,7 +49,7 @@ const TOPR_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(2,3)
 
 const ROADS_SOURCE_ID = 0
 const ROADS_VERTICAL_ATLAS_POS = Vector2i(0,0)
-const ROADS_HORIZONTAl_ATLAS_POS = Vector2i(1,0)
+const ROADS_HORIZONTAL_ATLAS_POS = Vector2i(1,0)
 const ROADS_4WAY_ATLAS_POS = Vector2i(2,0)
 const ROADS_LB_CORNER_ATLAS_POS = Vector2i(3,0)
 const ROADS_RB_CORNER_ATLAS_POS = Vector2i(4,0)
@@ -74,7 +74,7 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 @export_subgroup("Noise Variables")
 @export var elevation_varience = 0.5 #controls the amount of varience in elevation in the world
 @export_subgroup("Feature Variance")
-@export var tree_density = 200#1 in x grass tiles have trees
+@export var tree_density = 200#2 in x grass tiles have trees
  
 #variables derived from world parameters
 var shore_line = sea_level - beach_offset
@@ -178,7 +178,7 @@ func fill_ground_layers(elevation_matrix):
 				tm_layers["shore"].set_cell(Vector2i(i,j),BEACH_SOURCE_ID,BEACH_TILE_ATLAS_POS)#set tile with the beach sprite
 			elif(pos < tree_line):
 				tm_layers["ground"].set_cell(Vector2i(i,j),GRASS_SOURCE_ID,GRASS_TILE_ATLAS_POS)#set tile with the grass sprite
-				if(randi()%200 <= 1):
+				if(randi()%tree_density <= 1): #this works out to 2/tree_density but i like the results
 					tm_layers["trees"].set_cell(Vector2i(i,j), 0, Vector2i(randi()%3 + 1,0))
 			elif(pos < snow_line):
 				tm_layers["ground"].set_cell(Vector2i(i,j),MOUNTAIN_SOURCE_ID,MOUNTAIN_TILE_ATLAS_POS)#set tile with the mountain sprite
@@ -225,7 +225,7 @@ func update_road(road_location : Vector2i):
 	elif adjacent_roads.has(right) and adjacent_roads.has(bot):
 		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_RB_CORNER_ATLAS_POS)
 	elif adjacent_roads.has(right) or adjacent_roads.has(left):
-		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_HORIZONTAl_ATLAS_POS)
+		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_HORIZONTAL_ATLAS_POS)
 	elif adjacent_roads.has(top) or adjacent_roads.has(bot):
 		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_VERTICAL_ATLAS_POS)
 	else:

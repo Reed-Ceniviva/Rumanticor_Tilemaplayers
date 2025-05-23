@@ -11,7 +11,7 @@ var FIRST_NAMES = ["Reed", "Trevor", "George", "Lindsey", "Nick", "David", "Alex
 @onready var shore : TileMapLayer = $"../Shore"
 #const WORKER = preload("res://Scenes/Characters/worker.tscn")
 const ENTITY_WORKER = preload("res://Scenes/Characters/ECS/Entities/entity_worker.tscn")
-var astar_grid : AStarGrid2D : get = get_astar
+var astar_grid : AStarGrid2D 
 var traversable : TileMapLayer
 signal worker_created
 

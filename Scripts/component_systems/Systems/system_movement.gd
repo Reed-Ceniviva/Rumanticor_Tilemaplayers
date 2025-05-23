@@ -2,8 +2,9 @@
 extends Node
 class_name system_movement
 
+# set when the movement system is initially created in character manager
 var world_layer_manager
-var astar_grid
+var astar_grid 
 
 
 func process_entity(entity: entity_worker, delta: float) -> void:
@@ -22,10 +23,6 @@ func process_entity(entity: entity_worker, delta: float) -> void:
 		
 
 func move_to(entity: Node2D, target_pos: Vector2i, enter: bool = false) -> bool:
-	if not entity.has_meta("component_movement"):
-		print("entity has no movement component")
-		return false
-	
 	var movement = entity.get_meta("component_movement")
 	if movement == null:
 		print("entity has null movement component")

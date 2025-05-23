@@ -1,6 +1,6 @@
 extends Node
 
-func chop_tree(worker : Worker, world_layer_manager):
+func chop_tree(worker : entity_worker, world_layer_manager):
 	var move = worker.get_component(component_movement)
 	var inv = worker.get_component(component_inventory)
 	var perception = worker.get_component(component_sight)
