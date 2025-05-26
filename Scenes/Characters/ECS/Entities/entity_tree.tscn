@@ -1,0 +1,51 @@
+[gd_scene load_steps=7 format=3 uid="uid://dduuoc8q8lt78"]
+
+[ext_resource type="Script" uid="uid://biyjet7jc87gf" path="res://Scripts/ECS/entities/entity_tree.gd" id="1_yb8bl"]
+[ext_resource type="Texture2D" uid="uid://bjxp7dsg0f1gc" path="res://Assets/Sprites/MiniWorldSprites/Nature/Trees.png" id="2_gdqfi"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_xaem0"]
+atlas = ExtResource("2_gdqfi")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_gdqfi"]
+atlas = ExtResource("2_gdqfi")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_x63vd"]
+atlas = ExtResource("2_gdqfi")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_x63vd"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_xaem0")
+}],
+"loop": false,
+"name": &"default1",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_gdqfi")
+}],
+"loop": false,
+"name": &"default2",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_x63vd")
+}],
+"loop": false,
+"name": &"default3",
+"speed": 5.0
+}]
+
+[node name="EntityTree" type="Node2D"]
+script = ExtResource("1_yb8bl")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_x63vd")
+animation = &"default1"
+autoplay = "default1"

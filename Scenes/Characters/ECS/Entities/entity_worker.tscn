@@ -1,9 +1,0 @@
-[gd_scene load_steps=3 format=3 uid="uid://by7rx0im2ngkn"]
-
-[ext_resource type="Script" uid="uid://c0xq48kwv6s8k" path="res://Scripts/component_systems/entities/entity_worker.gd" id="1_dmrem"]
-[ext_resource type="PackedScene" uid="uid://dpdefihos7cac" path="res://Scenes/Characters/worker_animated_sprites/defualt_worker_animated_sprite_2d.tscn" id="2_cde7l"]
-
-[node name="entity_worker" type="Node2D" groups=["ecs_entities"]]
-script = ExtResource("1_dmrem")
-
-[node name="defualt_worker_animated_sprite_2d" parent="." instance=ExtResource("2_cde7l")]

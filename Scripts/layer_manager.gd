@@ -1,20 +1,20 @@
 class_name layer_manager extends Node
 #this seems to be the best way of doing this at the moment
-
+const TILE_TYPES = ["deep water", " water", "shore", "beech", "grass", "mountain", "snow", "cliff"]
 
 const GRASS_SOURCE_ID = 0
 const GRASS_TILE_ATLAS_POS = Vector2i(0,0)
 
-const WATER_SOURCE_ID = 0
+const WATER_SOURCE_ID = 1
 const WATER_TILE_ATLAS_POS = Vector2i(3,0)
 
-const DEAP_WATER_SOURCE_ID = 0
+const DEAP_WATER_SOURCE_ID = 1
 const DEAP_WATER_TILE_ATLAS_POS = Vector2i(4,0)
 
-const SHORE_SOURCE_ID = 0
+const SHORE_SOURCE_ID = 1
 const SHORE_TILE_ATLAS_POS = Vector2i(1,0)
 
-const BEACH_SOURCE_ID = 0
+const BEACH_SOURCE_ID = 1
 const BEACH_TILE_ATLAS_POS = Vector2i(0,0)
 
 const MOUNTAIN_SOURCE_ID = 4
@@ -23,28 +23,28 @@ const MOUNTAIN_TILE_ATLAS_POS = Vector2i(5,0)
 const SNOW_SOURCE_ID = 4
 const SNOW_TILE_ATLAS_POS = Vector2i(4,0)
 
-const LEFT_WATER_CLIFF_SOURCE_ID = 0
+const LEFT_WATER_CLIFF_SOURCE_ID = 5
 const LEFT_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(0,4)
 
-const TOP_WATER_CLIFF_SOURCE_ID = 0
+const TOP_WATER_CLIFF_SOURCE_ID = 5
 const TOP_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(1,3)
 
-const RIGHT_WATER_CLIFF_SOURCE_ID = 0
+const RIGHT_WATER_CLIFF_SOURCE_ID = 5
 const RIGHT_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(2,4)
 
-const BOT_WATER_CLIFF_SOURCE_ID = 0
+const BOT_WATER_CLIFF_SOURCE_ID = 5
 const BOT_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(1,5)
 
-const BOTL_WATER_CLIFF_SOURCE_ID = 0
+const BOTL_WATER_CLIFF_SOURCE_ID = 5
 const BOTL_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(0,5)
 
-const BOTR_WATER_CLIFF_SOURCE_ID = 0
+const BOTR_WATER_CLIFF_SOURCE_ID = 5
 const BOTR_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(2,5)
 
-const TOPL_WATER_CLIFF_SOURCE_ID = 0
+const TOPL_WATER_CLIFF_SOURCE_ID = 5
 const TOPL_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(0,3)
 
-const TOPR_WATER_CLIFF_SOURCE_ID = 0
+const TOPR_WATER_CLIFF_SOURCE_ID = 5
 const TOPR_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(2,3)
 
 const ROADS_SOURCE_ID = 0
@@ -63,14 +63,14 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 
 @export_group("World Parameters")
 @export_subgroup("Size")
-@export var world_x = 640
-@export var world_y = 640
+@export var world_x = 180
+@export var world_y = 180
 @export_subgroup("Elevation Markers")
 @export var elevation_range = 65000 #~ mirinara trench to everest peak in feet
-@export var sea_level = 36000
+@export var sea_level = 36000 #~marinara trench depth
 @export var beach_offset : int = 100
-@export var treeline_offset = 13000
-@export var snowline_offset = 2500
+@export var treeline_offset = 13000 #~ equator level
+@export var snowline_offset = 2500 #~equator snow line
 @export_subgroup("Noise Variables")
 @export var elevation_varience = 0.5 #controls the amount of varience in elevation in the world
 @export_subgroup("Feature Variance")
@@ -85,9 +85,12 @@ var offset = Vector2i(0,0)
 
 var tm_layers : Dictionary[String, TileMapLayer]
 var layer_quadtrees : Dictionary[String, quad_tree_node]
-var building_data = manager_cells.new()
 
 var elevation_matrix = [] : get = get_elevation_matrix
+var tile_dict : Dictionary[Vector2i, EntityTile]
+
+
+const ENTITY_TREE = preload("uid://dduuoc8q8lt78")
 
 signal matrix_created
 signal world_created
@@ -100,7 +103,7 @@ func _ready():
 			if child.get_child(0) is TileMapLayer:
 				for sub_child in child.get_children():
 					tm_layers[sub_child.name.to_lower()] = sub_child
-	fill_ground_layers(elevation_matrix)
+	await(fill_ground_layers(elevation_matrix))
 	fill_water_cliffs()
 	for layer in tm_layers:
 		layer_quadtrees[layer] = build_tml_quadtree(tm_layers[layer])
@@ -112,22 +115,6 @@ func _process(delta):
 func get_elevation_matrix():
 	return elevation_matrix
 
-func tree_chopped(tree_loc : Vector2i):
-	#print("tree chopped: adjusting tilemap and quadtree")
-	tm_layers["trees"].set_cell(tree_loc,-1,Vector2i(-1,-1))
-	layer_quadtrees["trees"].remove(tree_loc)
-	tm_layers["debris"].set_cell(tree_loc,0,Vector2i(0,0))
-	layer_quadtrees["debris"].insert(tree_loc)
-
-func hut_built(hut_loc : Vector2i):
-	#print("hut built: adjusting tilemap and quadtree")
-	tm_layers["buildings"].set_cell(hut_loc, 0, Vector2i(1,0))
-	building_data.set_cell_data(hut_loc, {"status" : "built"})
-	var building_inventory = component_inventory.new().setup()
-	building_data.set_cell_data(hut_loc, {"component_inventory" : building_inventory})
-	layer_quadtrees["buildings"].insert(hut_loc)
-	#layer_quadtrees["buildings"] = build_tml_quadtree(tm_layers["buildings"])
-	
 func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2) -> Array:
 	print("generating perlin matrix for elevations")
 	var matrix = []
@@ -147,45 +134,55 @@ func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2) -> Ar
 	matrix_created.emit()
 	return matrix
 
+func get_tile_dict():
+	return tile_dict
+
+func is_in_bounds(pos: Vector2i) -> bool:
+	return pos.x >= 0 and pos.y >= 0 and pos.x < world_x and pos.y < world_y
+
 func fill_water_cliffs():
 	print("adding cliffs")
 	for i in range(world_x):
 		for j in range(world_y):
 			var pos = Vector2i(i,j)
-			var ground_surrounding = tm_layers["ground"].get_surrounding_cells(pos)
-			var empty_cell = Vector2i(-1,-1)
-			if tm_layers["ground"].get_cell_atlas_coords(ground_surrounding[2]) != empty_cell and tm_layers["water"].get_cell_atlas_coords(pos) != empty_cell: #ground to the left
-				tm_layers["cliffs"].set_cell(pos,RIGHT_WATER_CLIFF_SOURCE_ID, RIGHT_WATER_CLIFF_TILE_ATLAS_POS)
-			elif tm_layers["ground"].get_cell_atlas_coords(ground_surrounding[0]) != empty_cell and tm_layers["water"].get_cell_atlas_coords(pos) != empty_cell: #ground to the right
-				tm_layers["cliffs"].set_cell(pos,LEFT_WATER_CLIFF_SOURCE_ID, LEFT_WATER_CLIFF_TILE_ATLAS_POS)
-			elif tm_layers["ground"].get_cell_atlas_coords(ground_surrounding[1]) != empty_cell and tm_layers["water"].get_cell_atlas_coords(pos) != empty_cell: #ground bellow
-				tm_layers["cliffs"].set_cell(pos,TOP_WATER_CLIFF_SOURCE_ID, TOP_WATER_CLIFF_TILE_ATLAS_POS)
-			elif tm_layers["ground"].get_cell_atlas_coords(ground_surrounding[3]) != empty_cell and tm_layers["water"].get_cell_atlas_coords(pos) != empty_cell: #ground above
-				tm_layers["cliffs"].set_cell(pos,BOT_WATER_CLIFF_SOURCE_ID, BOT_WATER_CLIFF_TILE_ATLAS_POS)
+			if tile_dict.has(pos + Vector2i.LEFT) and tile_dict.has(pos + Vector2i.RIGHT) and tile_dict[pos + Vector2i.LEFT].elevation > beach_line and tile_dict[pos + Vector2i.RIGHT].elevation < shore_line: #ground to the left
+				tm_layers["ground"].set_cell(pos,RIGHT_WATER_CLIFF_SOURCE_ID, RIGHT_WATER_CLIFF_TILE_ATLAS_POS)
+			elif tile_dict.has(pos + Vector2i.RIGHT) and tile_dict.has(pos + Vector2i.LEFT) and tile_dict[pos + Vector2i.RIGHT].elevation > beach_line and tile_dict[pos + Vector2i.LEFT].elevation < shore_line: #ground to the right
+				tm_layers["ground"].set_cell(pos,LEFT_WATER_CLIFF_SOURCE_ID, LEFT_WATER_CLIFF_TILE_ATLAS_POS)
+			elif tile_dict.has(pos + Vector2i.DOWN) and tile_dict.has(pos + Vector2i.UP) and tile_dict[pos + Vector2i.DOWN].elevation > beach_line and tile_dict[pos + Vector2i.UP].elevation < shore_line: #ground bellow
+				tm_layers["ground"].set_cell(pos,TOP_WATER_CLIFF_SOURCE_ID, TOP_WATER_CLIFF_TILE_ATLAS_POS)
+			elif tile_dict.has(pos + Vector2i.UP) and tile_dict.has(pos + Vector2i.DOWN) and tile_dict[pos + Vector2i.UP].elevation > beach_line and tile_dict[pos + Vector2i.DOWN].elevation < shore_line: #ground above
+				tm_layers["ground"].set_cell(pos,BOT_WATER_CLIFF_SOURCE_ID, BOT_WATER_CLIFF_TILE_ATLAS_POS)
 	
 func fill_ground_layers(elevation_matrix):
 	print("filling ground tilemaplayers")
 	for i in range(world_x):
 		for j in range(world_y):
+			var map_pos = Vector2i(i,j)
 			var pos = elevation_matrix[i][j]
+			var temp_tile = EntityTile.new(map_pos,pos)
 			if( pos < (sea_level*0.75)):
-				tm_layers["water"].set_cell(Vector2i(i,j), DEAP_WATER_SOURCE_ID, DEAP_WATER_TILE_ATLAS_POS)
-			elif( pos < (shore_line)):
-				tm_layers["water"].set_cell(Vector2i(i,j),WATER_SOURCE_ID,WATER_TILE_ATLAS_POS)#set tile with the water sprite
+				tm_layers["ground"].set_cell(Vector2i(i,j), DEAP_WATER_SOURCE_ID, DEAP_WATER_TILE_ATLAS_POS)
+			elif( pos < (shore_line)): 
+				tm_layers["ground"].set_cell(Vector2i(i,j),WATER_SOURCE_ID,WATER_TILE_ATLAS_POS)#set tile with the water sprite
 			elif(pos < beach_line):
-				tm_layers["shore"].set_cell(Vector2i(i,j),SHORE_SOURCE_ID,SHORE_TILE_ATLAS_POS)#set tile with the beach sprite
+				tm_layers["ground"].set_cell(Vector2i(i,j),SHORE_SOURCE_ID,SHORE_TILE_ATLAS_POS)#set tile with the beach sprite
 			elif(pos < beach_line + beach_offset):
-				tm_layers["shore"].set_cell(Vector2i(i,j),BEACH_SOURCE_ID,BEACH_TILE_ATLAS_POS)#set tile with the beach sprite
+				tm_layers["ground"].set_cell(Vector2i(i,j),BEACH_SOURCE_ID,BEACH_TILE_ATLAS_POS)#set tile with the beach sprite
 			elif(pos < tree_line):
 				tm_layers["ground"].set_cell(Vector2i(i,j),GRASS_SOURCE_ID,GRASS_TILE_ATLAS_POS)#set tile with the grass sprite
 				if(randi()%tree_density <= 1): #this works out to 2/tree_density but i like the results
-					tm_layers["trees"].set_cell(Vector2i(i,j), 0, Vector2i(randi()%3 + 1,0))
+					var tree_ent : EntityTree = ENTITY_TREE.instantiate()
+					get_node("entities").add_child(tree_ent)
+					tree_ent.setup(map_pos)
+					temp_tile.entities[tree_ent.entity_id] = tree_ent
 			elif(pos < snow_line):
 				tm_layers["ground"].set_cell(Vector2i(i,j),MOUNTAIN_SOURCE_ID,MOUNTAIN_TILE_ATLAS_POS)#set tile with the mountain sprite
 			elif(pos > snow_line):
 				tm_layers["ground"].set_cell(Vector2i(i,j),SNOW_SOURCE_ID,SNOW_TILE_ATLAS_POS)#set tile with the snow sprite
 			else:
 				print()
+			tile_dict[map_pos] = temp_tile
 
 func build_road(road_location : Vector2i):
 	if layer_quadtrees["roads"].has(road_location):
@@ -195,10 +192,9 @@ func build_road(road_location : Vector2i):
 		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_4WAY_ATLAS_POS)
 		layer_quadtrees["roads"].insert(road_location)
 		update_road(road_location)
-	
 
 func update_road(road_location : Vector2i):
-	var adjacent_roads = get_non_empty_cells_in_radius("roads",road_location,1)
+	var adjacent_roads = null #get_non_empty_cells_in_radius("roads",road_location,1)
 	var left = road_location + Vector2i.LEFT
 	var right = road_location + Vector2i.RIGHT
 	var top = road_location + Vector2i.UP
@@ -252,50 +248,3 @@ func build_tml_quadtree(reference: TileMapLayer) -> quad_tree_node:
 	for cell in used_cells:
 		target_qt.insert(cell)
 	return target_qt
-
-func get_non_empty_cells_in_radius_quadtree(quad_tree: quad_tree_node, center: Vector2i, radius: int) -> Array[Vector2i]:
-	var result: Array[Vector2i] = []
-	if quad_tree != null:
-		quad_tree.query_circle(center, radius, result)
-	return result
-
-func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radius: int) -> Array[Vector2i]:
-	var result: Array[Vector2i] = []
-	var quad_tree = layer_quadtrees[layer_name]
-	if quad_tree != null:
-		quad_tree.query_circle(center, radius, result)
-	else:
-		print("quad tree is null returning empty array")
-	return result
-
-func build_traversable_tilemap(traversable_layers: Array = ["ground", "shore"], obstical_layers: Array = []) -> TileMapLayer:
-	print("building traversable tilemap")
-
-	var traversable_tilemap := TileMapLayer.new()
-
-	# Step 1: Combine all traversable cells
-	var traversable_cells := {}
-
-	for layer_name in traversable_layers:
-		var layer: TileMapLayer = tm_layers[layer_name]
-		for cell in layer.get_used_cells():
-			traversable_cells[cell] = layer  # Save reference to layer for source/tile info
-
-	# Step 2: Mark all obstacle cells
-	var blocked_cells := {}
-	for obs_layer in obstical_layers:
-		for cell in tm_layers[obs_layer].get_used_cells():
-			blocked_cells[cell] = true
-
-	# Step 3: Filter and add to traversable_tilemap
-	for cell_pos in traversable_cells.keys():
-		if not blocked_cells.has(cell_pos):
-			var layer = traversable_cells[cell_pos]
-			traversable_tilemap.set_cell(
-				cell_pos,
-				layer.get_cell_source_id(cell_pos),
-				layer.get_cell_atlas_coords(cell_pos),
-				layer.get_cell_alternative_tile(cell_pos)
-			)
-
-	return traversable_tilemap
