@@ -62,7 +62,7 @@ var fieldPartTypes = [PartType.ELECTRORECEPTOR, PartType.TYMPANUM, PartType.LATE
 var part_id = 0
 var next_part_id = 1
 var parts: Dictionary [int,ComponentBodyPart]
-var part_groups: Dictionary [ComponentBodyPart.PartType,Array]
+var part_groups: Dictionary [ComponentBody.PartType,Array]
 
 func _init():
 	comp_name = "body"
@@ -70,6 +70,7 @@ func _init():
 func add_part(part: ComponentBodyPart, root_body : ComponentBody):
 	var new_part_id = root_body.next_part_id
 	part.part_id = new_part_id
+	part.parent_part = self
 	parts[new_part_id] = part
 	part_groups[part.type].append(new_part_id)
 	root_body.next_part_id += 1
@@ -107,7 +108,7 @@ func get_all_parts() -> Dictionary[int,ComponentBodyPart]:
 func get_total_parts() -> int:
 	return get_all_parts().size()
 
-func get_part_group(_part_type : ComponentBodyPart.PartType) -> Array[ComponentBodyPart]:
+func get_part_group(_part_type : ComponentBody.PartType) -> Array[ComponentBodyPart]:
 	if part_groups.has(_part_type):
 		return part_groups[_part_type]
 	else:
@@ -128,6 +129,100 @@ func has_part(_part_id: int) -> bool:
 	if parts.has(_part_id):
 		return true
 	for part in parts.values():
-		if part is ComponentBody and part.has_part_recursive(_part_id):
+		if part is ComponentBody and part.has_part(_part_id):
 			return true
+	return false
+
+var leg_sequence = [PartType.HIP, PartType.LEG, PartType.KNEE, PartType.LEG, PartType.FOOT]
+var arm_sequence = [PartType.SHOULDER, PartType.ARM, PartType.ELBOW, PartType.ARM, PartType.HAND]
+
+#might need to include an array of nodes to ignore so that this is useful for anything more than a head ( having two of a sequence would mean you may never get the other as a return
+func has_part_sequence(part_sequence: Array, is_terminating: bool = false) -> bool:
+	if part_sequence.is_empty():
+		return true
+		
+	var current_type = part_sequence[0]
+	
+	for part_id in parts:
+		var part = parts[part_id]
+		if part.type == current_type:
+			# Duplicate array to avoid mutating the original
+			var sub_sequence = part_sequence.duplicate()
+			sub_sequence.remove_at(0)
+			
+			# If this is the end of the sequence, check termination if needed
+			if sub_sequence.is_empty():
+				if is_terminating and part is ComponentBody and part.parts.size() != 0:
+					return false
+				return true
+			# Recurse if this part has children
+			if part is ComponentBody:
+				if part.has_part_sequence(sub_sequence, is_terminating):
+					return true
+					
+	# If none matched
+	return false
+
+func part_sequence_count(part_sequence: Array, is_terminating: bool = false) -> int:
+	if part_sequence.is_empty():
+		return 0
+
+	var current_type = part_sequence[0]
+	var best_match = 0
+
+	for part_id in parts:
+		var part = parts[part_id]
+		if part.type == current_type:
+			var sub_sequence = part_sequence.duplicate()
+			sub_sequence.remove_at(0)
+
+			if sub_sequence.is_empty():
+				if is_terminating and part is ComponentBody and part.parts.size() != 0:
+					continue  # terminate match here if tail has more children
+				return part_sequence.size()  # full match
+
+			# Recurse into child parts
+			if part is ComponentBody:
+				var sub_match = part.part_sequence_count(sub_sequence, is_terminating)
+				if sub_match > 0:
+					var total_match = 1 + sub_match
+					if total_match > best_match:
+						best_match = total_match
+
+	# If nothing fully matched, return best partial match (0 if none)
+	return best_match
+
+func get_matching_sequence_starts(part_sequence: Array, is_terminating: bool = false) -> Array:
+	var matching_starts: Array = []
+
+	for part_id in parts:
+		var part = parts[part_id]
+		if part.type == part_sequence[0]:
+			var sub_sequence = part_sequence.duplicate()
+			if _match_sequence_recursive(part, sub_sequence, is_terminating):
+				matching_starts.append(part_id)
+
+	return matching_starts
+
+func _match_sequence_recursive(current_part: ComponentBodyPart, sequence: Array, is_terminating: bool) -> bool:
+	if sequence.is_empty():
+		return true
+
+	if current_part.type != sequence[0]:
+		return false
+
+	sequence.remove_at(0)
+
+	if sequence.is_empty():
+		if is_terminating and current_part is ComponentBody and current_part.parts.size() != 0:
+			return false
+		return true
+
+	if current_part is ComponentBody:
+		for sub_part_id in current_part.parts:
+			var sub_part = current_part.parts[sub_part_id]
+			var sub_seq = sequence.duplicate()
+			if _match_sequence_recursive(sub_part, sub_seq, is_terminating):
+				return true
+
 	return false

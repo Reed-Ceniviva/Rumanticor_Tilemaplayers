@@ -6,11 +6,7 @@ var type: PartType
 var side: PartSide
 #var face: PartFace
 var level: PartLevel
-var isJoint: bool
-var isLimb : bool
-var isExtremity : bool
-var isSensory: bool
-var isMobile: bool
+var parent_part : ComponentBodyPart
 
 #max speed with only 2 full arms: 100m/25sec ~ 4meters/second (zion clark)
 #max speed with 2 full legs bipedal human 10.44meters/second (usain bolt)

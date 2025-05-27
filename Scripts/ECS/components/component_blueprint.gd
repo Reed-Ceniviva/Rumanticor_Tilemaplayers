@@ -18,6 +18,20 @@ var inf_vision = false
 
 var num_walking_limbs = 2
 
+# 		head - brain, eyes, ears, tongue, nose, 
+# 		neck
+# shdr| Torso | shdr\
+# arm | torso | arm |
+# elb | torso | arm |-middle
+# arm | torso | arm |
+# hnd | Cod   | hnd /
+# hip |       | hip \
+# leg |       | leg |
+# kne |       | kne |-lower
+# leg |       | leg |
+# fot |       | fot /
+#left | middle| right
+
 func _init():
 	comp_name = "blueprint"
 	
