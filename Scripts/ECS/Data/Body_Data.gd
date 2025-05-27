@@ -1,6 +1,4 @@
-# component_body.gd
-extends EntityBase
-class_name ComponentBody
+extends Resource
 
 enum PartType { HEAD, 
 NECK, #parent head, child spine
@@ -52,7 +50,6 @@ SWING, AIM, KICK, GRAB, THROW, LOB
 
 enum PartSide {LEFT, CENTER, RIGHT, ALL}
 enum PartLevel {LOWER, MIDDLE, UPPER, HEAD, ALL}
-#enum PartFace {FRONT, BACK, ALL, NA}
 
 var mobilePartTypes = [PartType.LEG, PartType.KNEE, PartType.HIP, PartType.FOOT, PartType.HOOF, PartType.PAW, PartType.TENTACLE, PartType.ABMUSCLES, PartType.FEETPAD, PartType.WING, PartType.FIN, PartType.ARM, PartType.SHOULDER, PartType.HAND, PartType.ELBOW]
 var jointPartTypes = [PartType.KNEE, PartType.ELBOW, PartType.NECK, PartType.SHOULDER, PartType.HIP, PartType.HAND, PartType.PAW, PartType.ABMUSCLES]
@@ -65,121 +62,41 @@ var touchPartTypes = [PartType.SKIN, PartType.WHISKER, PartType.ANTENNA, PartTyp
 var smellPartTypes = [PartType.NOSE, PartType.JACOBSON, PartType.ANTENNA]
 var tastePartTypes = [PartType.TONGUE,PartType.LABIALPALP]
 var fieldPartTypes = [PartType.ELECTRORECEPTOR, PartType.TYMPANUM, PartType.LATERALLINE, PartType.HAIR]
-#average human walking speed : 1.34 m/s given: bipedal: 2 hips with 1 leg each with 1 knee each with 1 foot each
 
 var full_leg_sequence = [PartType.HIP, PartType.LEG, PartType.KNEE, PartType.LEG, PartType.FOOT]
 var full_arm_sequence = [PartType.SHOULDER, PartType.ARM, PartType.ELBOW, PartType.ARM, PartType.HAND]
 
-# Define parent-to-child structural constraints
 var valid_connections := {
-	# Core body structure
 	PartType.SPINE: [PartType.TORSO, PartType.NECK],
 	PartType.NECK: [PartType.HEAD],
 	PartType.TORSO: [PartType.HIP, PartType.SHOULDER, PartType.COD, PartType.TAIL, PartType.SKIN, PartType.ABMUSCLES, PartType.WING, PartType.FIN],
-	PartType.COD: [PartType.GENITALS], # fish-like tails or tentacle base
-
-	# Legs and walking appendages
+	PartType.COD: [PartType.GENITALS],
 	PartType.HIP: [PartType.LEG],
-	PartType.LEG: [PartType.KNEE, PartType.FOOT, PartType.LEG, PartType.HOOF, PartType.PAW],  # double segments
-	PartType.KNEE: [PartType.LEG],  # upper to lower
+	PartType.LEG: [PartType.KNEE, PartType.FOOT, PartType.LEG, PartType.HOOF, PartType.PAW],
+	PartType.KNEE: [PartType.LEG],
 	PartType.FOOT: [PartType.FEETPAD],
 	PartType.HOOF: [],
 	PartType.ABMUSCLES: [],
-
-	# Arms and manipulation
 	PartType.SHOULDER: [PartType.ARM],
-	PartType.ARM: [PartType.ELBOW, PartType.HAND, PartType.ARM],  # e.g. forearm/upperarm
+	PartType.ARM: [PartType.ELBOW, PartType.HAND, PartType.ARM],
 	PartType.ELBOW: [PartType.ARM],
 	PartType.HAND: [PartType.CLAW, PartType.FEETPAD],
 	PartType.PAW: [PartType.CLAW],
-
-	PartType.TENTACLE: [PartType.SUCKER, PartType.CLAW, PartType.ABMUSCLES],  # if implemented
-
-	# Head & sensory
+	PartType.TENTACLE: [PartType.SUCKER, PartType.CLAW, PartType.ABMUSCLES],
 	PartType.HEAD: [
 		PartType.EYE, PartType.NOSE, PartType.EAR, PartType.MOUTH,
 		PartType.WHISKER, PartType.ANTENNA, PartType.JACOBSON, PartType.TYMPANUM,
 		PartType.LABIALPALP, PartType.HAIR, PartType.BRAIN, PartType.SKIN,
 		PartType.PIT, PartType.LATERALLINE, PartType.ELECTRORECEPTOR
 	],
-
-	# Sensory sub-structures (many are extremities or nested)
 	PartType.NOSE: [PartType.JACOBSON],
 	PartType.EAR: [PartType.TYMPANUM],
 	PartType.SKIN: [PartType.HAIR],
 	PartType.MOUTH: [PartType.TONGUE],
-
 }
 
+func valid_connection(parent: PartType, child: PartType) -> bool:
+	return valid_connections.has(parent) and child in valid_connections[parent]
 
-
-var part_id = 0
-var next_part_id = 1
-var child_parts : Array[int] = []
-var all_parts: Dictionary[int, ComponentBodyPart] = {}
-
-func add_part(part: ComponentBodyPart, root: ComponentBody, parent_id : int = -1) -> void:
-	# Assign a unique ID
-	part.part_id = root.next_part_id
-	root.next_part_id += 1
-
-	# Set parent-child relationships
-	part.parent_id = self.part_id
-	if parent_id != -1 and root.all_parts.has(parent_id):
-		root.all_parts[parent_id].child_parts.append(part.part_id)
-		root.all_parts[parent_id].all_parts[part.part_id] = part
-	else:
-		self.child_parts.append(part.part_id)
-		self.all_parts[part.part_id] = part
-	root.child_parts.append(part.part_id)
-	root.all_parts[part.part_id] = part
-
-
-func add_part_to(part: ComponentBodyPart, target_part_id : int, root_body: ComponentBody):
-	add_part(part, root_body, target_part_id)
-
-
-
-func get_part_flat(_part_id: int) -> ComponentBodyPart:
-	return all_parts.get(_part_id, null)
-
-func has_part_flat(_part_id: int) -> bool:
-	return all_parts.has(_part_id)
-
-func remove_part(part_id: int) -> void:
-	var part = get_part(part_id)
-	if part:
-		if part.parent_id != -1:
-			var parent = get_part(part.parent_id)
-			parent.child_parts.erase(part_id)
-			parent.all_parts.erase(part_id)
-		all_parts.erase(part_id)
-
-func get_all_parts() -> Dictionary[int, ComponentBodyPart]:
-	return all_parts
-
-
-func get_total_parts() -> int:
-	return all_parts.size()
-
-func get_part(part_id: int) -> ComponentBodyPart:
-	return all_parts.get(part_id, null)
-
-
-func has_part(_part_id: int) -> bool:
-	return all_parts.has(_part_id)
-
-#might need to include an array of nodes to ignore so that this is useful for anything more than a head ( having two of a sequence would mean you may never get the other as a return
-func has_part_sequence(start_id: int, part_sequence: Array, is_terminating := false) -> bool:
-	if part_sequence.is_empty(): return true
-	var current_part = get_part(start_id)
-	if current_part.type != part_sequence[0]: return false
-	if part_sequence.size() == 1:
-		if is_terminating and current_part.children.size() > 0:
-			return false
-		return true
-	var next_sequence = part_sequence.slice(1, part_sequence.size() - 1)
-	for child_id in current_part.child_parts:
-		if has_part_sequence(child_id, next_sequence, is_terminating):
-			return true
-	return false
+func get_valid_connections():
+	return valid_connections

@@ -1,4 +1,4 @@
-extends Component
+extends ComponentBodyPart
 class_name ComponentBrain
 
 const ComponentSense = preload("uid://cjsv7ucry3tgg")
@@ -7,7 +7,7 @@ var PartsDict = {}
 var senses = {}
 
 var my_body : ComponentBody
-var my_mobility : ComponentMobile
+#var my_mobility : ComponentMobile
 
 var mobile_body_parts : Array
 var vision_body_parts
@@ -24,5 +24,6 @@ func _init(_body : ComponentBody):
 			senses[ComponentSense.SenseType.VISION].append(ComponentVision.new(bodypart))
 			
 	if not mobile_body_parts.is_empty():
-		my_mobility = ComponentMobile.new(mobile_body_parts)
+		pass
+		#my_mobility = ComponentMobile.new(mobile_body_parts)
 			#the brain makes note of what mobile parts it has and how it is able to move with them

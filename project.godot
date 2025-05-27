@@ -22,6 +22,7 @@ enabled=PackedStringArray("res://addons/wfc/plugin.cfg")
 [file_customization]
 
 folder_colors={
+"res://Scripts/ECS/Data/": "red",
 "res://Scripts/ECS/components/": "green",
 "res://Scripts/ECS/entities/": "blue",
 "res://Scripts/ECS/systems/": "pink"

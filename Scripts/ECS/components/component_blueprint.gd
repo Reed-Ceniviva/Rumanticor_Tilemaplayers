@@ -16,7 +16,7 @@ var max_sight_distance = 32
 var min_sight_distance = 0
 var inf_vision = false
 
-var num_walking_limbs = 2
+var pedal = 2
 
 # 		head - brain, eyes, ears, tongue, nose, 
 # 		neck
