@@ -1,19 +1,19 @@
 class_name EntityBody
 extends EntityBase
 
-var root_parts: Array[ComponentBodyPart] = []
+var root_parts: Array[EntityBodyPart] = []
 const BodyData = preload("uid://rhetoeckohcj")
 
-func add_body_part(part: ComponentBodyPart, parent: ComponentBodyPart = null) -> void:
+func add_body_part(part: EntityBodyPart, parent: EntityBodyPart = null) -> void:
 	if parent:
 		parent.add_child_part(part)
 	else:
 		root_parts.append(part)
+		
+	#add_component(part)  # Also treat BodyPart as a component for ECS access
 
-	add_component(part)  # Also treat BodyPart as a component for ECS access
-
-func get_all_parts() -> Array[ComponentBodyPart]:
-	var parts: Array[ComponentBodyPart] = []
+func get_all_parts() -> Array[EntityBodyPart]:
+	var parts: Array[EntityBodyPart] = []
 	for root in root_parts:
 		parts.append_array(root.get_all_descendants())
 	return parts

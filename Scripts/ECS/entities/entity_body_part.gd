@@ -1,6 +1,6 @@
 # component_body_part.gd
-class_name ComponentBodyPart
-extends Component  # Now inherits body logic
+class_name EntityBodyPart
+extends EntityBase  # Now inherits body logic
 
 const BodyData = preload("uid://rhetoeckohcj")
 var my_BodyData = BodyData.new()
@@ -8,16 +8,14 @@ var my_BodyData = BodyData.new()
 var part_type: BodyData.PartType
 var side: BodyData.PartSide = BodyData.PartSide.CENTER
 var level: BodyData.PartLevel = BodyData.PartLevel.MIDDLE
-var parent_part: ComponentBodyPart = null
-var child_parts: Array[ComponentBodyPart] = []
+var parent_part: EntityBodyPart = null
+var child_parts: Array[EntityBodyPart] = []
 
-func init():
-	comp_name = "bodypart"
 
 func get_comp_name() -> String:
 	return "BodyPart_%s" % str(part_type)
 
-func add_child_part(part: ComponentBodyPart):
+func add_child_part(part: EntityBodyPart):
 	if part == self or part in get_all_descendants():
 		push_warning("Cannot add part as a descendant of itself")
 		return
@@ -31,7 +29,7 @@ func add_child_part(part: ComponentBodyPart):
 	else:
 		push_warning("Invalid bidirectional connection: %s ↔ %s" % [part_type, part.part_type])
 
-func get_all_descendants() -> Array[ComponentBodyPart]:
+func get_all_descendants() -> Array[EntityBodyPart]:
 	var all = [self]
 	for child in child_parts:
 		all.append_array(child.get_all_descendants())

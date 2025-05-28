@@ -26,7 +26,7 @@ CLAW, #,extremity,gripping/burrowing,birds/reptiles,true
 TENTACLE, #,limb,gripping/moving,octopuses,true
 ABMUSCLES, #muscle,slithering/snaking,snakes,false
 FEETPAD, #extremity,gripping/climbing,frogs true
-SKIN, #organ,touch/temperature,mammals false
+SKIN, #organ,touch/temperature,mammals false since this would be a child of all external  | this would be applied to all external parts so maybe change how this is applied/ external coatings
 WHISKER, #(Vibrissae),hair,touch/navigation,cats/seals true
 ANTENNA, #touch/smell/hearing,insects/crustaceans true
 JACOBSON, #(Vomeronasal Organ),organ,pheromone detection,snakes/cats false
@@ -55,21 +55,30 @@ var mobilePartTypes = [PartType.LEG, PartType.KNEE, PartType.HIP, PartType.FOOT,
 var jointPartTypes = [PartType.KNEE, PartType.ELBOW, PartType.NECK, PartType.SHOULDER, PartType.HIP, PartType.HAND, PartType.PAW, PartType.ABMUSCLES]
 var limbPartTypes = [PartType.HEAD, PartType.ARM, PartType.LEG, PartType.COD, PartType.TENTACLE]
 var extremityPartTypes = [PartType.GENITALS, PartType.SUCKER, PartType.HAIR, PartType.HEAD, PartType.HAND, PartType.HOOF, PartType.PAW, PartType.FEETPAD, PartType.TAIL, PartType.FOOT, PartType.FIN, PartType.WING]
-var organPartTypes = [PartType.MOUTH, PartType.GENITALS, PartType.BRAIN, PartType.PIT, PartType.LATERALLINE, PartType.SKIN, PartType.ABMUSCLES, PartType.TONGUE, PartType.EAR, PartType.NOSE, PartType.EYE]
-var sensoryPartTypes = [PartType.EYE, PartType.EAR, PartType.NOSE, PartType.SKIN, PartType.PIT, PartType.TENTACLE, PartType.WHISKER, PartType.ANTENNA, PartType.JACOBSON, PartType.LATERALLINE, PartType.ELECTRORECEPTOR, PartType.TYMPANUM, PartType.LABIALPALP]
+var organPartTypes = [PartType.MOUTH, PartType.GENITALS, PartType.BRAIN, PartType.PIT, PartType.LATERALLINE,  PartType.ABMUSCLES, PartType.TONGUE, PartType.EAR, PartType.NOSE, PartType.EYE]
+var sensoryPartTypes = [PartType.EYE, PartType.EAR, PartType.NOSE, PartType.PIT, PartType.TENTACLE, PartType.WHISKER, PartType.ANTENNA, PartType.JACOBSON, PartType.LATERALLINE, PartType.ELECTRORECEPTOR, PartType.TYMPANUM, PartType.LABIALPALP]
 var visionPartTypes = [PartType.EYE, PartType.PIT]
 var touchPartTypes = [PartType.SKIN, PartType.WHISKER, PartType.ANTENNA, PartType.LABIALPALP, PartType.SUCKER]
 var smellPartTypes = [PartType.NOSE, PartType.JACOBSON, PartType.ANTENNA]
 var tastePartTypes = [PartType.TONGUE,PartType.LABIALPALP]
 var fieldPartTypes = [PartType.ELECTRORECEPTOR, PartType.TYMPANUM, PartType.LATERALLINE, PartType.HAIR]
+var bonePartTypes = [PartType.SPINE]
 
 var full_leg_sequence = [PartType.HIP, PartType.LEG, PartType.KNEE, PartType.LEG, PartType.FOOT]
 var full_arm_sequence = [PartType.SHOULDER, PartType.ARM, PartType.ELBOW, PartType.ARM, PartType.HAND]
 
 var valid_connections := {
-	PartType.SPINE: [PartType.TORSO, PartType.NECK],
-	PartType.NECK: [PartType.HEAD],
-	PartType.TORSO: [PartType.HIP, PartType.SHOULDER, PartType.COD, PartType.TAIL, PartType.SKIN, PartType.ABMUSCLES, PartType.WING, PartType.FIN],
+	PartType.HEAD: [
+		PartType.EYE, PartType.NOSE, PartType.EAR, PartType.MOUTH,
+		PartType.WHISKER, PartType.ANTENNA, PartType.JACOBSON, PartType.TYMPANUM,
+		PartType.LABIALPALP, PartType.HAIR, PartType.BRAIN,
+		PartType.PIT, PartType.LATERALLINE, PartType.ELECTRORECEPTOR,
+		PartType.NECK
+	],
+	PartType.NECK: [PartType.SPINE],
+	PartType.SPINE: [PartType.TORSO],
+	PartType.TORSO: [PartType.HIP, PartType.SHOULDER, PartType.COD, PartType.TAIL, PartType.SKIN, PartType.ABMUSCLES, PartType.WING, PartType.FIN, PartType.SPINE],
+	PartType.SHOULDER: [PartType.ARM],
 	PartType.COD: [PartType.GENITALS],
 	PartType.HIP: [PartType.LEG],
 	PartType.LEG: [PartType.KNEE, PartType.FOOT, PartType.LEG, PartType.HOOF, PartType.PAW],
@@ -77,18 +86,11 @@ var valid_connections := {
 	PartType.FOOT: [PartType.FEETPAD],
 	PartType.HOOF: [],
 	PartType.ABMUSCLES: [],
-	PartType.SHOULDER: [PartType.ARM],
 	PartType.ARM: [PartType.ELBOW, PartType.HAND, PartType.ARM],
 	PartType.ELBOW: [PartType.ARM],
 	PartType.HAND: [PartType.CLAW, PartType.FEETPAD],
 	PartType.PAW: [PartType.CLAW],
 	PartType.TENTACLE: [PartType.SUCKER, PartType.CLAW, PartType.ABMUSCLES],
-	PartType.HEAD: [
-		PartType.EYE, PartType.NOSE, PartType.EAR, PartType.MOUTH,
-		PartType.WHISKER, PartType.ANTENNA, PartType.JACOBSON, PartType.TYMPANUM,
-		PartType.LABIALPALP, PartType.HAIR, PartType.BRAIN, PartType.SKIN,
-		PartType.PIT, PartType.LATERALLINE, PartType.ELECTRORECEPTOR
-	],
 	PartType.NOSE: [PartType.JACOBSON],
 	PartType.EAR: [PartType.TYMPANUM],
 	PartType.SKIN: [PartType.HAIR],

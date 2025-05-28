@@ -1,16 +1,35 @@
 extends Component
 class_name ComponentMobile
+const BodyData = preload("res://Scripts/ECS/Data/Body_Data.gd")
+var mobile_body : ComponentBody
 
-var mobile_parts : Array[ComponentBodyPart]
-
-var possible_move_actions = []
-var structured_limbs : Dictionary [String,Array] = {"Leg" : []}
+#var possible_move_actions = []
+var structured_limbs : Dictionary [String,Array] = {"" : []}
 
 
 func _init(mobile_body : EntityBody, char_blueprint : ComponentBlueprint):
 	comp_name = "mobile"
+	var arm = [BodyData.PartType.SHOULDER, BodyData.PartType.ARM, BodyData.PartType.ELBOW, BodyData.PartType.ARM, BodyData.PartType.HAND]
+	var leg = [BodyData.PartType.HIP, BodyData.PartType.LEG, BodyData.PartType.KNEE, BodyData.PartType.LEG, BodyData.PartType.FOOT]
+	var body_legs = mobile_body.root_parts[0].match_sequences(leg)
+	var body_arms = mobile_body.root_parts[0].match_sequences(arm)
+	var full_arm_count = 0
+	var full_leg_count = 0
+	var partial_leg_count = 0
+	var partial_arm_count = 0
+	for body_leg in body_legs:
+		if body_leg["matched"]:
+			if body_leg["score"] >= 1.0:
+				full_leg_count += 1
+			else:
+				partial_leg_count += 1
 	
-	pass
+	for body_arm in body_arms:
+		if body_arm["matched"]:
+			if body_arm["score"] >= 1.0:
+				full_arm_count += 1
+			else:
+				partial_arm_count += 1
 
 
 #func _init_bad(mobile_body_parts : Array[ComponentBodyPart], char_blueprint : ComponentBlueprint):
@@ -79,8 +98,8 @@ func _init(mobile_body : EntityBody, char_blueprint : ComponentBlueprint):
 		#possible_move_actions.erase(body_actions.RUN)
 		#possible_move_actions.erase(body_actions.JUMP)
 			#
-func structured_limbs_get(part_group:String) -> Array[int]:
-	var result : Array[int]
-	for limb_type in structured_limbs:
-		if limb_type.contains(part_group):
-			result.append()
+#func structured_limbs_get(part_group:String) -> Array[int]:
+	#var result : Array[int]
+	#for limb_type in structured_limbs:
+		#if limb_type.contains(part_group):
+			#result.append()
