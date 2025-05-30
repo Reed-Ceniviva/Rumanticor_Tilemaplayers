@@ -63,8 +63,8 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 
 @export_group("World Parameters")
 @export_subgroup("Size")
-@export var world_x = 180
-@export var world_y = 180
+@export var world_x = 300
+@export var world_y = 300
 @export_subgroup("Elevation Markers")
 @export var elevation_range = 65000 #~ mirinara trench to everest peak in feet
 @export var sea_level = 36000 #~marinara trench depth
@@ -75,7 +75,8 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 @export var elevation_varience = 0.5 #controls the amount of varience in elevation in the world
 @export_subgroup("Feature Variance")
 @export var tree_density = 200#2 in x grass tiles have trees
- 
+@onready var world_manager = $".."
+
 #variables derived from world parameters
 var shore_line = sea_level - beach_offset
 var beach_line = sea_level + beach_offset
@@ -175,7 +176,7 @@ func fill_ground_layers(elevation_matrix):
 					var tree_ent : EntityTree = ENTITY_TREE.instantiate()
 					get_node("entities").add_child(tree_ent)
 					tree_ent.setup(map_pos)
-					temp_tile.entities[tree_ent.entity_id] = tree_ent
+					world_manager.new_entity_id(tree_ent)
 			elif(pos < snow_line):
 				tm_layers["ground"].set_cell(Vector2i(i,j),MOUNTAIN_SOURCE_ID,MOUNTAIN_TILE_ATLAS_POS)#set tile with the mountain sprite
 			elif(pos > snow_line):

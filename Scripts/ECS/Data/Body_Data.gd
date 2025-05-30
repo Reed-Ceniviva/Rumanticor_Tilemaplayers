@@ -1,4 +1,5 @@
 extends Resource
+class_name BodyData
 
 enum PartType { HEAD, 
 NECK, #parent head, child spine

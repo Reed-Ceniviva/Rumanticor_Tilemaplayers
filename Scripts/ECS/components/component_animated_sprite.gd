@@ -6,4 +6,3 @@ var animation_names : Array[String]
 
 func _ready():
 	animation_names = _animated_sprite_2d.sprite_frames.get_animation_names()
-		

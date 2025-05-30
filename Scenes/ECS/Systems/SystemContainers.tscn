@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cl0aw6gxx0eqn"]
+
+[ext_resource type="Script" uid="uid://4grhqbkpb8jt" path="res://Scripts/ECS/systems/system_containers.gd" id="1_8jsur"]
+
+[node name="Containers System" type="Node"]
+script = ExtResource("1_8jsur")

@@ -6,5 +6,5 @@ var my_position: Vector2i = Vector2i.ZERO
 
 func _init(pos: Vector2i = Vector2i.ZERO):
 	my_position = pos
-	set_comp_name("position")
+	comp_name = ("position")
 	

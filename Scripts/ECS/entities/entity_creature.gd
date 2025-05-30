@@ -1,2 +1,0 @@
-extends EntityBase
-class_name EntityCreature

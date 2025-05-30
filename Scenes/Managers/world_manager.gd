@@ -1,13 +1,16 @@
+class_name world_manager
+
 extends Node
 
 @onready var _layer_manager : layer_manager = $Layer_Manager
 @onready var camera_2d = $Camera2D
 var entity_id_counter = 0
-var entity_store : Dictionary [int, EntityBase]
+var entity_store : Dictionary [int, Entity]
 var tick_interval : = 0.2
 var tick_accumulator := 0.0
 
-func new_entity_id(entity : EntityBase) -> int:
+func new_entity_id(entity : Entity) -> int:
+	entity.set_world_manager(self)
 	var return_id = entity_id_counter
 	entity_id_counter += 1
 	entity_store[return_id] = entity
@@ -30,5 +33,5 @@ func _on_layer_manager_ready():
 	_layer_manager = $Layer_Manager
 	var entity_tml = _layer_manager.tm_layers["entities"]
 	for entity in entity_tml.get_children():
-		if entity is EntityBase:
+		if entity is Entity:
 			entity_store[entity.entity_id] = entity
