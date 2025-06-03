@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=3 uid="uid://bbfnne01anyft"]
+
+[ext_resource type="Script" uid="uid://draikuyulobo6" path="res://Scripts/ECS/entities/entity_body_part.gd" id="1_sc5vy"]
+[ext_resource type="Script" uid="uid://fvge72j23f42" path="res://Scripts/ECS/components/component_body_part.gd" id="2_3efp5"]
+
+[node name="EntityBodyPart" type="Node"]
+script = ExtResource("1_sc5vy")
+component = ExtResource("2_3efp5")

@@ -130,8 +130,8 @@ func get_volume(shape_type: int, args: Dictionary) -> float:
 			if args.has("r"):
 				return (4.0 / 3.0) * PI * pow(args["r"], 3)
 		ShapeTypes.ELLIPSOID:
-			if args.has_all(["rx", "ry", "rz"]):
-				return (4.0 / 3.0) * PI * args["rx"] * args["ry"] * args["rz"]
+			if args.has_all(["rx", "ry", "h"]):
+				return (4.0 / 3.0) * PI * args["rx"] * args["ry"] * args["h"]
 		ShapeTypes.CYLINDER:
 			if args.has_all(["r", "h"]):
 				return PI * pow(args["r"], 2) * args["h"]

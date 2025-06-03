@@ -162,6 +162,7 @@ func fill_ground_layers(elevation_matrix):
 			var map_pos = Vector2i(i,j)
 			var pos = elevation_matrix[i][j]
 			var temp_tile = EntityTile.new(map_pos,pos)
+			world_manager.new_entity_id(temp_tile)
 			if( pos < (sea_level*0.75)):
 				tm_layers["ground"].set_cell(Vector2i(i,j), DEAP_WATER_SOURCE_ID, DEAP_WATER_TILE_ATLAS_POS)
 			elif( pos < (shore_line)): 

@@ -1,14 +1,28 @@
-class_name ComponentBodyPart
+# component_body_part.gd
 extends Component
+class_name ComponentBodyPart
 
-const BodyData = preload("uid://rhetoeckohcj")
-	
-var part_type: BodyData.PartType # e.g., "brain", "leg", "torso"
-var is_critical: bool = false # Brain, heart, etc.
-var parent_id : int
-var child_ids : Array[int]
-var my_body : Entity = null
+var part_type: BodyData.PartType
+var parent: EntityBodyPart = null
+var children: Array[EntityBodyPart] = []
+var side: BodyData.PartSide = BodyData.PartSide.ALL
+var face: BodyData.PartFace = BodyData.PartFace.ALL
 
-func _init(_part_type : BodyData.PartType):
-	part_type = _part_type
+func _init(parttype : BodyData.PartType):
 	comp_name = "bodypart"
+	part_type = parttype
+
+func add_child(part: EntityBodyPart):
+	#if _has_loop(part):
+		#push_error("Loop detected: cannot add part as child of itself or its descendant.")
+		#return
+	children.append(part)
+	part.parent = self
+
+func _has_loop(part: EntityBodyPart) -> bool:
+	var current = self
+	while current != null:
+		if current == part:
+			return true
+		current = current.parent
+	return false
