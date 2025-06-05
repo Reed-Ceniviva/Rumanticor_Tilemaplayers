@@ -5,7 +5,8 @@ enum PartType {
 	HEAD, NECK, SPINE, SHOULDER, ARM, ELBOW, HAND, TORSO, COD, HIP, LEG, KNEE, FOOT,
 	TAIL, EYE, NOSE, EAR, TONGUE, WING, FIN, HOOF, PAW, CLAW, TENTACLE, ABMUSCLES,
 	FEETPAD, SKIN, WHISKER, ANTENNA, JACOBSON, LATERALLINE, ELECTRORECEPTOR, FLIPPER,
-	PIT, TYMPANUM, LABIALPALP, BRAIN, HAIR, SUCKER, GENITALS, MOUTH, HORN, SCALES, PELT, COATING
+	PIT, TYMPANUM, LABIALPALP, BRAIN, HAIR, SUCKER, GENITALS, MOUTH, HORN, SCALES, PELT, COATING,
+	BEAK, STOMACH
 } 
 
 var part_shapes := {
@@ -27,7 +28,7 @@ var part_shapes := {
 	PartType.WING : ShapeData.ShapeTypes.ELLIPSOID,
 	PartType.FIN : ShapeData.ShapeTypes.ELLIPSOID,
 	PartType.HOOF : ShapeData.ShapeTypes.CYLINDER,
-	PartType.PAW : ShapeData.ShapeTypes.ELLIPSOID,
+	PartType.PAW : ShapeData.ShapeTypes.CUBOID,
 	PartType.CLAW : ShapeData.ShapeTypes.CONE,
 	PartType.TENTACLE : ShapeData.ShapeTypes.CONE,
 	PartType.FEETPAD : ShapeData.ShapeTypes.ELLIPSOID,
@@ -36,12 +37,14 @@ var part_shapes := {
 	PartType.SUCKER : ShapeData.ShapeTypes.SPHERE,
 	PartType.GENITALS : ShapeData.ShapeTypes.SPHERE,
 	PartType.HORN : ShapeData.ShapeTypes.CONE,
+	PartType.BEAK : ShapeData.ShapeTypes.CONE
 }
 
 enum BodyActions {
-WALK, RUN, JUMP,  CLIMB,  CRAWL, ROLL, SPRINT, LIMP, DRAG, HANDRUN, SLITHER,
+WALK, RUN, JUMP,  CLIMB,  CRAWL, ROLL, SPRINT, LIMP, DRAG, HANDRUN, SLITHER, FLY,
 LOOK, SENSE, HEAR, TASTE, SMELL, FEEL, 
-SWING, AIM, KICK, GRIP, THROW, LOB 
+SWING, AIM, KICK, GRIP, THROW, LOB ,
+SUCK, BLOW, JERK, PECK, EAT, DRINK, SHAKE
 }
 
 enum PartSide {LEFT, CENTER, RIGHT, ALL}
@@ -90,8 +93,11 @@ var part_traits := {
 	PartType.SPINE: {mobile=false, joint=false, limb=false, extremity=false, organ=false, sensory=false, vision=false, touch=false, smell=false, taste=false, field=false, bone=true, coating=false},
 	PartType.SKIN: 	{mobile=false, joint=false, limb=false, extremity=false, organ=false, sensory=true, vision=false, touch=true, smell=false, taste=false, field=false, bone=false, coating=true},
 	PartType.SCALES:{mobile=false, joint=false, limb=false, extremity=false, organ=false, sensory=true, vision=false, touch=true, smell=false, taste=false, field=false, bone=false, coating=true},
-	PartType.PELT: 	{mobile=false, joint=false, limb=false, extremity=false, organ=false, sensory=true, vision=false, touch=true, smell=false, taste=false, field=false, bone=false, coating=true}
+	PartType.PELT: 	{mobile=false, joint=false, limb=false, extremity=false, organ=false, sensory=true, vision=false, touch=true, smell=false, taste=false, field=false, bone=false, coating=true},
+	PartType.STOMACH:{organ=true,coating=false,is_coated=false},
+	PartType.BEAK: {extremity = true, sensory = true, touch = true, bone = true, coating = false, is_coated = false}
 }
+
 
 enum BodyTypes {
 	BIPEDAL, QUADROPED, SECTOPED, OCTOPED
@@ -118,11 +124,11 @@ var valid_connections := {
 		PartType.WHISKER, PartType.ANTENNA, PartType.JACOBSON, PartType.TYMPANUM,
 		PartType.LABIALPALP, PartType.HAIR, PartType.BRAIN,
 		PartType.PIT, PartType.LATERALLINE, PartType.ELECTRORECEPTOR,
-		PartType.NECK, PartType.HORN
+		PartType.NECK, PartType.HORN, PartType.BEAK
 	],
 	PartType.NECK: [PartType.SPINE],
 	PartType.SPINE: [PartType.TORSO],
-	PartType.TORSO: [PartType.HIP, PartType.SHOULDER, PartType.COD, PartType.TAIL, PartType.ABMUSCLES, PartType.WING, PartType.FIN, PartType.FLIPPER],
+	PartType.TORSO: [PartType.HIP, PartType.SHOULDER, PartType.COD, PartType.TAIL, PartType.ABMUSCLES, PartType.WING, PartType.FIN, PartType.FLIPPER, PartType.STOMACH],
 	PartType.SHOULDER: [PartType.ARM],
 	PartType.COD: [PartType.GENITALS],
 	PartType.HIP: [PartType.LEG],

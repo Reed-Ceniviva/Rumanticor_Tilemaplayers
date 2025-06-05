@@ -22,7 +22,11 @@ func get_new_used_volume(container: ComponentContainer) -> float:
 					total += shape_data.get_organized_volume(shape_type, args)
 				_:
 					total += shape_data.get_volume(shape_type, args)  # fallback
-	return total
+	if total < container.current_volume:
+		return total
+	else:
+		print("failed to rearrange the items better")
+		return container.current_volume
 
 
 func get_remaining_volume(container: ComponentContainer) -> float:

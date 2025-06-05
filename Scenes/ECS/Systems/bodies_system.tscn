@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cctdsnb1nc3ct"]
+
+[ext_resource type="Script" uid="uid://dtgx0sr6jgs8v" path="res://Scripts/ECS/systems/system_bodies.gd" id="1_10cj4"]
+
+[node name="BodiesSystem" type="Node"]
+script = ExtResource("1_10cj4")

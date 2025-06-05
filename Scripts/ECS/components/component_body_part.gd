@@ -17,7 +17,6 @@ func add_child(part: EntityBodyPart):
 		#push_error("Loop detected: cannot add part as child of itself or its descendant.")
 		#return
 	children.append(part)
-	part.parent = self
 
 func _has_loop(part: EntityBodyPart) -> bool:
 	var current = self

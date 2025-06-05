@@ -153,3 +153,9 @@ func get_volume(shape_type: int, args: Dictionary) -> float:
 
 func get_packing_efficiency(shape_type: int) -> Vector2:
 	return PACKING_EFFICIENCY.get(shape_type, Vector2(0, 0))
+
+func get_radius_from_circumference(circumference: float) -> float:
+	return circumference / (2 * PI)
+
+func get_diameter_from_circumference(circumference : float) ->float:
+	return get_radius_from_circumference(circumference)*2

@@ -26,7 +26,9 @@ var shape_args: Dictionary
 func _init(type : ShapeData.ShapeTypes):
 	comp_name = "shape"
 	shape_type = type
-	
+
+func set_args(args : Dictionary):
+	shape_args = args
 
 func set_cube_args( a : float):
 	shape_args["a"] = a

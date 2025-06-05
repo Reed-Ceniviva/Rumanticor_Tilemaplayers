@@ -7,11 +7,12 @@ var entity_id_counter = 0
 var entity_store : Dictionary [int, Entity]
 var tick_interval : = 0.2
 var tick_accumulator := 0.0
-
-var BodySystem : SystemBodies
+@onready var body_system : SystemBodies = $Systems/BodiesSystem
+const WORKER = preload("uid://bjhfcpircke4c")
+const ENTITY_BODY = preload("uid://238jfxvsma1w")
 
 func _init():
-	BodySystem = SystemBodies.new(self)
+	pass
 
 func new_entity_id(entity : Entity) -> int:
 	entity.set_world_manager(self)
@@ -29,6 +30,7 @@ func _physics_process(delta):
 
 
 func _tick_process():
+	build_worker()
 	for id in entity_store:
 		if entity_store[id].has_component("position"):
 			#print("has position")
@@ -46,30 +48,10 @@ func _on_layer_manager_ready():
 
 func build_worker():
 	#Create the head
-	var head_comp = ComponentBodyPart.new(BodyData.PartType.HEAD) 
-	var head_part = EntityBodyPart.new(head_comp)
-	new_entity_id(head_part)
-	#create and add the brain
-	var brain_comp = ComponentBodyPart.new(BodyData.PartType.BRAIN)
-	var brain_part = EntityBodyPart.new(brain_comp)
-	new_entity_id(brain_part)
-	head_part.add_child_part(brain_part)
-	#Create and add the eyes
-	var right_eye_comp = ComponentBodyPart.new(BodyData.PartType.EYE)
-	right_eye_comp.side = BodyData.PartSide.RIGHT
-	right_eye_comp.face = BodyData.PartFace.FRONT
-	var right_eye_part = EntityBodyPart.new(right_eye_comp)
-	new_entity_id(right_eye_part)
-	head_part.add_child_part(right_eye_part)
-	var left_eye_comp = ComponentBodyPart.new(BodyData.PartType.EYE)
-	left_eye_comp.side = BodyData.PartSide.LEFT
-	left_eye_comp.face = BodyData.PartFace.FRONT
-	var left_eye_part = EntityBodyPart.new(right_eye_comp)
-	new_entity_id(left_eye_part)
-	head_part.add_child_part(left_eye_part)
-	#create and add the nose
-	var nose_comp = ComponentBodyPart.new(BodyData.PartType.NOSE)
-	nose_comp.face = BodyData.PartFace.FRONT
-	var nose_part = EntityBodyPart.new(nose_comp)
-	new_entity_id(nose_part)
-	head_part.add_child_part(nose_part)
+	var body = body_system.build_base_person_body()
+	var new_worker = WORKER.instantiate()
+	new_worker.body = body
+	new_worker.setup(ComponentPosition.new(Vector2i(1,1)))
+	_layer_manager.find_child("entities").add_child(new_worker)
+	
+	

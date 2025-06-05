@@ -1,11 +1,11 @@
 extends System
 class_name SystemBodies
-var wm = world_manager
+
+@onready var wm = $"../.."
+
 @onready var _ShapeData = ShapeData.new() 
 @onready var _BodyData = BodyData.new()
 
-func _init(_wm : world_manager):
-	wm = _wm
 #func get_total_weight(body: ComponentBody) -> float:
 	#var total := 0.0
 	#for part in body.root_parts:
@@ -37,6 +37,12 @@ func create_part(part_type : BodyData.PartType, parent : EntityBodyPart = null, 
 		parent.add_child_part(part)
 	return part
 
+func set_body_shape_args(body : EntityBody , blueprint : ComponentBlueprint):
+	var parts = body.get_all_parts()
+	for part in parts:
+		if part.has_component("shape"):
+			part.get_component("shape").set_args(blueprint.get_part_shape_args(part.get_type(), body.height))
+
 func create_part_comp(part_type : BodyData.PartType, parent : EntityBodyPart = null, part_side : BodyData.PartSide = BodyData.PartSide.ALL, part_face : BodyData.PartFace = BodyData.PartFace.ALL) -> ComponentBodyPart:
 	var component = ComponentBodyPart.new(part_type)
 	component.parent = parent
@@ -44,7 +50,7 @@ func create_part_comp(part_type : BodyData.PartType, parent : EntityBodyPart = n
 	component.face = part_face
 	return component
 	
-func build_limb(sequence: Array, base_part: ComponentBodyPart, side: BodyData.PartSide) -> void:
+func build_limb(sequence: Array, base_part: EntityBodyPart, side: BodyData.PartSide) -> void:
 	var current_parent = base_part
 	for part_type in sequence:
 		var part = create_part(part_type, current_parent, side)
@@ -134,17 +140,25 @@ func build_symetrical_torso(arms : int=2, legs: int=2, tails: int=0, wings: int 
 	return torso
 
 func connect_head_to_torso(head : EntityBodyPart, torso : EntityBodyPart) -> EntityBody:
-	var body = EntityBody.new()
+	var body = EntityBody.new(null)
+	wm.new_entity_id(body)
 	var neck = create_part(BodyData.PartType.NECK, head)
 	var spine = create_part(BodyData.PartType.SPINE,neck, BodyData.PartSide.CENTER, BodyData.PartFace.BACK)
-	torso.component.parent = spine
+	torso.get_component("bodypart").parent = spine
 	body.root_part = head	
 	return body
 	
 func add_coating(body : EntityBody ,coating_type : BodyData.PartType = BodyData.PartType.SKIN):
 	body.coating = coating_type
+	for part in body.get_all_parts():
+		if _BodyData.part_traits[part.get_type()].has("is_coated"):
+			if _BodyData.part_traits[part.get_type()]["is_coated"] == true:
+				part.coating = coating_type
 
 func build_base_person_body() -> EntityBody:
 	var body = connect_head_to_torso(build_symetrical_head(),build_symetrical_torso())
+	var blueprint = ComponentBlueprint.new()
+	body.height = blueprint.rand_grown_height()
+	set_body_shape_args(body, blueprint)
 	add_coating(body)
 	return body

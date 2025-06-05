@@ -23,12 +23,15 @@ func _init(body : EntityBody):
 				left_eyes += 1
 			elif eye_part.get_side() == BodyData.PartSide.CENTER:
 				center_eyes += 1
+		var total_eyes = left_eyes+right_eyes+center_eyes
+		if total_eyes > 0:
+			#
+			pass
 		if left_eyes > 0 and right_eyes > 0:
 			#stereo vision ~ depth perception ~ better judge of distance
 			#each eye provides vision of distance but having stereo vision enhances the overall ability of depth perception
 			#this increased depth perception is decreased over distance 
 			pass
-	var neck = my_body.root_part.has_child_part(BodyData.PartType.NECK)
 	my_body.update_connection_data()
 	var limb_data = my_BodyData.count_limb_sequences(my_body.connection_data)
 	
