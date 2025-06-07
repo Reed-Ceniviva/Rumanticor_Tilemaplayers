@@ -251,7 +251,7 @@ func KNEEr_from_height(height : float) -> Dictionary[String,float]:
 	
 func FOOT_args_from_height(height : float) -> Dictionary[String,float]:
 	var width = LLEG_args_from_height(height)["r"]*2
-	var tall = height/16
+	var tall = height/8
 	var size = get_boy_shoe_size(height)
 	size -= 3.211
 	var length = size*0.085
@@ -332,13 +332,17 @@ func GENITALSr_from_height(height : float) -> Dictionary[String,float]:
 	
 #mac to height conversion: 0.1 height = 0.03 MAC
 #FARM to height conversion: 0.5 height = 0.17 FARM
-
-#head = 1/8th
-#shoulders & neck = 1/8th
-#upper arms and torso = 1/8th
-#lower arms and cod = 1/8th
-#upper legs =1/8th
-#hands = 3/32nds
+func get_part_height_ratio(part : EntityBodyPart):
+	match part.get_type():
+		BodyData.PartType.HEAD, BodyData.PartType.FOOT, BodyData.PartType.HIP, BodyData.PartType.COD:
+			return 0.125
+		BodyData.PartType.NECK, BodyData.PartType.SHOULDER, BodyData.PartType.LEG, BodyData.PartType.ARM:
+			return 0.125
+		BodyData.PartType.TORSO:
+			return 0.25
+		BodyData.PartType.HAND:
+			return 0.09375
+	
 #knees = 1/8th
 #lower legs = 3/16th
 #feet (~ankles) = 1/16th

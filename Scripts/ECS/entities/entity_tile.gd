@@ -7,6 +7,7 @@ var my_position : ComponentPosition
 func _init(pos : Vector2i, _elevation : float):
 	my_position = ComponentPosition.new(pos)
 	elevation = _elevation
+	#wm.new_entity_id(self)
 	
 func get_elevation():
 	return elevation

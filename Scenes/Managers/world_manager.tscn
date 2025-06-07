@@ -1,10 +1,11 @@
-[gd_scene load_steps=6 format=3 uid="uid://do4f0nc28mrv8"]
+[gd_scene load_steps=7 format=3 uid="uid://do4f0nc28mrv8"]
 
 [ext_resource type="Script" uid="uid://baaacockspog7" path="res://Scenes/Managers/world_manager.gd" id="1_d40b4"]
 [ext_resource type="PackedScene" uid="uid://buaonr7qjcjv1" path="res://Scenes/layer_manager.tscn" id="1_nvnn5"]
 [ext_resource type="PackedScene" uid="uid://ll1gtb5o4xf3" path="res://Scenes/camera_controller.tscn" id="2_d40b4"]
 [ext_resource type="PackedScene" uid="uid://cl0aw6gxx0eqn" path="res://Scenes/ECS/Systems/SystemContainers.tscn" id="4_d4a2d"]
 [ext_resource type="PackedScene" uid="uid://cctdsnb1nc3ct" path="res://Scenes/ECS/Systems/bodies_system.tscn" id="5_0aw3v"]
+[ext_resource type="PackedScene" uid="uid://bbmyh1pm37lnt" path="res://Scenes/ECS/Systems/growth_system.tscn" id="6_1ppl2"]
 
 [node name="World Manager" type="Node"]
 script = ExtResource("1_d40b4")
@@ -18,6 +19,8 @@ script = ExtResource("1_d40b4")
 [node name="Containers System" parent="Systems" instance=ExtResource("4_d4a2d")]
 
 [node name="BodiesSystem" parent="Systems" instance=ExtResource("5_0aw3v")]
+
+[node name="GrowthSystem" parent="Systems" instance=ExtResource("6_1ppl2")]
 
 [connection signal="ready" from="Layer_Manager" to="." method="_on_layer_manager_ready"]
 [connection signal="world_created" from="Layer_Manager" to="." method="_on_layer_manager_world_created"]

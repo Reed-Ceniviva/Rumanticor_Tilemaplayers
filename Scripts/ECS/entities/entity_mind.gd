@@ -34,4 +34,3 @@ func _init(body : EntityBody):
 			pass
 	my_body.update_connection_data()
 	var limb_data = my_BodyData.count_limb_sequences(my_body.connection_data)
-	

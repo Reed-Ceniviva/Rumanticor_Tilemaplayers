@@ -2,12 +2,23 @@
 extends Node
 class_name Entity
 
-var wm : world_manager
+@onready var wm : world_manager = $"../../.."
 var entity_id : int = 0
 # Components stored using comp_name as key
 var components: Dictionary = {}
+var idd = false
 
+func _init():
+	pass
+	#wm.new_entity_id(self)
 # Add a component
+
+func _process(delta):
+	if wm and !idd:
+		wm.new_entity_id(self)
+		idd = true 
+	
+
 func add_component(component: Component) -> void:
 	var name: String = component.get_comp_name()
 	if components.has(name):

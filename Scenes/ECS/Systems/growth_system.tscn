@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://bbmyh1pm37lnt"]
+
+[ext_resource type="Script" uid="uid://ofdf38darmp0" path="res://Scripts/ECS/systems/system_growth.gd" id="1_s216q"]
+
+[node name="GrowthSystem" type="Node"]
+script = ExtResource("1_s216q")

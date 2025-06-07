@@ -151,6 +151,49 @@ func get_volume(shape_type: int, args: Dictionary) -> float:
 	push_warning("Insufficient parameters for volume calculation of shape type %s" % str(shape_type))
 	return 0.0
 
+func expand_xy_dimensions(shape_component: ComponentShape, amount: float) -> Dictionary:
+	var shape_type = shape_component.shape_type
+	var args = shape_component.shape_args
+	
+	match shape_type:
+		ShapeTypes.CUBE:
+			args["a"] = args.get("a", 0.0) + amount
+		ShapeTypes.CUBOID:
+			args["l"] = args.get("l", 0.0) + amount
+			args["w"] = args.get("w", 0.0) + amount
+		ShapeTypes.SPHERE, ShapeTypes.CYLINDER, ShapeTypes.CONE, ShapeTypes.CAPSULE:
+			args["r"] = args.get("r", 0.0) + amount
+		ShapeTypes.ELLIPSOID:
+			args["rx"] = args.get("rx", 0.0) + amount
+			args["ry"] = args.get("ry", 0.0) + amount
+		ShapeTypes.TORUS:
+			args["R"] = args.get("R", 0.0) + amount
+			args["r"] = args.get("r", 0.0) + amount
+		ShapeTypes.PYRAMID:
+			args["x"] = args.get("x", 0.0) + amount
+			args["y"] = args.get("y", 0.0) + amount
+	return args
+
+func expand_z_dimension(shape_component: ComponentShape, amount: float) -> Dictionary:
+	var shape_type = shape_component.shape_type
+	var args = shape_component.shape_args
+	
+	match shape_type:
+		ShapeTypes.CUBE:
+			args["a"] = args.get("a", 0.0) + amount
+		ShapeTypes.CUBOID:
+			args["h"] = args.get("h", 0.0) + amount
+		ShapeTypes.SPHERE:
+			args["r"] = args.get("r", 0.0) + amount
+		ShapeTypes.ELLIPSOID:
+			args["h"] = args.get("h", 0.0) + amount
+		ShapeTypes.CYLINDER, ShapeTypes.CONE, ShapeTypes.CAPSULE, ShapeTypes.PYRAMID:
+			args["h"] = args.get("h", 0.0) + amount
+		ShapeTypes.TORUS:
+			args["r"] = args.get("r", 0.0) + amount  # only affects minor radius
+	return args
+
+
 func get_packing_efficiency(shape_type: int) -> Vector2:
 	return PACKING_EFFICIENCY.get(shape_type, Vector2(0, 0))
 

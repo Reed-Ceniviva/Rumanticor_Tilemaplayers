@@ -140,7 +140,7 @@ func build_symetrical_torso(arms : int=2, legs: int=2, tails: int=0, wings: int 
 	return torso
 
 func connect_head_to_torso(head : EntityBodyPart, torso : EntityBodyPart) -> EntityBody:
-	var body = EntityBody.new(null)
+	var body = EntityBody.new()
 	wm.new_entity_id(body)
 	var neck = create_part(BodyData.PartType.NECK, head)
 	var spine = create_part(BodyData.PartType.SPINE,neck, BodyData.PartSide.CENTER, BodyData.PartFace.BACK)

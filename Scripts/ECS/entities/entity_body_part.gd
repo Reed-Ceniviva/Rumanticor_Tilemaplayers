@@ -23,7 +23,6 @@ func _init(part_comp : ComponentBodyPart):
 		var cont_comp = ComponentContainer.new(0.004)
 		cont_comp.mode = null # treats everything eaten as a liquid 
 		add_component(cont_comp)
-		
 
 func get_type() -> BodyData.PartType:
 	return get_component("bodypart").part_type

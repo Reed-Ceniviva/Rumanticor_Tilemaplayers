@@ -8,17 +8,9 @@ const BodyData = preload("uid://rhetoeckohcj")
 @export var coating : BodyData.PartType
 @export var connection_data: Dictionary[int,Array]
 var _BodyData
-var Blueprint 
+var Blueprint : ComponentBlueprint 
 var height
-
-func _init(body :  EntityBody):
-	if body:
-		root_part = body.root_part
-		coating = body.coating
-		connection_data = body.connection_data
-		_BodyData = body._BodyData
-		Blueprint = body.Blueprint
-		height = body.height
+var shaped = false
 
 func _ready():
 	_BodyData = BodyData.new()
@@ -28,7 +20,8 @@ func _ready():
 	_validate_connections()
 
 func _validate_connections():
-	_validate_recursive(root_part)
+	if root_part:
+		_validate_recursive(root_part)
 
 func _validate_recursive(part: EntityBodyPart):
 	if part.parent:
@@ -44,8 +37,9 @@ func get_all_parts() -> Array[EntityBodyPart]:
 
 func _collect_parts_recursive(part: EntityBodyPart, parts: Array):
 	parts.append(part)
-	for child in part.get_child_parts():
-		_collect_parts_recursive(child, parts)
+	if part:
+		for child in part.get_child_parts():
+			_collect_parts_recursive(child, parts)
 
 func update_connection_data():
 	connection_data.clear()
@@ -61,4 +55,4 @@ func _fill_connection_data_recursive(part: EntityBodyPart):
 		_fill_connection_data_recursive(child)
 
 func get_body_height():
-	pass
+	return height

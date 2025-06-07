@@ -89,6 +89,7 @@ var layer_quadtrees : Dictionary[String, quad_tree_node]
 
 var elevation_matrix = [] : get = get_elevation_matrix
 var tile_dict : Dictionary[Vector2i, EntityTile]
+var wm = get_parent()
 
 
 const ENTITY_TREE = preload("uid://dduuoc8q8lt78")
