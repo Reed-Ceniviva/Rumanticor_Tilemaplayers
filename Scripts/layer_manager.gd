@@ -23,28 +23,14 @@ const MOUNTAIN_TILE_ATLAS_POS = Vector2i(5,0)
 const SNOW_SOURCE_ID = 4
 const SNOW_TILE_ATLAS_POS = Vector2i(4,0)
 
-const LEFT_WATER_CLIFF_SOURCE_ID = 0
+const WATER_CLIFF_SOURCE_ID = 0
 const LEFT_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(0,4)
-
-const TOP_WATER_CLIFF_SOURCE_ID = 0
 const TOP_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(1,3)
-
-const RIGHT_WATER_CLIFF_SOURCE_ID = 0
 const RIGHT_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(2,4)
-
-const BOT_WATER_CLIFF_SOURCE_ID = 0
 const BOT_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(1,5)
-
-const BOTL_WATER_CLIFF_SOURCE_ID = 0
 const BOTL_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(0,5)
-
-const BOTR_WATER_CLIFF_SOURCE_ID = 0
 const BOTR_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(2,5)
-
-const TOPL_WATER_CLIFF_SOURCE_ID = 0
 const TOPL_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(0,3)
-
-const TOPR_WATER_CLIFF_SOURCE_ID = 0
 const TOPR_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(2,3)
 
 const ROADS_SOURCE_ID = 0
@@ -68,7 +54,7 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 @export_subgroup("Elevation Markers")
 @export var elevation_range = 65000 #~ mirinara trench to everest peak in feet
 @export var sea_level = 36000
-@export var beach_offset : int = 100
+@export var beach_offset : int = 50
 @export var treeline_offset = 13000
 @export var snowline_offset = 2500
 @export_subgroup("Noise Variables")
@@ -85,7 +71,6 @@ var offset = Vector2i(0,0)
 
 var tm_layers : Dictionary[String, TileMapLayer]
 var layer_quadtrees : Dictionary[String, quad_tree_node]
-var building_data = manager_cells.new()
 
 var elevation_matrix = [] : get = get_elevation_matrix
 
@@ -112,21 +97,6 @@ func _process(delta):
 func get_elevation_matrix():
 	return elevation_matrix
 
-func tree_chopped(tree_loc : Vector2i):
-	#print("tree chopped: adjusting tilemap and quadtree")
-	tm_layers["trees"].set_cell(tree_loc,-1,Vector2i(-1,-1))
-	layer_quadtrees["trees"].remove(tree_loc)
-	tm_layers["debris"].set_cell(tree_loc,0,Vector2i(0,0))
-	layer_quadtrees["debris"].insert(tree_loc)
-
-func hut_built(hut_loc : Vector2i):
-	#print("hut built: adjusting tilemap and quadtree")
-	tm_layers["buildings"].set_cell(hut_loc, 0, Vector2i(1,0))
-	building_data.set_cell_data(hut_loc, {"status" : "built"})
-	var building_inventory = component_inventory.new().setup()
-	building_data.set_cell_data(hut_loc, {"component_inventory" : building_inventory})
-	layer_quadtrees["buildings"].insert(hut_loc)
-	#layer_quadtrees["buildings"] = build_tml_quadtree(tm_layers["buildings"])
 	
 func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2) -> Array:
 	print("generating perlin matrix for elevations")
@@ -149,41 +119,65 @@ func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2) -> Ar
 
 func fill_water_cliffs():
 	print("adding cliffs")
+	var ground = tm_layers["ground"]
+	var water = tm_layers["water"]
+	var cliffs = tm_layers["cliffs"]
 	for i in range(world_x):
 		for j in range(world_y):
 			var pos = Vector2i(i,j)
 			var ground_surrounding = tm_layers["ground"].get_surrounding_cells(pos)
+			var ground_diagnals = []
+			ground_diagnals.append(ground.get_neighbor_cell(pos, TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER )) # top left
+			ground_diagnals.append(ground.get_neighbor_cell(pos, TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER )) # top left
+			ground_diagnals.append(ground.get_neighbor_cell(pos, TileSet.CELL_NEIGHBOR_BOTTOM_LEFT_CORNER )) # top left
+			ground_diagnals.append(ground.get_neighbor_cell(pos, TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER )) # top left
+			var water_coords = water.get_cell_atlas_coords(pos)
 			var empty_cell = Vector2i(-1,-1)
-			if tm_layers["ground"].get_cell_atlas_coords(ground_surrounding[2]) != empty_cell and tm_layers["water"].get_cell_atlas_coords(pos) != empty_cell: #ground to the left
-				tm_layers["cliffs"].set_cell(pos,RIGHT_WATER_CLIFF_SOURCE_ID, RIGHT_WATER_CLIFF_TILE_ATLAS_POS)
-			elif tm_layers["ground"].get_cell_atlas_coords(ground_surrounding[0]) != empty_cell and tm_layers["water"].get_cell_atlas_coords(pos) != empty_cell: #ground to the right
-				tm_layers["cliffs"].set_cell(pos,LEFT_WATER_CLIFF_SOURCE_ID, LEFT_WATER_CLIFF_TILE_ATLAS_POS)
-			elif tm_layers["ground"].get_cell_atlas_coords(ground_surrounding[1]) != empty_cell and tm_layers["water"].get_cell_atlas_coords(pos) != empty_cell: #ground bellow
-				tm_layers["cliffs"].set_cell(pos,TOP_WATER_CLIFF_SOURCE_ID, TOP_WATER_CLIFF_TILE_ATLAS_POS)
-			elif tm_layers["ground"].get_cell_atlas_coords(ground_surrounding[3]) != empty_cell and tm_layers["water"].get_cell_atlas_coords(pos) != empty_cell: #ground above
-				tm_layers["cliffs"].set_cell(pos,BOT_WATER_CLIFF_SOURCE_ID, BOT_WATER_CLIFF_TILE_ATLAS_POS)
-	
+			if water_coords != empty_cell:
+				if ground.get_cell_atlas_coords(ground_surrounding[2]) != empty_cell: #ground to the left
+					cliffs.set_cell(pos,WATER_CLIFF_SOURCE_ID, RIGHT_WATER_CLIFF_TILE_ATLAS_POS)
+				elif ground.get_cell_atlas_coords(ground_surrounding[0]) != empty_cell: #ground to the right
+					cliffs.set_cell(pos,WATER_CLIFF_SOURCE_ID, LEFT_WATER_CLIFF_TILE_ATLAS_POS)
+				elif ground.get_cell_atlas_coords(ground_surrounding[1]) != empty_cell: #ground bellow
+					cliffs.set_cell(pos,WATER_CLIFF_SOURCE_ID, TOP_WATER_CLIFF_TILE_ATLAS_POS)
+				elif ground.get_cell_atlas_coords(ground_surrounding[3]) != empty_cell: #ground above
+					cliffs.set_cell(pos,WATER_CLIFF_SOURCE_ID, BOT_WATER_CLIFF_TILE_ATLAS_POS)
+				elif ground.get_cell_atlas_coords(ground_diagnals[3]) != empty_cell: #ground top left
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, TOPL_WATER_CLIFF_TILE_ATLAS_POS)
+				elif ground.get_cell_atlas_coords(ground_diagnals[2]) != empty_cell: #ground top Right
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, TOPR_WATER_CLIFF_TILE_ATLAS_POS)
+				elif ground.get_cell_atlas_coords(ground_diagnals[1]) != empty_cell: #top right
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, BOTL_WATER_CLIFF_TILE_ATLAS_POS)
+				elif ground.get_cell_atlas_coords(ground_diagnals[0]) != empty_cell: #top left
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, BOTR_WATER_CLIFF_TILE_ATLAS_POS)
+			
+			
 func fill_ground_layers(elevation_matrix):
 	print("filling ground tilemaplayers")
+	var ground = tm_layers["ground"]
+	var water = tm_layers["water"]
+	var shore = tm_layers["shore"]
+	var trees = tm_layers["trees"]
+	
 	for i in range(world_x):
 		for j in range(world_y):
 			var pos = elevation_matrix[i][j]
 			if( pos < (sea_level*0.75)):
-				tm_layers["water"].set_cell(Vector2i(i,j), DEAP_WATER_SOURCE_ID, DEAP_WATER_TILE_ATLAS_POS)
+				water.set_cell(Vector2i(i,j), DEAP_WATER_SOURCE_ID, DEAP_WATER_TILE_ATLAS_POS)
 			elif( pos < (shore_line)):
-				tm_layers["water"].set_cell(Vector2i(i,j),WATER_SOURCE_ID,WATER_TILE_ATLAS_POS)#set tile with the water sprite
+				water.set_cell(Vector2i(i,j),WATER_SOURCE_ID,WATER_TILE_ATLAS_POS)#set tile with the water sprite
 			elif(pos < beach_line):
-				tm_layers["shore"].set_cell(Vector2i(i,j),SHORE_SOURCE_ID,SHORE_TILE_ATLAS_POS)#set tile with the beach sprite
+				shore.set_cell(Vector2i(i,j),SHORE_SOURCE_ID,SHORE_TILE_ATLAS_POS)#set tile with the beach sprite
 			elif(pos < beach_line + beach_offset):
-				tm_layers["shore"].set_cell(Vector2i(i,j),BEACH_SOURCE_ID,BEACH_TILE_ATLAS_POS)#set tile with the beach sprite
+				shore.set_cell(Vector2i(i,j),BEACH_SOURCE_ID,BEACH_TILE_ATLAS_POS)#set tile with the beach sprite
 			elif(pos < tree_line):
-				tm_layers["ground"].set_cell(Vector2i(i,j),GRASS_SOURCE_ID,GRASS_TILE_ATLAS_POS)#set tile with the grass sprite
+				ground.set_cell(Vector2i(i,j),GRASS_SOURCE_ID,GRASS_TILE_ATLAS_POS)#set tile with the grass sprite
 				if(randi()%tree_density <= 1): #this works out to 2/tree_density but i like the results
-					tm_layers["trees"].set_cell(Vector2i(i,j), 0, Vector2i(randi()%3 + 1,0))
+					trees.set_cell(Vector2i(i,j), 0, Vector2i(randi()%3 + 1,0))
 			elif(pos < snow_line):
-				tm_layers["ground"].set_cell(Vector2i(i,j),MOUNTAIN_SOURCE_ID,MOUNTAIN_TILE_ATLAS_POS)#set tile with the mountain sprite
+				ground.set_cell(Vector2i(i,j),MOUNTAIN_SOURCE_ID,MOUNTAIN_TILE_ATLAS_POS)#set tile with the mountain sprite
 			elif(pos > snow_line):
-				tm_layers["ground"].set_cell(Vector2i(i,j),SNOW_SOURCE_ID,SNOW_TILE_ATLAS_POS)#set tile with the snow sprite
+				ground.set_cell(Vector2i(i,j),SNOW_SOURCE_ID,SNOW_TILE_ATLAS_POS)#set tile with the snow sprite
 			else:
 				print()
 
