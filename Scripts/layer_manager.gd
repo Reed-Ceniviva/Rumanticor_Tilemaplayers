@@ -17,10 +17,10 @@ const SHORE_TILE_ATLAS_POS = Vector2i(1,0)
 const BEACH_SOURCE_ID = 0
 const BEACH_TILE_ATLAS_POS = Vector2i(0,0)
 
-const MOUNTAIN_SOURCE_ID = 4
+const MOUNTAIN_SOURCE_ID = 0
 const MOUNTAIN_TILE_ATLAS_POS = Vector2i(5,0)
 
-const SNOW_SOURCE_ID = 4
+const SNOW_SOURCE_ID = 0
 const SNOW_TILE_ATLAS_POS = Vector2i(4,0)
 
 const WATER_CLIFF_SOURCE_ID = 0
@@ -71,7 +71,7 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 ## fractal steps of granularity > 1
 @export var lacunarity = 2.35 #steps of granularity
 ## how much the granularity mixes > 0
-@export var persistance = 0.55 #granularity mix rate
+@export var persistance = 0.50 #granularity mix rate
 ## number of steps of granularity 
 @export var octaves = 5.0 # number of steps of granularity 
 ## custom offset input
@@ -105,7 +105,8 @@ func _ready():
 					tm_layers[sub_child.name.to_lower()] = sub_child
 	fill_ground_layers(elevation_matrix)
 	fill_water_cliffs()
-	round_cliffs()
+	round_water_cliffs()
+	fill_mountain_cliffs()
 	build_traversable_tilemap()
 	for layer in tm_layers:
 		layer_quadtrees[layer] = build_tml_quadtree(tm_layers[layer])
@@ -115,9 +116,16 @@ func _ready():
 func _process(delta):
 	pass
 
+## Return the elevation matrix used for world gen
+##
+##Returns the 2D Array used to store the elevation values of the tile locations of the generated map
 func get_elevation_matrix():
 	return elevation_matrix
 
+## creates the map dictionary
+##
+## creates the map dictionary and fills vector2i keys with the tilemaplayers that have non empty cells at said Vector2i location
+## returns void
 func make_map():
 	var layer_data : Dictionary[String,Array]
 	var new_map : Dictionary[Vector2i,Array]
@@ -129,9 +137,11 @@ func make_map():
 			else:
 				new_map.set(pos, [layer])
 
+## returns the map dictionary generated after world gen
 func get_map() -> Dictionary[Vector2i,Node]:
 	return map
-	
+
+## generate the elevation matrix based on perlin noise
 func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2) -> Array:
 	print("generating perlin matrix for elevations")
 	var matrix = []
@@ -154,12 +164,14 @@ func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2) -> Ar
 	matrix_created.emit()
 	return matrix
 
+## fill cliff layer cells with appropriete tile information based on ground and water layer information
 func fill_water_cliffs():
 	print("adding cliffs")
 	var ground = tm_layers["ground"]
 	var water = tm_layers["water"]
 	var cliffs = tm_layers["cliffs"]
 	var shore = tm_layers["shore"]
+	var cliff_loc = []
 	for i in range(world_x):
 		for j in range(world_y):
 			var pos = Vector2i(i,j)
@@ -190,7 +202,6 @@ func fill_water_cliffs():
 					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, BOTL_WATER_CLIFF_TILE_ATLAS_POS)
 				elif ground.get_cell_atlas_coords(ground_diagnals[0]) != empty_cell: #top left
 					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, BOTR_WATER_CLIFF_TILE_ATLAS_POS)
-				
 			var shore_coords = shore.get_cell_atlas_coords(pos)
 			if shore_coords != empty_cell:
 				if cliffs.get_cell_atlas_coords(pos+Vector2i.LEFT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.DOWN) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.LEFT + Vector2i.DOWN) != empty_cell:
@@ -201,10 +212,9 @@ func fill_water_cliffs():
 					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, TOPL_CLIFF_CORNER_TILE_ATLAS_POS)
 				if cliffs.get_cell_atlas_coords(pos+Vector2i.RIGHT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.UP) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.RIGHT + Vector2i.UP) != empty_cell:
 					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, TOPR_CLIFF_CORNER_TILE_ATLAS_POS) 
-			
-			
 
-func round_cliffs():
+## fills cliff layer cells with appropriette corner tile information based on cliff and water layer information
+func round_water_cliffs():
 	var ground = tm_layers["ground"]
 	var water = tm_layers["water"]
 	var cliffs = tm_layers["cliffs"]
@@ -223,37 +233,64 @@ func round_cliffs():
 					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, TOPL_CLIFF_CORNER_TILE_ATLAS_POS)
 				if cliffs.get_cell_atlas_coords(pos+Vector2i.RIGHT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.UP) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.RIGHT + Vector2i.UP) != empty_cell:
 					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, TOPR_CLIFF_CORNER_TILE_ATLAS_POS) 
+	cliffs.set_cells_terrain_connect(cliffs.get_used_cells(),0,0)
 
+## fill cliff layer cells with appropriete tile information based on ground and mountain layer information
+func fill_mountain_cliffs():
+	var mountains = tm_layers["mountains"]
+	var ground = tm_layers["ground"]
+	var ground_cells = ground.get_used_cells() 
+	var mountain_cliff_pos = []
+	for tile_pos in mountains.get_used_cells():
+		mountain_cliff_pos.append(tile_pos)
+		var neighboring_cells = ground.get_surrounding_cells(tile_pos)
+		neighboring_cells.append(tile_pos+Vector2i.UP+Vector2i.LEFT)
+		neighboring_cells.append(tile_pos+Vector2i.UP+Vector2i.RIGHT)
+		neighboring_cells.append(tile_pos+Vector2i.DOWN+Vector2i.LEFT)
+		neighboring_cells.append(tile_pos+Vector2i.DOWN+Vector2i.RIGHT)
+		for cell in neighboring_cells:
+			if ground_cells.has(cell):
+				for neighbor_cell in neighboring_cells:
+					if !ground_cells.has(neighbor_cell):
+						if !mountain_cliff_pos.has(neighbor_cell):
+							mountain_cliff_pos.append(neighbor_cell)
+				continue
+	
+	tm_layers["cliffs"].set_cells_terrain_connect(mountain_cliff_pos,0,1,false)
 
+## fill water,ground,mountain,tree, and shore layer cells with appropriete tile information based on the elevation matrix
 func fill_ground_layers(elevation_matrix):
 	print("filling ground tilemaplayers")
 	var ground = tm_layers["ground"]
 	var water = tm_layers["water"]
 	var shore = tm_layers["shore"]
 	var trees = tm_layers["trees"]
-	
+	var mountains = tm_layers["mountains"]
+	var mountain_cliff_pos = []
 	for i in range(world_x):
 		for j in range(world_y):
 			var pos = elevation_matrix[i][j]
+			var map_pos = Vector2i(i,j)
 			if( pos < (sea_level*0.75)):
-				water.set_cell(Vector2i(i,j), DEAP_WATER_SOURCE_ID, DEAP_WATER_TILE_ATLAS_POS)
+				water.set_cell(map_pos, DEAP_WATER_SOURCE_ID, DEAP_WATER_TILE_ATLAS_POS)
 			elif( pos < (shore_line)):
-				water.set_cell(Vector2i(i,j),WATER_SOURCE_ID,WATER_TILE_ATLAS_POS)#set tile with the water sprite
+				water.set_cell(map_pos,WATER_SOURCE_ID,WATER_TILE_ATLAS_POS)#set tile with the water sprite
 			elif(pos < beach_line):
-				shore.set_cell(Vector2i(i,j),SHORE_SOURCE_ID,SHORE_TILE_ATLAS_POS)#set tile with the beach sprite
+				shore.set_cell(map_pos,SHORE_SOURCE_ID,SHORE_TILE_ATLAS_POS)#set tile with the beach sprite
 			elif(pos < beach_line + beach_offset):
-				shore.set_cell(Vector2i(i,j),BEACH_SOURCE_ID,BEACH_TILE_ATLAS_POS)#set tile with the beach sprite
+				shore.set_cell(map_pos,BEACH_SOURCE_ID,BEACH_TILE_ATLAS_POS)#set tile with the beach sprite
 			elif(pos < tree_line):
-				ground.set_cell(Vector2i(i,j),GRASS_SOURCE_ID,GRASS_TILE_ATLAS_POS)#set tile with the grass sprite
+				ground.set_cell(map_pos,GRASS_SOURCE_ID,GRASS_TILE_ATLAS_POS)#set tile with the grass sprite
 				if(randi()%tree_density < 1): #this works out to 2/tree_density but i like the results
-					trees.set_cell(Vector2i(i,j), 0, Vector2i(randi()%3 + 1,0))
+					trees.set_cell(map_pos, 0, Vector2i(randi()%3 + 1,0))
 			elif(pos < snow_line):
-				ground.set_cell(Vector2i(i,j),MOUNTAIN_SOURCE_ID,MOUNTAIN_TILE_ATLAS_POS)#set tile with the mountain sprite
+				mountains.set_cell(map_pos,MOUNTAIN_SOURCE_ID,MOUNTAIN_TILE_ATLAS_POS)#set tile with the mountain sprite
 			elif(pos > snow_line):
-				ground.set_cell(Vector2i(i,j),SNOW_SOURCE_ID,SNOW_TILE_ATLAS_POS)#set tile with the snow sprite
+				mountains.set_cell(map_pos,SNOW_SOURCE_ID,SNOW_TILE_ATLAS_POS)#set tile with the snow sprite
 			else:
 				print()
 
+## custom built WCF because i didnt know autotiling was a thing
 func build_road(road_location : Vector2i):
 	if layer_quadtrees["roads"].has(road_location):
 		print("road already exists")
@@ -263,6 +300,7 @@ func build_road(road_location : Vector2i):
 		layer_quadtrees["roads"].insert(road_location)
 		update_road(road_location)
 
+## helper function for build road
 func update_road(road_location : Vector2i):
 	var adjacent_roads = get_non_empty_cells_in_radius("roads",road_location,1)
 	var left = road_location + Vector2i.LEFT
@@ -297,7 +335,7 @@ func update_road(road_location : Vector2i):
 	else:
 		pass
 
-#builds a quadtreenode based on a tilemaplayer
+##builds a quadtreenode based on a tilemaplayer
 func build_tml_quadtree(reference: TileMapLayer) -> quad_tree_node:
 	print("building quadtree based on a tilemaplayer") 
 	var used_cells = reference.get_used_cells()
@@ -319,12 +357,22 @@ func build_tml_quadtree(reference: TileMapLayer) -> quad_tree_node:
 		target_qt.insert(cell)
 	return target_qt
 
+## queries for an existing cell in a quadtreenode in the radius of center
+##
+## Arg 0 : "quad_tree" quad_tree_node - quad_tree_node to querie
+## Arg 1 : "center" Vector2i - position of entity
+## Arg 2 : "radius" int - distance to querie
 func get_non_empty_cells_in_radius_quadtree(quad_tree: quad_tree_node, center: Vector2i, radius: int) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
 	if quad_tree != null:
 		quad_tree.query_circle(center, radius, result)
 	return result
 
+## queries for an existing cell in a layer in the radius of center
+##
+## Arg 0 : "layer_name" String - the name of the layer to querie
+## Arg 1 : "center" Vector2i - position of entity
+## Arg 2 : "radius" int - distance to querie
 func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radius: int) -> Array[Vector2i]:
 	var result: Array[Vector2i] = []
 	var quad_tree = layer_quadtrees[layer_name]
@@ -334,6 +382,10 @@ func get_non_empty_cells_in_radius(layer_name : String , center : Vector2i, radi
 		print("quad tree is null returning empty array")
 	return result
 
+## combins tilemaplayers and returns the resulting tilmaplayer
+##
+## Arg 0 : "traversable_layers" Array[String] - the names of layers that are traversable by the entity
+## Arg 1 : "obstical layers" Array[String] - the names of the layers that are obstacals for the entity to traverse
 func build_traversable_tilemap(traversable_layers: Array = ["ground", "shore"], obstical_layers: Array = []) -> TileMapLayer:
 	print("building traversable tilemap")
 
