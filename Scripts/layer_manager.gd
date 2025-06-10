@@ -32,6 +32,10 @@ const BOTL_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(0,5)
 const BOTR_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(2,5)
 const TOPL_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(0,3)
 const TOPR_WATER_CLIFF_TILE_ATLAS_POS = Vector2i(2,3)
+const BOTL_CLIFF_CORNER_TILE_ATLAS_POS= Vector2i(3,4)
+const BOTR_CLIFF_CORNER_TILE_ATLAS_POS= Vector2i(4,4)
+const TOPL_CLIFF_CORNER_TILE_ATLAS_POS= Vector2i(3,3)
+const TOPR_CLIFF_CORNER_TILE_ATLAS_POS= Vector2i(4,3)
 
 const ROADS_SOURCE_ID = 0
 const ROADS_VERTICAL_ATLAS_POS = Vector2i(0,0)
@@ -52,25 +56,39 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 @export var world_x = 640
 @export var world_y = 640
 @export_subgroup("Elevation Markers")
-@export var elevation_range = 65000 #~ mirinara trench to everest peak in feet
-@export var sea_level = 36000
-@export var beach_offset : int = 50
-@export var treeline_offset = 13000
-@export var snowline_offset = 2500
+##total range of elevation in meters
+@export var elevation_range = 20000 #~ mirinara trench to everest peak in feet
+##ocean depth to sea level in meters
+@export var sea_level = 11000
+##distance between the start of the beach and the start of the ocean in meters
+@export var beach_offset : int = 20
+##elevation distance between sea level and the tree line in meters
+@export var treeline_offset = 4000
+## elevation distance between the tree line and the snow line
+@export var snowline_offset = 1000
 @export_subgroup("Noise Variables")
-@export var elevation_varience = 0.5 #controls the amount of varience in elevation in the world
+@export var scale = 0.5 #controls the amount of varience in elevation in the world
+## fractal steps of granularity > 1
+@export var lacunarity = 2.35 #steps of granularity
+## how much the granularity mixes > 0
+@export var persistance = 0.55 #granularity mix rate
+## number of steps of granularity 
+@export var octaves = 5.0 # number of steps of granularity 
+## custom offset input
+@export var offset = Vector2i(0,0)
 @export_subgroup("Feature Variance")
-@export var tree_density = 200#2 in x grass tiles have trees
+@export var tree_density = 100#2 in x grass tiles have trees
  
 #variables derived from world parameters
 var shore_line = sea_level - beach_offset
 var beach_line = sea_level + beach_offset
 var tree_line = sea_level + treeline_offset
 var snow_line = tree_line + snowline_offset
-var offset = Vector2i(0,0)
+
 
 var tm_layers : Dictionary[String, TileMapLayer]
 var layer_quadtrees : Dictionary[String, quad_tree_node]
+var map : Dictionary[Vector2i,Node]
 
 var elevation_matrix = [] : get = get_elevation_matrix
 
@@ -78,7 +96,7 @@ signal matrix_created
 signal world_created
 
 func _ready():
-	elevation_matrix = generate_perlin_matrix(world_x, world_y, elevation_varience, offset)
+	elevation_matrix = generate_perlin_matrix(world_x, world_y, scale, offset)
 	for child in get_children():
 		if child is TileMapLayer:
 			tm_layers[child.name.to_lower()] = child
@@ -87,16 +105,32 @@ func _ready():
 					tm_layers[sub_child.name.to_lower()] = sub_child
 	fill_ground_layers(elevation_matrix)
 	fill_water_cliffs()
+	round_cliffs()
+	build_traversable_tilemap()
 	for layer in tm_layers:
 		layer_quadtrees[layer] = build_tml_quadtree(tm_layers[layer])
+	make_map()
 	world_created.emit()
-	
+
 func _process(delta):
 	pass
 
 func get_elevation_matrix():
 	return elevation_matrix
 
+func make_map():
+	var layer_data : Dictionary[String,Array]
+	var new_map : Dictionary[Vector2i,Array]
+	for layer in tm_layers:
+		var layer_pos = tm_layers[layer].get_used_cells()
+		for pos in layer_pos:
+			if new_map.has(pos):
+				new_map[pos].append(layer)
+			else:
+				new_map.set(pos, [layer])
+
+func get_map() -> Dictionary[Vector2i,Node]:
+	return map
 	
 func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2) -> Array:
 	print("generating perlin matrix for elevations")
@@ -104,6 +138,9 @@ func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2) -> Ar
 	var noise = FastNoiseLite.new()
 	noise.seed = randi()  # Random seed for variety
 	noise.noise_type = FastNoiseLite.TYPE_PERLIN
+	noise.fractal_lacunarity = lacunarity
+	noise.fractal_gain = persistance
+	noise.fractal_octaves = octaves
 	for i in range(y):
 		var row = []
 		for j in range(x):
@@ -122,10 +159,12 @@ func fill_water_cliffs():
 	var ground = tm_layers["ground"]
 	var water = tm_layers["water"]
 	var cliffs = tm_layers["cliffs"]
+	var shore = tm_layers["shore"]
 	for i in range(world_x):
 		for j in range(world_y):
 			var pos = Vector2i(i,j)
 			var ground_surrounding = tm_layers["ground"].get_surrounding_cells(pos)
+			var shore_surrounding = tm_layers["shore"].get_surrounding_cells(pos)
 			var ground_diagnals = []
 			ground_diagnals.append(ground.get_neighbor_cell(pos, TileSet.CELL_NEIGHBOR_TOP_LEFT_CORNER )) # top left
 			ground_diagnals.append(ground.get_neighbor_cell(pos, TileSet.CELL_NEIGHBOR_TOP_RIGHT_CORNER )) # top left
@@ -133,6 +172,7 @@ func fill_water_cliffs():
 			ground_diagnals.append(ground.get_neighbor_cell(pos, TileSet.CELL_NEIGHBOR_BOTTOM_RIGHT_CORNER )) # top left
 			var water_coords = water.get_cell_atlas_coords(pos)
 			var empty_cell = Vector2i(-1,-1)
+			#find adjacent cells and set appropriete cliff
 			if water_coords != empty_cell:
 				if ground.get_cell_atlas_coords(ground_surrounding[2]) != empty_cell: #ground to the left
 					cliffs.set_cell(pos,WATER_CLIFF_SOURCE_ID, RIGHT_WATER_CLIFF_TILE_ATLAS_POS)
@@ -150,8 +190,41 @@ func fill_water_cliffs():
 					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, BOTL_WATER_CLIFF_TILE_ATLAS_POS)
 				elif ground.get_cell_atlas_coords(ground_diagnals[0]) != empty_cell: #top left
 					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, BOTR_WATER_CLIFF_TILE_ATLAS_POS)
+				
+			var shore_coords = shore.get_cell_atlas_coords(pos)
+			if shore_coords != empty_cell:
+				if cliffs.get_cell_atlas_coords(pos+Vector2i.LEFT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.DOWN) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.LEFT + Vector2i.DOWN) != empty_cell:
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, BOTL_CLIFF_CORNER_TILE_ATLAS_POS)
+				if cliffs.get_cell_atlas_coords(pos+Vector2i.RIGHT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.DOWN) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.RIGHT + Vector2i.DOWN) != empty_cell:
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, BOTR_CLIFF_CORNER_TILE_ATLAS_POS)
+				if cliffs.get_cell_atlas_coords(pos+Vector2i.LEFT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.UP) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.LEFT + Vector2i.UP) != empty_cell:
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, TOPL_CLIFF_CORNER_TILE_ATLAS_POS)
+				if cliffs.get_cell_atlas_coords(pos+Vector2i.RIGHT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.UP) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.RIGHT + Vector2i.UP) != empty_cell:
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, TOPR_CLIFF_CORNER_TILE_ATLAS_POS) 
 			
 			
+
+func round_cliffs():
+	var ground = tm_layers["ground"]
+	var water = tm_layers["water"]
+	var cliffs = tm_layers["cliffs"]
+	var shore = tm_layers["shore"]
+	var empty_cell = Vector2i(-1,-1)
+	for i in range(world_x):
+		for j in range(world_y):
+			var pos = Vector2i(i,j)
+			var shore_coords = shore.get_cell_atlas_coords(pos)
+			if shore_coords != empty_cell:
+				if cliffs.get_cell_atlas_coords(pos+Vector2i.LEFT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.DOWN) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.LEFT + Vector2i.DOWN) != empty_cell:
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, BOTL_CLIFF_CORNER_TILE_ATLAS_POS)
+				if cliffs.get_cell_atlas_coords(pos+Vector2i.RIGHT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.DOWN) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.RIGHT + Vector2i.DOWN) != empty_cell:
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, BOTR_CLIFF_CORNER_TILE_ATLAS_POS)
+				if cliffs.get_cell_atlas_coords(pos+Vector2i.LEFT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.UP) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.LEFT + Vector2i.UP) != empty_cell:
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, TOPL_CLIFF_CORNER_TILE_ATLAS_POS)
+				if cliffs.get_cell_atlas_coords(pos+Vector2i.RIGHT) != empty_cell and cliffs.get_cell_atlas_coords(pos+Vector2i.UP) != empty_cell and water.get_cell_atlas_coords(pos + Vector2i.RIGHT + Vector2i.UP) != empty_cell:
+					cliffs.set_cell(pos, WATER_CLIFF_SOURCE_ID, TOPR_CLIFF_CORNER_TILE_ATLAS_POS) 
+
+
 func fill_ground_layers(elevation_matrix):
 	print("filling ground tilemaplayers")
 	var ground = tm_layers["ground"]
@@ -172,7 +245,7 @@ func fill_ground_layers(elevation_matrix):
 				shore.set_cell(Vector2i(i,j),BEACH_SOURCE_ID,BEACH_TILE_ATLAS_POS)#set tile with the beach sprite
 			elif(pos < tree_line):
 				ground.set_cell(Vector2i(i,j),GRASS_SOURCE_ID,GRASS_TILE_ATLAS_POS)#set tile with the grass sprite
-				if(randi()%tree_density <= 1): #this works out to 2/tree_density but i like the results
+				if(randi()%tree_density < 1): #this works out to 2/tree_density but i like the results
 					trees.set_cell(Vector2i(i,j), 0, Vector2i(randi()%3 + 1,0))
 			elif(pos < snow_line):
 				ground.set_cell(Vector2i(i,j),MOUNTAIN_SOURCE_ID,MOUNTAIN_TILE_ATLAS_POS)#set tile with the mountain sprite
@@ -189,7 +262,6 @@ func build_road(road_location : Vector2i):
 		tm_layers["roads"].set_cell(road_location,ROADS_SOURCE_ID,ROADS_4WAY_ATLAS_POS)
 		layer_quadtrees["roads"].insert(road_location)
 		update_road(road_location)
-	
 
 func update_road(road_location : Vector2i):
 	var adjacent_roads = get_non_empty_cells_in_radius("roads",road_location,1)
@@ -273,7 +345,11 @@ func build_traversable_tilemap(traversable_layers: Array = ["ground", "shore"], 
 	for layer_name in traversable_layers:
 		var layer: TileMapLayer = tm_layers[layer_name]
 		for cell in layer.get_used_cells():
-			traversable_cells[cell] = layer  # Save reference to layer for source/tile info
+			traversable_cells[cell] = {
+			"source_id": layer.get_cell_source_id(cell),
+			"atlas_coords": layer.get_cell_atlas_coords(cell),
+			"alt_tile": layer.get_cell_alternative_tile(cell)
+			}
 
 	# Step 2: Mark all obstacle cells
 	var blocked_cells := {}
@@ -284,12 +360,12 @@ func build_traversable_tilemap(traversable_layers: Array = ["ground", "shore"], 
 	# Step 3: Filter and add to traversable_tilemap
 	for cell_pos in traversable_cells.keys():
 		if not blocked_cells.has(cell_pos):
-			var layer = traversable_cells[cell_pos]
+			var tile = traversable_cells[cell_pos]
 			traversable_tilemap.set_cell(
 				cell_pos,
-				layer.get_cell_source_id(cell_pos),
-				layer.get_cell_atlas_coords(cell_pos),
-				layer.get_cell_alternative_tile(cell_pos)
+				tile["source_id"],
+				tile["atlas_coords"],
+				tile["alt_tile"]
 			)
 
 	return traversable_tilemap

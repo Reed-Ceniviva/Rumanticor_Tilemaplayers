@@ -1,4 +1,4 @@
-[gd_scene load_steps=31 format=3 uid="uid://buaonr7qjcjv1"]
+[gd_scene load_steps=37 format=3 uid="uid://buaonr7qjcjv1"]
 
 [ext_resource type="Script" uid="uid://c1iny50805neq" path="res://Scripts/layer_manager.gd" id="1_pfwod"]
 [ext_resource type="Texture2D" uid="uid://2q4lqlnm7bfa" path="res://Assets/Sprites/MiniWorldSprites/Ground/Shore.png" id="2_f5k6d"]
@@ -8,7 +8,9 @@
 [ext_resource type="Texture2D" uid="uid://2en01n58n6uc" path="res://Assets/Sprites/MiniWorldSprites/Ground/Winter.png" id="6_3jqb2"]
 [ext_resource type="Texture2D" uid="uid://bfeh7gsql68od" path="res://Assets/Sprites/MiniWorldSprites/Ground/Cliff-Water.png" id="7_24hkg"]
 [ext_resource type="Texture2D" uid="uid://b42gx1brwpvnv" path="res://Assets/Sprites/MiniWorldSprites/Ground/Cliff.png" id="8_6wyk6"]
+[ext_resource type="Texture2D" uid="uid://bx080a4td2pmt" path="res://Assets/Sprites/MiniWorldSprites/Ground/MountainCliffs.png" id="9_461vt"]
 [ext_resource type="Texture2D" uid="uid://bjxp7dsg0f1gc" path="res://Assets/Sprites/MiniWorldSprites/Nature/Trees.png" id="9_nut35"]
+[ext_resource type="Texture2D" uid="uid://sxuwot43328e" path="res://Assets/Sprites/MiniWorldSprites/Buildings/Wood/Huts.png" id="10_nut35"]
 [ext_resource type="Texture2D" uid="uid://bi585guk81slr" path="res://Assets/Sprites/MiniWorldSprites/Ground/Road.png" id="13_3jqb2"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nut35"]
@@ -205,8 +207,126 @@ texture = ExtResource("7_24hkg")
 1:5/0 = 0
 2:5/0 = 0
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3jqb2"]
+texture = ExtResource("8_6wyk6")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+0:8/0 = 0
+1:8/0 = 0
+2:8/0 = 0
+3:8/0 = 0
+4:8/0 = 0
+5:8/0 = 0
+6:8/0 = 0
+
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_lbudn"]
+texture = ExtResource("9_461vt")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+0:1/0 = 0
+1:1/0 = 0
+2:1/0 = 0
+3:1/0 = 0
+4:1/0 = 0
+0:2/0 = 0
+1:2/0 = 0
+2:2/0 = 0
+3:2/0 = 0
+4:2/0 = 0
+5:2/0 = 0
+6:2/0 = 0
+0:3/0 = 0
+1:3/0 = 0
+2:3/0 = 0
+3:3/0 = 0
+4:3/0 = 0
+5:3/0 = 0
+6:3/0 = 0
+0:4/0 = 0
+1:4/0 = 0
+2:4/0 = 0
+3:4/0 = 0
+4:4/0 = 0
+5:4/0 = 0
+6:4/0 = 0
+0:5/0 = 0
+1:5/0 = 0
+2:5/0 = 0
+3:5/0 = 0
+4:5/0 = 0
+5:5/0 = 0
+6:5/0 = 0
+0:6/0 = 0
+1:6/0 = 0
+2:6/0 = 0
+0:7/0 = 0
+1:7/0 = 0
+2:7/0 = 0
+3:7/0 = 0
+4:7/0 = 0
+5:7/0 = 0
+6:7/0 = 0
+0:8/0 = 0
+1:8/0 = 0
+2:8/0 = 0
+3:8/0 = 0
+4:8/0 = 0
+5:8/0 = 0
+6:8/0 = 0
+
 [sub_resource type="TileSet" id="TileSet_ikia7"]
 sources/0 = SubResource("TileSetAtlasSource_3l582")
+sources/1 = SubResource("TileSetAtlasSource_3jqb2")
+sources/2 = SubResource("TileSetAtlasSource_lbudn")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_rn1lw"]
 texture = ExtResource("9_nut35")
@@ -245,19 +365,31 @@ texture = ExtResource("13_3jqb2")
 [sub_resource type="TileSet" id="TileSet_x47hx"]
 sources/0 = SubResource("TileSetAtlasSource_ti1v7")
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_x47hx"]
+texture = ExtResource("10_nut35")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_lbudn"]
+sources/0 = SubResource("TileSetAtlasSource_x47hx")
+
 [node name="Layer_Manager" type="Node"]
 script = ExtResource("1_pfwod")
+beach_offset = 165
 
-[node name="Water" type="TileMapLayer" parent="."]
+[node name="water" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_5v1tr")
 
-[node name="Shore" type="TileMapLayer" parent="."]
+[node name="shore" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_0fj1v")
 
-[node name="Ground" type="TileMapLayer" parent="."]
+[node name="ground" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_8j60k")
 
-[node name="Cliffs" type="TileMapLayer" parent="."]
+[node name="cliffs" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_ikia7")
 
 [node name="trees" type="TileMapLayer" parent="."]
@@ -266,9 +398,10 @@ tile_set = SubResource("TileSet_3jqb2")
 [node name="debris" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_461vt")
 
-[node name="features" type="TileMapLayer" parent="."]
-
-[node name="roads" type="TileMapLayer" parent="features"]
+[node name="roads" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_x47hx")
+
+[node name="buildings" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_lbudn")
 
 [connection signal="matrix_created" from="." to="." method="_on_matrix_created"]
