@@ -1,6 +1,4 @@
 class_name layer_manager extends Node
-#this seems to be the best way of doing this at the moment
-
 
 const GRASS_SOURCE_ID = 0
 const GRASS_TILE_ATLAS_POS = Vector2i(0,0)
@@ -67,17 +65,23 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 ## elevation distance between the tree line and the snow line
 @export var snowline_offset = 1000
 @export_subgroup("Noise Variables")
-@export var scale = 0.5 #controls the amount of varience in elevation in the world
+@export var scale = 0.5
 ## fractal steps of granularity > 1
-@export var lacunarity = 2.35 #steps of granularity
+@export var lacunarity = 2.35
 ## how much the granularity mixes > 0
-@export var persistance = 0.50 #granularity mix rate
+@export var persistance = 0.50
 ## number of steps of granularity 
-@export var octaves = 5.0 # number of steps of granularity 
+@export var octaves = 5.0
 ## custom offset input
 @export var offset = Vector2i(0,0)
 @export_subgroup("Feature Variance")
-@export var tree_density = 100#2 in x grass tiles have trees
+##1/tree_density ground tiles are trees
+@export var tree_density = 100
+@export_subgroup("Lake Formation")
+##maximum number of water tiles that a lake can take up
+@export var max_lake_size : int = 100
+##maximum elevation difference to include in a local minima
+@export var max_elev_varience : float = 33.0
  
 #variables derived from world parameters
 var shore_line = sea_level - beach_offset
@@ -104,9 +108,11 @@ func _ready():
 				for sub_child in child.get_children():
 					tm_layers[sub_child.name.to_lower()] = sub_child
 	fill_ground_layers(elevation_matrix)
+	paint_lakes(max_lake_size,max_elev_varience)
 	fill_water_cliffs()
 	round_water_cliffs()
 	fill_mountain_cliffs()
+	#paint_lakes(max_lake_size,max_elev_varience)
 	build_traversable_tilemap()
 	for layer in tm_layers:
 		layer_quadtrees[layer] = build_tml_quadtree(tm_layers[layer])
@@ -421,3 +427,114 @@ func build_traversable_tilemap(traversable_layers: Array = ["ground", "shore"], 
 			)
 
 	return traversable_tilemap
+
+func find_minima(elevation_matrix: Array, minima_spread : int) -> Array:
+	var width = elevation_matrix.size()
+	var height = elevation_matrix[0].size()
+	var minima := []
+
+	for y in range(1, height - 1):
+		for x in range(1, width - 1):
+			var current = elevation_matrix[x][y]
+			var is_min = true
+
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					if dx == 0 and dy == 0:
+						continue
+					var neighbor = elevation_matrix[x + dx][y + dy]
+					if neighbor <= current:
+						is_min = false
+						break
+				if not is_min:
+					break
+
+			if is_min and randi() % (minima_spread/2) < (minima_spread/16):
+				minima.append(Vector2i(x, y))
+	return minima
+
+func find_local_minima(elevation_matrix: Array , elevation_threshold := 10) -> Array:
+	var width = elevation_matrix.size()
+	var height = elevation_matrix[0].size()
+	var minima := []
+
+	for y in range(1, height - 1):
+		for x in range(1, width - 1):
+			var current = elevation_matrix[x][y]
+			var is_min = true
+
+			for dy in range(-1, 2):
+				for dx in range(-1, 2):
+					if dx == 0 and dy == 0:
+						continue
+					var neighbor = elevation_matrix[x + dx][y + dy]
+					if neighbor < current - elevation_threshold:
+						is_min = false
+						break
+				#if not is_min:
+					#break
+
+			if is_min:
+				minima.append(Vector2i(x, y))
+	return minima
+
+func paint_lakes(max_lake_size := 50, elevation_threshold := 10  ) -> void:
+	var width = elevation_matrix.size()
+	var height = elevation_matrix[0].size()
+	var visited := {}
+	
+	var global_minima := find_minima(elevation_matrix, max_lake_size)
+	var local_minima := find_local_minima(elevation_matrix, elevation_threshold)
+	var ground_cells = tm_layers["ground"].get_used_cells()
+	var tree_pos = tm_layers["trees"].get_used_cells()
+	var mountain_pos = tm_layers["mountains"].get_used_cells()
+
+	for seed in global_minima:
+		if seed in visited:
+			continue
+		
+		if !ground_cells.has(seed):
+			continue
+		
+		var lake_tiles := []
+		var queue := [seed]
+		visited[seed] = true
+
+		while queue.size() > 0 and lake_tiles.size() < max_lake_size:
+			var current = queue.pop_front()
+			lake_tiles.append(current)
+
+			for neighbor in get_all_neighboring_positions(current):
+				if neighbor.x < 0 or neighbor.y < 0 or neighbor.x >= width or neighbor.y >= height:
+					continue
+				if neighbor in visited:
+					continue
+				if elevation_matrix[neighbor.x][neighbor.y] > elevation_matrix[current.x][current.y] + elevation_threshold:
+					continue
+
+				queue.append(neighbor)
+				visited[neighbor] = true
+		
+		if lake_tiles.size() > 1:
+			for tile_pos in lake_tiles:
+				if mountain_pos.has(tile_pos):
+					continue
+				tm_layers["water"].set_cell(tile_pos, DEAP_WATER_SOURCE_ID, DEAP_WATER_TILE_ATLAS_POS)
+				if tree_pos.has(tile_pos):
+					tm_layers["trees"].set_cell(tile_pos)
+				if ground_cells.has(tile_pos):
+					tm_layers["ground"].set_cell(tile_pos)
+
+func get_all_neighboring_positions(pos : Vector2i, inclusive : bool = false) -> Array[Vector2i]:
+	var neighbors : Array[Vector2i] = []
+	neighbors.append(pos+Vector2i.UP+Vector2i.LEFT)
+	neighbors.append(pos+Vector2i.UP)
+	neighbors.append(pos+Vector2i.UP+Vector2i.RIGHT)
+	neighbors.append(pos+Vector2i.RIGHT)
+	neighbors.append(pos+Vector2i.DOWN+Vector2i.RIGHT)
+	neighbors.append(pos+Vector2i.DOWN)
+	neighbors.append(pos+Vector2i.DOWN+Vector2i.LEFT)
+	neighbors.append(pos+Vector2i.LEFT)
+	if inclusive:
+		neighbors.append(pos)
+	return neighbors
