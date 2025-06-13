@@ -428,7 +428,7 @@ func build_traversable_tilemap(traversable_layers: Array = ["ground", "shore"], 
 
 	return traversable_tilemap
 
-func find_minima(elevation_matrix: Array, minima_spread : int) -> Array:
+func find_minima(elevation_matrix: Array, max_lake_size : int, lake_appearrance : float) -> Array:
 	var width = elevation_matrix.size()
 	var height = elevation_matrix[0].size()
 	var minima := []
@@ -443,13 +443,13 @@ func find_minima(elevation_matrix: Array, minima_spread : int) -> Array:
 					if dx == 0 and dy == 0:
 						continue
 					var neighbor = elevation_matrix[x + dx][y + dy]
-					if neighbor <= current:
+					if neighbor < current:
 						is_min = false
 						break
 				if not is_min:
 					break
 
-			if is_min and randi() % (minima_spread/2) < (minima_spread/16):
+			if is_min and randi() % (max_lake_size/2) < (lake_appearrance):
 				minima.append(Vector2i(x, y))
 	return minima
 
@@ -478,12 +478,17 @@ func find_local_minima(elevation_matrix: Array , elevation_threshold := 10) -> A
 				minima.append(Vector2i(x, y))
 	return minima
 
-func paint_lakes(max_lake_size := 50, elevation_threshold := 10  ) -> void:
+##paints in lakes to the tilemap, does not adjust the elevation matrix
+##
+##max_lake_size : int = 50 | the maximum number of tiles a generated lake will contain
+##elevation_treshold : float = 10.0 | the maximum difference in elevation two tiles can be while still being a continuation of a lake
+##lake distribution : int = 2 | 1 lake per lake_distribution/(max_lake_size/2)
+func paint_lakes(max_lake_size : int = 50, elevation_threshold : float = 10.0  , lake_distribution : int = 2) -> void:
 	var width = elevation_matrix.size()
 	var height = elevation_matrix[0].size()
 	var visited := {}
 	
-	var global_minima := find_minima(elevation_matrix, max_lake_size)
+	var global_minima := find_minima(elevation_matrix, max_lake_size,2)
 	var local_minima := find_local_minima(elevation_matrix, elevation_threshold)
 	var ground_cells = tm_layers["ground"].get_used_cells()
 	var tree_pos = tm_layers["trees"].get_used_cells()
@@ -519,7 +524,7 @@ func paint_lakes(max_lake_size := 50, elevation_threshold := 10  ) -> void:
 			for tile_pos in lake_tiles:
 				if mountain_pos.has(tile_pos):
 					continue
-				tm_layers["water"].set_cell(tile_pos, DEAP_WATER_SOURCE_ID, DEAP_WATER_TILE_ATLAS_POS)
+				tm_layers["water"].set_cell(tile_pos, WATER_SOURCE_ID, WATER_TILE_ATLAS_POS)
 				if tree_pos.has(tile_pos):
 					tm_layers["trees"].set_cell(tile_pos)
 				if ground_cells.has(tile_pos):
