@@ -2,11 +2,11 @@
 
 [ext_resource type="PackedScene" uid="uid://ll1gtb5o4xf3" path="res://Scenes/camera_controller.tscn" id="1_qxrlw"]
 [ext_resource type="Script" uid="uid://cx13k8lh24st6" path="res://Scripts/game.gd" id="1_wrm1d"]
-[ext_resource type="PackedScene" uid="uid://buaonr7qjcjv1" path="res://Scenes/layer_manager.tscn" id="3_wrm1d"]
+[ext_resource type="PackedScene" uid="uid://ck330weafqg7o" path="res://Scenes/ECS/Managers/world_manager.tscn" id="4_wowpa"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_wrm1d")
 
 [node name="Camera2D" parent="." instance=ExtResource("1_qxrlw")]
 
-[node name="Layer_Manager" parent="." instance=ExtResource("3_wrm1d")]
+[node name="World_Manager" parent="." instance=ExtResource("4_wowpa")]

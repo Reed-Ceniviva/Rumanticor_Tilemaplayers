@@ -92,7 +92,7 @@ var snow_line = tree_line + snowline_offset
 
 var tm_layers : Dictionary[String, TileMapLayer]
 var layer_quadtrees : Dictionary[String, quad_tree_node]
-var map : Dictionary[Vector2i,Node]
+var map : Dictionary[Vector2i,Array]
 
 var elevation_matrix = [] : get = get_elevation_matrix
 
@@ -112,10 +112,10 @@ func _ready():
 	fill_water_cliffs()
 	round_water_cliffs()
 	fill_mountain_cliffs()
-	#paint_lakes(max_lake_size,max_elev_varience)
-	build_traversable_tilemap()
+	#build_traversable_tilemap()
 	for layer in tm_layers:
-		layer_quadtrees[layer] = build_tml_quadtree(tm_layers[layer])
+		pass
+		#layer_quadtrees[layer] = build_tml_quadtree(tm_layers[layer])
 	make_map()
 	world_created.emit()
 
@@ -133,7 +133,6 @@ func get_elevation_matrix():
 ## creates the map dictionary and fills vector2i keys with the tilemaplayers that have non empty cells at said Vector2i location
 ## returns void
 func make_map():
-	var layer_data : Dictionary[String,Array]
 	var new_map : Dictionary[Vector2i,Array]
 	for layer in tm_layers:
 		var layer_pos = tm_layers[layer].get_used_cells()
@@ -142,9 +141,10 @@ func make_map():
 				new_map[pos].append(layer)
 			else:
 				new_map.set(pos, [layer])
+	map = new_map
 
 ## returns the map dictionary generated after world gen
-func get_map() -> Dictionary[Vector2i,Node]:
+func get_map() -> Dictionary[Vector2i,Array]:
 	return map
 
 ## generate the elevation matrix based on perlin noise
@@ -287,8 +287,8 @@ func fill_ground_layers(elevation_matrix):
 				shore.set_cell(map_pos,BEACH_SOURCE_ID,BEACH_TILE_ATLAS_POS)#set tile with the beach sprite
 			elif(pos < tree_line):
 				ground.set_cell(map_pos,GRASS_SOURCE_ID,GRASS_TILE_ATLAS_POS)#set tile with the grass sprite
-				if(randi()%tree_density < 1): #this works out to 2/tree_density but i like the results
-					trees.set_cell(map_pos, 0, Vector2i(randi()%3 + 1,0))
+				#if(randi()%tree_density < 1): #this works out to 2/tree_density but i like the results
+					#trees.set_cell(map_pos, 0, Vector2i(randi()%3 + 1,0))
 			elif(pos < snow_line):
 				mountains.set_cell(map_pos,MOUNTAIN_SOURCE_ID,MOUNTAIN_TILE_ATLAS_POS)#set tile with the mountain sprite
 			elif(pos > snow_line):

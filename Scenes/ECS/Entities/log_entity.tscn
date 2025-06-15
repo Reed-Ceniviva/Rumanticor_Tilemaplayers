@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://dk4fpumc7rmbv"]
+
+[ext_resource type="Script" uid="uid://ck0vyf66rww78" path="res://Scripts/component_systems/entities/entity_log.gd" id="1_ac0of"]
+[ext_resource type="Texture2D" uid="uid://bhaphwekk5abj" path="res://Assets/Sprites/MiniWorldSprites/Nature/DeadTrees.png" id="2_iithg"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rb8da"]
+atlas = ExtResource("2_iithg")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_un7dr"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rb8da")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="LogEntity" type="Node2D"]
+script = ExtResource("1_ac0of")
+metadata/_custom_type_script = "uid://ck0vyf66rww78"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_un7dr")
+autoplay = "default"

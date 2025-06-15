@@ -2,7 +2,14 @@
 extends Resource
 class_name Component
 
-@export var comp_name: String = "Component"
+@export var component_name: String = "Component"
+
+static var _registered := false
+
+func _init():
+	if not _registered:
+		ComponentRegistry.register_component(component_name, self.get_script())
+		_registered = true
 
 func setup(data: Dictionary = {}) -> void:
 	var prop_names := []

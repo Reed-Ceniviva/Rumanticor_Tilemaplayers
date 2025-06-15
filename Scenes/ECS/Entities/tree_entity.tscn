@@ -1,0 +1,66 @@
+[gd_scene load_steps=8 format=3 uid="uid://tukn3gx6b3qm"]
+
+[ext_resource type="Script" uid="uid://dg3gy66q4w8w5" path="res://Scripts/component_systems/entities/entity_tree.gd" id="1_qnro1"]
+[ext_resource type="Texture2D" uid="uid://bjxp7dsg0f1gc" path="res://Assets/Sprites/MiniWorldSprites/Nature/Trees.png" id="2_jt2mm"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qnro1"]
+atlas = ExtResource("2_jt2mm")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fd4je"]
+atlas = ExtResource("2_jt2mm")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bue5d"]
+atlas = ExtResource("2_jt2mm")
+region = Rect2(32, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ie7kn"]
+atlas = ExtResource("2_jt2mm")
+region = Rect2(48, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_oivol"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qnro1")
+}],
+"loop": true,
+"name": &"dead",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fd4je")
+}],
+"loop": true,
+"name": &"default1",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bue5d")
+}],
+"loop": true,
+"name": &"default2",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ie7kn")
+}],
+"loop": true,
+"name": &"default3",
+"speed": 5.0
+}]
+
+[node name="TreeEntity" type="Node2D"]
+script = ExtResource("1_qnro1")
+metadata/_custom_type_script = "uid://dg3gy66q4w8w5"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_oivol")
+animation = &"default1"
+autoplay = "default1"
+
+[connection signal="ready" from="AnimatedSprite2D" to="." method="_on_animated_sprite_2d_ready"]

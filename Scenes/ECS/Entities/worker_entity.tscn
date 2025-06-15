@@ -1,0 +1,10 @@
+[gd_scene load_steps=3 format=3 uid="uid://cpek715cejdle"]
+
+[ext_resource type="Script" uid="uid://bfcnetdd6u3uk" path="res://Scripts/component_systems/entities/entity_worker.gd" id="1_ppolv"]
+[ext_resource type="PackedScene" uid="uid://dpdefihos7cac" path="res://Scenes/Characters/worker_animated_sprites/defualt_worker_animated_sprite_2d.tscn" id="2_b4oc5"]
+
+[node name="WorkerEntity" type="Node2D"]
+script = ExtResource("1_ppolv")
+metadata/_custom_type_script = "uid://bfcnetdd6u3uk"
+
+[node name="defualt_worker_animated_sprite_2d" parent="." instance=ExtResource("2_b4oc5")]

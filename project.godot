@@ -22,9 +22,12 @@ enabled=PackedStringArray("res://addons/wfc/plugin.cfg")
 [file_customization]
 
 folder_colors={
+"res://Scenes/ECS/Entities/": "blue",
+"res://Scenes/ECS/Managers/": "pink",
+"res://Scenes/ECS/Systems/": "purple",
 "res://Scripts/component_systems/Data/": "red",
+"res://Scripts/component_systems/GOAP/": "yellow",
 "res://Scripts/component_systems/Systems/": "purple",
-"res://Scripts/component_systems/Tasks/": "yellow",
 "res://Scripts/component_systems/components/": "green",
 "res://Scripts/component_systems/entities/": "blue",
 "res://Scripts/component_systems/managers/": "pink"

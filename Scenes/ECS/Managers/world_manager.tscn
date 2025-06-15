@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3 uid="uid://ck330weafqg7o"]
+
+[ext_resource type="Script" uid="uid://c7ihg2dsayw28" path="res://Scenes/ECS/Managers/world_manager.gd" id="1_3pref"]
+[ext_resource type="PackedScene" uid="uid://buaonr7qjcjv1" path="res://Scenes/layer_manager.tscn" id="2_ysl4i"]
+
+[node name="World_Manager" type="Node"]
+script = ExtResource("1_3pref")
+
+[node name="Layer_Manager" parent="." instance=ExtResource("2_ysl4i")]
+
+[node name="Entities" type="Node" parent="."]
