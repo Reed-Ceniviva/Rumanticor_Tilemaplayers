@@ -15,6 +15,9 @@ func add_item(entity: Entity) -> bool:
 		return false
 	items.append(entity)
 	entity.set_active(false)
+	if entity.has_component_type("InventoryComponent"):
+		if entity.get_component_by_type("InventoryComponent").max_items > 1:
+			max_items += 1
 	return true
 
 func remove_item(entity: Entity) -> Entity:

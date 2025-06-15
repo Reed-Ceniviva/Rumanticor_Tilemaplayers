@@ -1,7 +1,7 @@
 extends Component
-class_name GoalComponent
+class_name CurrentGoalComponent
 
 @export var current_goal: Goal
 
 func _ready():
-	component_name = "GoalComponent"
+	component_name = "CurrentGoalComponent"

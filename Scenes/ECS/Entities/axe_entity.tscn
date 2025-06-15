@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://dhr7wyxix5wed"]
+
+[ext_resource type="Script" uid="uid://c1qnrixjlxatn" path="res://Scripts/component_systems/entities/entity_axe.gd" id="1_ncl3i"]
+[ext_resource type="Texture2D" uid="uid://c36s31n0ov75a" path="res://Assets/Sprites/MiniWorldSprites/Objects/Axe.png" id="1_vedb3"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ncl3i"]
+atlas = ExtResource("1_vedb3")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_wyqwc"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ncl3i")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="AxeEntity" type="Node2D"]
+script = ExtResource("1_ncl3i")
+metadata/_custom_type_script = "uid://c1qnrixjlxatn"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_wyqwc")
+autoplay = "default"

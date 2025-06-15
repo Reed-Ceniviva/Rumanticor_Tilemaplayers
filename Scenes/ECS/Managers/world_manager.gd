@@ -29,7 +29,9 @@ func _physics_process(delta):
 			pos_system.groundTM = layer_manager.tm_layers["ground"]
 			place_trees()
 			var worker_ent = EntityRegistry.instantiate_entity("WorkerEntity", [layer_manager.tm_layers["ground"].get_used_cells().min()])
+			var axe_ent = EntityRegistry.instantiate_entity("AxeEntity",[layer_manager.tm_layers["ground"].get_used_cells().min() + Vector2i.RIGHT])
 			entities_layer.add_child(worker_ent)
+			entities_layer.add_child(axe_ent)
 		for child in entities_layer.get_children():
 			if child is Entity:
 				if child.has_component_type("HealthComponent"):
