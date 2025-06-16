@@ -12,3 +12,4 @@ var action_categories: Dictionary[String, Array] = {
 
 func _ready():
 	component_name = "AvailableActionsComponent"
+	super._init()

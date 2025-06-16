@@ -1,5 +1,5 @@
 extends Component
-class_name ComponentVision
+class_name VisionComponent
 
 @export var range: float = 32.0  # vision radius in pixels
 var visible_entities: Array[int] = []  # entity_ids of currently seen entities

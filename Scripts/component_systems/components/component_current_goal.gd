@@ -5,3 +5,4 @@ class_name CurrentGoalComponent
 
 func _ready():
 	component_name = "CurrentGoalComponent"
+	super._init()

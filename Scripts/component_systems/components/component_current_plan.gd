@@ -5,3 +5,4 @@ var plan : Array[GOAPAction] = []
 
 func _ready():
 	component_name = "CurrentPlanComponent"
+	super._init()

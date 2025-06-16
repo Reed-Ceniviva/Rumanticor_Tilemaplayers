@@ -23,7 +23,8 @@ func process_entity(entity: Entity) -> void:
 	if not entity.has_component_type("TargetEntityComponent"): return
 
 	var start = entity.get_component_by_type("PositionComponent").position
-	var goal_pos = entity.get_component_by_type("TargetEntityComponent").target_position
+	var goal_id = entity.get_component_by_type("TargetEntityComponent").target
+	var goal_pos = EntityRegistry._entity_store[goal_id].get_component_by_type("PositionComponent").pos
 	var mobility = entity.get_component_by_type("MobilityComponent").traversable
 
 	var path := _find_path(start, goal_pos, mobility)

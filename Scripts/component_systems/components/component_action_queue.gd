@@ -4,6 +4,10 @@ class_name ActionQueueComponent
 var action_queue: Array[GOAPAction] = []
 var current_action: GOAPAction = null
 
+func _ready():
+	component_name = "ActionQueueComponent"
+	super._init()
+
 func enqueue_action(action: GOAPAction) -> void:
 	action_queue.append(action)
 
