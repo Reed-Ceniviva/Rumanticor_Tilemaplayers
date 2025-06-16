@@ -6,6 +6,8 @@ var component_registry = ComponentRegistry
 var health_system = HealthSystem.new()
 var pos_system = PositionSystem.new()
 var vision_system = VisionSystem.new()
+var movement_system = MovementSystem.new()
+var navigation_system = NavigationSystem.new()
 
 @onready var layer_manager = $Layer_Manager
 @onready var entities_layer = $Entities

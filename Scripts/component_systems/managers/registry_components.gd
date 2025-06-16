@@ -11,7 +11,11 @@ static var _registry: Dictionary[String,Script] = {
 	"ActionQueueComponent":preload("uid://buynuass4lwjo"),
 	"CurrentGoalComponent":preload("uid://dpgl3nykq5ubu"),
 	"EquippableComponent":preload("uid://dw40ybygh1467"),
-	"EquipmentComponent":preload("uid://dn786unhvh1mg")
+	"EquipmentComponent":preload("uid://dn786unhvh1mg"),
+	"MobilityComponent":preload("uid://csies4wklr1qv"),
+	"MovementPathComponent":preload("uid://cef53qosior36"),
+	"TargetEntityComponent":preload("uid://ciuw2dj0bcuce")
+	
 }
 
 static func register_component(name: String, class_ref: Script) -> void:

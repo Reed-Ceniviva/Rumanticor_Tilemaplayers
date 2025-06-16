@@ -141,6 +141,7 @@ func make_map():
 				new_map[pos].append(layer)
 			else:
 				new_map.set(pos, [layer])
+			new_map[pos].append(elevation_matrix[pos.x][pos.y])
 	map = new_map
 
 ## returns the map dictionary generated after world gen

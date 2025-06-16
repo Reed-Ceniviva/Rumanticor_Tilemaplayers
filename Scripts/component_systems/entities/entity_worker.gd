@@ -35,6 +35,19 @@ func _ready():
 	var equipment_comp_class = ComponentRegistry.get_component_class("EquipmentComponent")
 	if equipment_comp_class:
 		add_component(equipment_comp_class.new())
+		
+	var movement_path_comp_class = ComponentRegistry.get_component_class("MovementPathComponent")
+	if movement_path_comp_class:
+		add_component(movement_path_comp_class.new())
+		
+	var action_queue_comp_class = ComponentRegistry.get_component_class("ActionQueueComponent")
+	if action_queue_comp_class:
+		add_component(action_queue_comp_class.new())
+	
+	var target_ent_comp_class = ComponentRegistry.get_component_class("TargetEntityComponent")
+	if target_ent_comp_class:
+		add_component(target_ent_comp_class.new())
+
 	#play defualt animation
 	worker_animated_sprite_2d.play("default")
 
