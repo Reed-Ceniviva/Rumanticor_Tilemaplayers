@@ -14,8 +14,10 @@ static var _registry: Dictionary[String,Script] = {
 	"EquipmentComponent":preload("uid://dn786unhvh1mg"),
 	"MobilityComponent":preload("uid://csies4wklr1qv"),
 	"MovementPathComponent":preload("uid://cef53qosior36"),
-	"TargetEntityComponent":preload("uid://ciuw2dj0bcuce")
-	
+	"TargetEntityComponent":preload("uid://ciuw2dj0bcuce"),
+	"AvailableActionComponent":preload("uid://b778wfmssldvq"),
+	"CurrentPlanComponent":preload("uid://dk6vxkygw8g6c"),
+	"SaughtEntityComponent":preload("uid://6syjoyosbikf")
 }
 
 static func register_component(name: String, class_ref: Script) -> void:

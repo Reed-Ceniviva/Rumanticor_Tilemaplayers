@@ -25,21 +25,26 @@ func _ready():
 	var inv_comp_class = ComponentRegistry.get_component_class("InventoryComponent")
 	if inv_comp_class:
 		add_component(inv_comp_class.new(2))
-	
-	#create and add vision component (eyes)
-	var vision_comp_class = ComponentRegistry.get_component_class("VisionComponent")
-	if vision_comp_class:
-		add_component(vision_comp_class.new(32))
 		
 	#create and add equipment component (hands/back)
 	var equipment_comp_class = ComponentRegistry.get_component_class("EquipmentComponent")
 	if equipment_comp_class:
 		add_component(equipment_comp_class.new())
 		
+	var mobility_comp_class = ComponentRegistry.get_component_class("MobilityComponent")
+	if mobility_comp_class:
+		add_component(mobility_comp_class.new())
+	
+	#brain components
+	#create and add vision component (eyes)
+	var vision_comp_class = ComponentRegistry.get_component_class("VisionComponent")
+	if vision_comp_class:
+		add_component(vision_comp_class.new(32))
+	
 	var movement_path_comp_class = ComponentRegistry.get_component_class("MovementPathComponent")
 	if movement_path_comp_class:
 		add_component(movement_path_comp_class.new())
-		
+	
 	var action_queue_comp_class = ComponentRegistry.get_component_class("ActionQueueComponent")
 	if action_queue_comp_class:
 		add_component(action_queue_comp_class.new())
@@ -47,6 +52,22 @@ func _ready():
 	var target_ent_comp_class = ComponentRegistry.get_component_class("TargetEntityComponent")
 	if target_ent_comp_class:
 		add_component(target_ent_comp_class.new())
+	
+	var saught_ent_comp_class = ComponentRegistry.get_component_class("SaughtEntityComponent")
+	if saught_ent_comp_class:
+		add_component(saught_ent_comp_class.new())
+		
+	var avail_action_comp_class = ComponentRegistry.get_component_class("AvailableActionsComponent")
+	if avail_action_comp_class:
+		add_component(avail_action_comp_class.new())
+
+	var cur_goal_comp_class = ComponentRegistry.get_component_class("CurrentGoalComponent")
+	if cur_goal_comp_class:
+		add_component(cur_goal_comp_class.new())
+	
+	var cur_plan_comp_class = ComponentRegistry.get_component_class("CurrentPlanComponent")
+	if cur_plan_comp_class:
+		add_component(cur_plan_comp_class.new())
 
 	#play defualt animation
 	worker_animated_sprite_2d.play("default")

@@ -9,6 +9,7 @@ func process(entity: Entity) -> void:
 			return
 		if not entity.has_component_type("MovementPathComponent"):
 			return
+		##would use the traversable values for how many steps in the path is moved per tick
 		if not entity.has_component_type("MobilityComponent"):
 			return
 

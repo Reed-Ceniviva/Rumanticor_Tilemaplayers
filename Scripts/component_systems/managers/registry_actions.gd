@@ -7,6 +7,7 @@ func _ready():
 	# Register global actions here
 	registered_actions.append(FindTreeInSightAction.new())
 	#registered_actions.append(ChopTreeAction.new())
+	registered_actions.append(FindSaughtEntityInSight.new())
 	registered_actions.append(MoveToTargetAction.new())
 	# Add more as needed
 

@@ -9,7 +9,7 @@ func _init():
 # Used to get neighbors (4-way)
 const DIRS = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
 
-func process_entity(entity: Entity, delta: float) -> void:
+func process_entity(entity: Entity) -> void:
 	if not entity.has_component_type("CurrentGoalComponent"):
 		return
 

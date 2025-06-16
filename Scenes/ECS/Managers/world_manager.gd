@@ -8,6 +8,7 @@ var pos_system = PositionSystem.new()
 var vision_system = VisionSystem.new()
 var movement_system = MovementSystem.new()
 var navigation_system = NavigationSystem.new()
+var goap_planner = GOAPPlanner.new()
 
 @onready var layer_manager = $Layer_Manager
 @onready var entities_layer = $Entities
@@ -36,12 +37,25 @@ func _physics_process(delta):
 			entities_layer.add_child(axe_ent)
 		for child in entities_layer.get_children():
 			if child is Entity:
+				if child.has_component_type("CurrentPlanComponent"):
+					var child_plan : CurrentPlanComponent = child.get_component_by_type("CurrentPlanComponent")
+					if child_plan.plan.is_empty():
+						goap_planner.make_plan(child)
+					else:
+						goap_planner.execute_plan(child)
 				if child.has_component_type("HealthComponent"):
 					health_system.process(child)
 				if child.has_component_type("PositionComponent"):
 					pos_system.process(child)
 				if child.has_component_type("VisionComponent"):
 					vision_system.process(child)
+				if child.has_component_type("MovementPathComponent"):
+					movement_system.process(child)
+				if child.has_component_type("CurrentGoalComponent"):
+					var goal_comp : CurrentGoalComponent = child.get_component_by_type("CurrentGoalComponent")
+					if not goal_comp.goal.is_satisfied(child):
+						navigation_system.process_entity(child)
+					else:
 		
 		
 
