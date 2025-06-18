@@ -5,7 +5,8 @@ static var entity_uids: Dictionary = {
 	"LogEntity" : preload("uid://dk4fpumc7rmbv"),
 	"TreeEntity" : preload("uid://tukn3gx6b3qm"),
 	"WorkerEntity": preload("uid://cpek715cejdle"),
-	"AxeEntity":preload("uid://dhr7wyxix5wed")
+	"AxeEntity":preload("uid://dhr7wyxix5wed"),
+	"HutEntity":preload("uid://5jpxrh5cwuy8")
 }  # name : scene preload
 
 static var _entity_store : Dictionary[int,Entity]

@@ -1,7 +1,7 @@
 extends System
 class_name GOAPExecutorSystem
 
-func process_entity(entity: Entity, delta: float) -> void:
+func process_entity(entity: Entity) -> void:
 	if not entity.has_component("ActionQueueComponent"):
 		return
 

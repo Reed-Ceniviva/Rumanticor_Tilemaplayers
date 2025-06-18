@@ -7,7 +7,7 @@ func _init():
 
 func process(entity: Entity) -> void:
 	if entity.has_component_type("VisionComponent"):
-		var vision : ComponentVision = entity.get_component_by_type("VisionComponent")
+		var vision : VisionComponent = entity.get_component_by_type("VisionComponent")
 		var pos_viewer: Vector2 = entity.get_component_by_type("PositionComponent").pos
 
 		vision.clear_vision()

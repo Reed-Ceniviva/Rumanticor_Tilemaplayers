@@ -8,6 +8,7 @@ func _ready():
 	registered_actions.append(FindTreeInSightAction.new())
 	#registered_actions.append(ChopTreeAction.new())
 	registered_actions.append(FindSaughtEntityInSight.new())
+	registered_actions.append(EquipTargetItemAction.new())
 	registered_actions.append(MoveToTargetAction.new())
 	# Add more as needed
 

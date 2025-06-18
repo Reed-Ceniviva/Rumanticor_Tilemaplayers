@@ -2,6 +2,7 @@ extends Resource
 class_name Goal
 
 @export var name: String = "Goal"
+var priority : float = 1.0
 
 ##checks if the entities components show that the goal has been achieved
 ##

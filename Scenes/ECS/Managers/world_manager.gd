@@ -9,6 +9,9 @@ var vision_system = VisionSystem.new()
 var movement_system = MovementSystem.new()
 var navigation_system = NavigationSystem.new()
 var goap_planner = GOAPPlanner.new()
+var goal_selection = GoalSelectionSystem.new()
+var goap_execution = GOAPExecutorSystem.new()
+var goal_generation = GoalGeneratorSystem.new()
 
 @onready var layer_manager = $Layer_Manager
 @onready var entities_layer = $Entities
@@ -53,10 +56,15 @@ func _physics_process(delta):
 					movement_system.process(child)
 				if child.has_component_type("CurrentGoalComponent"):
 					var goal_comp : CurrentGoalComponent = child.get_component_by_type("CurrentGoalComponent")
-					if not goal_comp.goal.is_satisfied(child):
-						navigation_system.process_entity(child)
+					if goal_comp.goal:
+						if not goal_comp.goal.is_satisfied(child):
+							navigation_system.process_entity(child)
+							goap_execution.process_entity(child)
+						else:
+							goal_selection.process_entity(child)
 					else:
-		
+						child.get_component_by_type("AvailableGoalsComponent").goals = goal_generation.generate_available_goals(child)
+						goal_selection.process_entity(child)
 		
 
 func place_trees():

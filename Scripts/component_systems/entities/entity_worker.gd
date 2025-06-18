@@ -60,10 +60,16 @@ func _ready():
 	var avail_action_comp_class = ComponentRegistry.get_component_class("AvailableActionsComponent")
 	if avail_action_comp_class:
 		add_component(avail_action_comp_class.new())
+		
+	var avail_goal_comp_class = ComponentRegistry.get_component_class("AvailableGoalssComponent")
+	if avail_goal_comp_class:
+		add_component(avail_goal_comp_class.new())
 
 	var cur_goal_comp_class = ComponentRegistry.get_component_class("CurrentGoalComponent")
 	if cur_goal_comp_class:
-		add_component(cur_goal_comp_class.new())
+		var cur_goal_comp : CurrentGoalComponent = cur_goal_comp_class.new()
+		cur_goal_comp.goal = LocateTreeGoal.new()
+		add_component(cur_goal_comp)
 	
 	var cur_plan_comp_class = ComponentRegistry.get_component_class("CurrentPlanComponent")
 	if cur_plan_comp_class:

@@ -1,8 +1,8 @@
 extends GOAPAction
-class_name EquipItemAction
+class_name EquipTargetItemAction
 
 func _read():
-	name = "EquipItem"
+	name = "EquipTargetItem"
 	cost = 1.0
 
 ##checks if an entity has the needed components to take this action
@@ -41,4 +41,7 @@ func is_applicable(entity: Entity) -> bool:
 ## takes entity : Entity = the entity to change data of or change world variables in relation to
 ## returns void
 func apply_effects(entity: Entity) -> void:
-	pass  # Override
+	var equi_comp : EquipmentComponent = entity.get_component_by_type("EquipmentComponent")
+	var target_id = entity.get_component_by_type("TargetEntityComponent").target
+	equi_comp.equip_entity(EntityRegistry._entity_store[target_id])
+	entity.get_component_by_type("TargetEntityComponent").target = null

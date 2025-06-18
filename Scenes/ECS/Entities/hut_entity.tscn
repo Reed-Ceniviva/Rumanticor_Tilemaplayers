@@ -1,0 +1,27 @@
+[gd_scene load_steps=5 format=3 uid="uid://5jpxrh5cwuy8"]
+
+[ext_resource type="Script" uid="uid://d1di8hf75rvfy" path="res://Scripts/component_systems/entities/entity_hut.gd" id="1_x6a4y"]
+[ext_resource type="Texture2D" uid="uid://sxuwot43328e" path="res://Assets/Sprites/MiniWorldSprites/Buildings/Wood/Huts.png" id="2_fdidf"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_rt500"]
+atlas = ExtResource("2_fdidf")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_io1x1"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_rt500")
+}],
+"loop": true,
+"name": &"default",
+"speed": 5.0
+}]
+
+[node name="HutEntity" type="Node2D"]
+script = ExtResource("1_x6a4y")
+metadata/_custom_type_script = "uid://d1di8hf75rvfy"
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+sprite_frames = SubResource("SpriteFrames_io1x1")
+autoplay = "default"

@@ -1,7 +1,7 @@
 extends System
 class_name GoalSelectionSystem
 
-func process_entity(entity: Entity, delta: float) -> void:
+func process_entity(entity: Entity) -> void:
 	if not entity.has_component_type("CurrentGoalComponent"):
 		return
 	if not entity.has_component_type("AvailableGoalsComponent"):
