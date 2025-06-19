@@ -1,20 +1,30 @@
 extends Node
 class_name ActionRegistry
 
-var registered_actions: Array[GOAPAction] = []
+static var registered_actions: Array[GOAPAction] = []
+static var initialized := false
 
-func _ready():
-	# Register global actions here
+static func initialize():
+	if initialized:
+		return
+	initialized = true
 	registered_actions.append(FindTreeInSightAction.new())
 	#registered_actions.append(ChopTreeAction.new())
 	registered_actions.append(FindSaughtEntityInSight.new())
 	registered_actions.append(EquipTargetItemAction.new())
 	registered_actions.append(MoveToTargetAction.new())
-	# Add more as needed
+	registered_actions.append(AttackTargetWithEquippedAction.new())
 
-func get_applicable_actions(entity: Entity) -> void:
-	var result := []
+static func get_applicable_actions(entity: Entity) -> Array[GOAPAction]:
+	if not initialized:
+		initialize()
+
+	var result: Array[GOAPAction] = []
 	for action in registered_actions:
 		if action.is_applicable(entity):
-			result.append(action.duplicate())  # So it's not shared across entities
-	entity.get_component_by_type("AvailableActionsComponent").actions = result
+			#print("Applicable action: ", action.name)
+			result.append(action.duplicate())
+		else:
+			pass
+			#print("Inapplicable action: ", action.name)
+	return result

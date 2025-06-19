@@ -1,7 +1,7 @@
 extends GOAPAction
 class_name MoveToTargetAction
 
-func _ready():
+func _init():
 	name = "MoveToTarget"
 	cost = 32
 	
@@ -11,10 +11,13 @@ func _ready():
 ## takes entity : Entity = the entity to check if the prerequisites have been met
 func is_applicable(entity: Entity) -> bool:
 	if not entity.has_component_type("MobilityComponent"):
+		print("entity missing mobility component to move to target")
 		return false
 	if not entity.has_component_type("TargetEntityComponent"):
+		print("entity missing target entity component to move to target")
 		return false
 	if not entity.has_component_type("MovementPathComponent"):
+		print("entity missing movement path component to move to target")
 		return false
 	return true  # Override
 

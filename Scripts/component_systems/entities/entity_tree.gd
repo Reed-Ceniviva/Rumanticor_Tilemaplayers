@@ -21,6 +21,7 @@ func _ready():
 		add_component(inv_comp)
 	animated_sprite_2d.play("default" + str(randi()%3 + 1))
 	
+	
 func die():
 	animated_sprite_2d.play("dead")
 	super.die()

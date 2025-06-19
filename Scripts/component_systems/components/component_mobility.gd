@@ -10,6 +10,10 @@ var traversable : Dictionary[String,float]
 #"water" : 0.0 #if a medium of mobility is not present the entity cannot traverse it
 #}
 
+func _init():
+	component_name = "MobilityComponent"
+	super._init()
+
 func _ready(init_traversability : Dictionary = {}):
 	if init_traversability.is_empty():
 		traversable = {
@@ -17,5 +21,4 @@ func _ready(init_traversability : Dictionary = {}):
 		}
 	else:
 		traversable = init_traversability
-	component_name = "MobilityComponent"
-	super._init()
+	

@@ -1,6 +1,10 @@
 extends System
 class_name GoalSelectionSystem
 
+func _init():
+	required_components = ["CurrentGoalComponent","AvailableGoalsComponent"]
+
+
 func process_entity(entity: Entity) -> void:
 	if not entity.has_component_type("CurrentGoalComponent"):
 		return

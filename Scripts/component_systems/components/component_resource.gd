@@ -1,5 +1,5 @@
 extends Component
-class_name ComponentResource
+class_name ResourceComponent
 
 var type : String = "wood"
 

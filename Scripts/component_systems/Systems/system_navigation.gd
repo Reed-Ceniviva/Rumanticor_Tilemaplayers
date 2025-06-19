@@ -4,7 +4,7 @@ class_name NavigationSystem
 @export var terrain_map: Dictionary = {}
 
 func _init():
-	required_components = ["PositionComponent", "MobilityComponent", "MovementPathComponent", "TargetEntityComponent"]
+	required_components = ["PositionComponent", "MobilityComponent", "MovementPathComponent", "TargetEntityComponent", "CurrentGoalComponent"]
 
 # Used to get neighbors (4-way)
 const DIRS = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
@@ -13,7 +13,7 @@ func process_entity(entity: Entity) -> void:
 	if not entity.has_component_type("CurrentGoalComponent"):
 		return
 
-	var goal : Goal = entity.get_component_by_type("CurrentGoalComponent").current_goal
+	var goal : Goal = entity.get_component_by_type("CurrentGoalComponent").goal
 	if goal == null or goal.name != "MoveToTarget":
 		return
 
@@ -22,7 +22,7 @@ func process_entity(entity: Entity) -> void:
 	if not entity.has_component_type("MovementPathComponent"): return
 	if not entity.has_component_type("TargetEntityComponent"): return
 
-	var start = entity.get_component_by_type("PositionComponent").position
+	var start = entity.get_component_by_type("PositionComponent").pos
 	var goal_id = entity.get_component_by_type("TargetEntityComponent").target
 	var goal_pos = EntityRegistry._entity_store[goal_id].get_component_by_type("PositionComponent").pos
 	var mobility = entity.get_component_by_type("MobilityComponent").traversable

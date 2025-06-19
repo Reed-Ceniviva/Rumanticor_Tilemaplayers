@@ -21,6 +21,6 @@ func reset_path() -> void:
 func is_complete() -> bool:
 	return current_step_index >= current_path.size()
 
-func _ready():
+func _init():
 	component_name = "MovementPathComponent"
 	super._init()

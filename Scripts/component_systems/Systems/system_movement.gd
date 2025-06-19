@@ -2,7 +2,7 @@ extends System
 class_name MovementSystem
 
 func _init():
-	required_components = ["PositionComponent", "MovementPathComponent"]
+	required_components = ["PositionComponent", "MovementPathComponent","MobilityComponent"]
 
 func process(entity: Entity) -> void:
 		if not entity.has_component_type("PositionComponent"):

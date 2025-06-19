@@ -133,16 +133,20 @@ func get_elevation_matrix():
 ## creates the map dictionary and fills vector2i keys with the tilemaplayers that have non empty cells at said Vector2i location
 ## returns void
 func make_map():
-	var new_map : Dictionary[Vector2i,Array]
+	var new_map : Dictionary[Vector2i, Array] = {}
 	for layer in tm_layers:
 		var layer_pos = tm_layers[layer].get_used_cells()
 		for pos in layer_pos:
-			if new_map.has(pos):
-				new_map[pos].append(layer)
-			else:
-				new_map.set(pos, [layer])
-			new_map[pos].append(elevation_matrix[pos.x][pos.y])
+			if not new_map.has(pos):
+				new_map[pos] = []
+			new_map[pos].append(layer)
+
+			# Bounds check before accessing elevation_matrix
+			if pos.x >= 0 and pos.x < elevation_matrix.size():
+				if pos.y >= 0 and pos.y < elevation_matrix[pos.x].size():
+					new_map[pos].append(elevation_matrix[pos.x][pos.y])
 	map = new_map
+
 
 ## returns the map dictionary generated after world gen
 func get_map() -> Dictionary[Vector2i,Array]:

@@ -1,8 +1,8 @@
 extends GOAPAction
-class_name FindSaughtEntityInSight
+class_name FindWoodInSightAction
 
 func _init():
-	name = "FindSaughtEntityInSight"
+	name = "FindWoodInSight"
 	cost = 1
 
 
@@ -15,8 +15,6 @@ func is_applicable(entity: Entity) -> bool:
 		return false
 	if not entity.has_component_type("TargetEntityComponent"):
 		return false
-	if not entity.has_component_type("SaughtEntityComponent"):
-		return false
 	return true  # Override
 
 ##the action of the Gaction
@@ -25,10 +23,9 @@ func is_applicable(entity: Entity) -> bool:
 ## returns void
 func apply_effects(entity: Entity) -> void:
 	var sight = entity.get_component_by_type("VisionComponent").visible_entities
-	var saught = entity.get_component_by_type("SaughtEntityComponent").saught
 	var found = false
 	for entity_id in sight:
-		if EntityRegistry._entity_store[entity_id].is_class(saught.get_class()):
+		if EntityRegistry._entity_store[entity_id] is TreeEntity:
 			entity.get_component_by_type("TargetEntityComponent").target = entity_id
 			found = true
 			break

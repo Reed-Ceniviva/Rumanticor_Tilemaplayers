@@ -10,6 +10,6 @@ var action_categories: Dictionary[String, Array] = {
 	"movement": []
 }
 
-func _ready():
+func _init():
 	component_name = "AvailableActionsComponent"
 	super._init()

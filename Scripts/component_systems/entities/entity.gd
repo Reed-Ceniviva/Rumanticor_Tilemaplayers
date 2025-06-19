@@ -36,9 +36,13 @@ func set_active(is_active : bool) -> void:
 	if is_active:
 		active = true
 		self.visible = true
+		for child in get_children():
+			child.visible = true
 	else:
 		active = false
 		self.visible = false
+		for child in get_children():
+			child.visible = false
 
 ##function to take care of housekeeping before freeing up an entity
 ##

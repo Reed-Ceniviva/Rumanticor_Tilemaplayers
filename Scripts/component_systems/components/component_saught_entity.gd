@@ -3,6 +3,6 @@ class_name SaughtEntityComponent
 
 var saught : Entity
 
-func _ready():
+func _init():
 	component_name = "SaughtEntityComponent"
 	super._init()

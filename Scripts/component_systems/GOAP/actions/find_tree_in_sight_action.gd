@@ -1,7 +1,7 @@
 extends GOAPAction
 class_name FindTreeInSightAction
 
-func _ready():
+func _init():
 	name = "FindTreeInSight"
 	cost = 1
 
@@ -30,4 +30,4 @@ func apply_effects(entity: Entity) -> void:
 			found = true
 			break
 	if not found:
-		entity.get_component_by_type("TargetEntityComponent").target = null
+		entity.get_component_by_type("TargetEntityComponent").target = -1

@@ -45,10 +45,6 @@ func _ready():
 	if movement_path_comp_class:
 		add_component(movement_path_comp_class.new())
 	
-	var action_queue_comp_class = ComponentRegistry.get_component_class("ActionQueueComponent")
-	if action_queue_comp_class:
-		add_component(action_queue_comp_class.new())
-	
 	var target_ent_comp_class = ComponentRegistry.get_component_class("TargetEntityComponent")
 	if target_ent_comp_class:
 		add_component(target_ent_comp_class.new())
@@ -68,12 +64,16 @@ func _ready():
 	var cur_goal_comp_class = ComponentRegistry.get_component_class("CurrentGoalComponent")
 	if cur_goal_comp_class:
 		var cur_goal_comp : CurrentGoalComponent = cur_goal_comp_class.new()
-		cur_goal_comp.goal = LocateTreeGoal.new()
+		cur_goal_comp.goal = TargetItemEquippedGoal.new()
 		add_component(cur_goal_comp)
 	
 	var cur_plan_comp_class = ComponentRegistry.get_component_class("CurrentPlanComponent")
 	if cur_plan_comp_class:
 		add_component(cur_plan_comp_class.new())
+
+	var sphere_stats = ComponentRegistry.get_component_class("SphereStatsComponent")
+	if sphere_stats:
+		add_component(sphere_stats.new())
 
 	#play defualt animation
 	worker_animated_sprite_2d.play("default")

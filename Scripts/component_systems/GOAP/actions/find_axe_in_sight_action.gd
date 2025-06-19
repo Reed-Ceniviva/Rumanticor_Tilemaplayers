@@ -1,7 +1,7 @@
 extends GOAPAction
 class_name FindAxeInSightAction
 
-func _ready():
+func _init():
 	name = "FindAxeInSight"
 	cost = 1
 

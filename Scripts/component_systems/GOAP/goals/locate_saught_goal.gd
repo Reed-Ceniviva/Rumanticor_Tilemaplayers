@@ -1,7 +1,7 @@
 extends Goal
 class_name LocateSaughtGoal
 
-func _ready():
+func _init():
 	name = "LocateSaught"
 
 ##checks if the entities components show that the goal has been achieved
