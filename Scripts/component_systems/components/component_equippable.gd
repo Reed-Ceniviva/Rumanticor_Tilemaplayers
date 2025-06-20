@@ -17,3 +17,9 @@ func _init(init_equips_to : String = equips_to, is_accessory : bool = accessory)
 	equips_to = init_equips_to
 	component_name = "EquippableComponent"
 	super._init()
+
+func get_is_accessory():
+	return accessory
+
+func set_is_accessory(set_to : bool):
+	accessory = set_to

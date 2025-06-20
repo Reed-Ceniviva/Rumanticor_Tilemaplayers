@@ -3,7 +3,7 @@ class_name MoveToTargetAction
 
 func _init():
 	name = "MoveToTarget"
-	cost = 32
+	cost = 0.0
 	
 ##checks if an entity has the needed components to take this action
 ##

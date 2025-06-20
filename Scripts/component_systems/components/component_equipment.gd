@@ -27,7 +27,7 @@ func equip_entity(entity : Entity) -> bool:
 		var equi_comp_equip_to = equippable_comp.equips_to
 		for key in equippable_body.keys():
 			if equi_comp_equip_to in key:
-				var body_part_equipment : Array[Entity] = equippable_body.get(key)
+				var body_part_equipment : Array = equippable_body.get(key)
 				for equipment in body_part_equipment:
 					if equipment.has_component_type("EquippableComponent"):
 						var equipped_equi_comp : EquippableComponent = equipment.get_component_by_type("EquippableComponent")
@@ -76,8 +76,9 @@ func non_accessory_equipped(part : String = "hand"):
 			equipment_slots += 1
 			available_slots += 1
 			for equipment in equippable_body[body_part]:
-				if !equipment.accessory:
-					available_slots -= 1
+				if equipment is Entity:
+					if !equipment.get_component_by_type("EquippableComponent").accessory:
+						available_slots -= 1
 				
 			
 		
@@ -94,7 +95,7 @@ func get_weapon_equipped(part : String = "hand") -> Entity:
 	for body_part in equippable_body.keys():
 		if body_part.contains(part):
 			for equipment in equippable_body[body_part]:
-				if !equipment.accessory:
+				if !equipment.get_component_by_type("EquippableComponent").accessory:
 					available_equipment.append(equipment)
 	var max_damage = 0.0
 	var chosen_equi : Entity

@@ -16,7 +16,7 @@ func process_entity(entity: Entity) -> void:
 	var goal : Goal = entity.get_component_by_type("CurrentGoalComponent").goal
 	if goal == null or goal.name != "MoveToTarget":
 		return
-
+	print("computing navigation")
 	if not entity.has_component_type("PositionComponent"): return
 	if not entity.has_component_type("MobilityComponent"): return
 	if not entity.has_component_type("MovementPathComponent"): return

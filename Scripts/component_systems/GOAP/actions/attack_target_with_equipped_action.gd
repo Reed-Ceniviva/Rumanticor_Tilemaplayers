@@ -26,6 +26,10 @@ func is_applicable(entity: Entity) -> bool:
 	if not entity.has_component_type("SphereStatsComponent"):
 		return false
 	
+	if target_ent_id == -1:
+		return false
+	
+	
 	var target_ent = EntityRegistry._entity_store[target_ent_id]
 	
 	if not target_ent.has_component_type("PositionComponent"):
@@ -40,10 +44,10 @@ func is_applicable(entity: Entity) -> bool:
 	var equipped_weapon = equi_comp.get_weapon_equipped("hand")
 	var equipment_range = 1
 	if equipped_weapon:
-		equipment_range = equi_comp.get_weapon_equipped("hand").get_component_by_type("EqippableComponent").range
+		equipment_range = equipped_weapon.get_component_by_type("EquippableComponent").range
 	
 	if distance_between > equipment_range:
-		print("out of range of euqipped")
+		#print("out of range of euqipped")
 		return false
 	
 	return true

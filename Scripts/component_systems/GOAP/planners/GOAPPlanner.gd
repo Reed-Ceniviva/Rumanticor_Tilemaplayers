@@ -19,7 +19,6 @@ func make_plan(entity: Entity) -> void:
 	var iteration_count := 0
 
 	if not goal.is_satisfied(current_entity_state):
-		iteration_count += 1
 		var best_action: GOAPAction = null
 		var lowest_cost := INF
 

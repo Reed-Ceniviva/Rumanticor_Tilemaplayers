@@ -14,6 +14,7 @@ static func initialize():
 	registered_actions.append(EquipTargetItemAction.new())
 	registered_actions.append(MoveToTargetAction.new())
 	registered_actions.append(AttackTargetWithEquippedAction.new())
+	registered_actions.append(FindAxeInSightAction.new())
 
 static func get_applicable_actions(entity: Entity) -> Array[GOAPAction]:
 	if not initialized:

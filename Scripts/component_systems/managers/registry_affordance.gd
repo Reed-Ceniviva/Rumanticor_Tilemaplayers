@@ -25,7 +25,7 @@ func _ready():
 	
 	affordances["MovementPathComponent"] = func(entity : Entity):
 		if entity.has_component_type("MobilityComponent"):
-			return [MoveToTargetAction.new()]
+			return [AtTargetGoal.new()]
 
 	affordances["TargetEntityComponent"] = func(entity : Entity):
 		return [KillTargetGoal.new()]

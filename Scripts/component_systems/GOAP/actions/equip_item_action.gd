@@ -13,7 +13,7 @@ func is_applicable(entity: Entity) -> bool:
 	if not entity.has_component_type("VisionComponent"):
 		print("entity does not have vision component")
 		return false
-	if not entity.has_component_type("TargetEntityComponent"):
+	if not entity.has_component_type("TargetEntityComponent") or entity.get_component_by_type("TargetEntityComponent").target == -1:
 		print("entity does not have target component")
 		return false
 	if not EntityRegistry._entity_store[entity.get_component_by_type("TargetEntityComponent").target].has_component_type("EquippableComponent"):
@@ -51,4 +51,4 @@ func apply_effects(entity: Entity) -> void:
 	var equi_comp : EquipmentComponent = entity.get_component_by_type("EquipmentComponent")
 	var target_id = entity.get_component_by_type("TargetEntityComponent").target
 	equi_comp.equip_entity(EntityRegistry._entity_store[target_id])
-	entity.get_component_by_type("TargetEntityComponent").target = null
+	entity.get_component_by_type("TargetEntityComponent").target = -1

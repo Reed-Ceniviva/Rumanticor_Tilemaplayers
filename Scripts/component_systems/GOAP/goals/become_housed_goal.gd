@@ -15,5 +15,6 @@ func is_satisfied(entity: Entity) -> bool:
 	var housed_comp : HousedComponent = entity.get_component_by_type("HousedComponent")
 	if not housed_comp.is_housed:
 		return false
-
+	
+	priority = 10.0
 	return true
