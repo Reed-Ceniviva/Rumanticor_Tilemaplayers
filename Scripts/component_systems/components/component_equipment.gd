@@ -90,7 +90,7 @@ func non_accessory_equipped(part : String = "hand"):
 		return false
 			
 
-func get_weapon_equipped(part : String = "hand") -> Entity:
+func get_strongest_weapon_equipped_to_part(part : String = "hand") -> Entity:
 	var available_equipment : Array[Entity] = []
 	for body_part in equippable_body.keys():
 		if body_part.contains(part):
@@ -105,3 +105,37 @@ func get_weapon_equipped(part : String = "hand") -> Entity:
 			max_damage = equi_damage
 			chosen_equi = equipment
 	return chosen_equi
+
+func get_strongest_equipped_weapon() -> Entity:
+	var available_equipment : Array[Entity] = []
+	for body_part in equippable_body.keys():
+		for equipment in equippable_body[body_part]:
+			if !equipment.get_component_by_type("EquippableComponent").accessory:
+				available_equipment.append(equipment)
+	var max_damage = 0.0
+	var chosen_equi : Entity
+	for equipment in available_equipment:
+		var equi_damage = equipment.get_component_by_type("EquippableComponent").damage_mod
+		if equi_damage > max_damage:
+			max_damage = equi_damage
+			chosen_equi = equipment
+	return chosen_equi
+
+func has_weapon_equipped_to_part(part : String = "hand") -> bool:
+	var available_equipment : Array[Entity] = []
+	for body_part in equippable_body.keys():
+		if body_part.contains(part):
+			for equipment in equippable_body[body_part]:
+				if !equipment.get_component_by_type("EquippableComponent").accessory:
+					if equipment.get_component_by_type("EquippableComponent").damage_mod != 1.0:
+						return true
+	return false
+	
+func has_weapon_equipped() -> bool:
+	var available_equipment : Array[Entity] = []
+	for body_part in equippable_body.keys():
+		for equipment in equippable_body[body_part]:
+			if !equipment.get_component_by_type("EquippableComponent").accessory:
+				if equipment.get_component_by_type("EquippableComponent").damage_mod != 1.0:
+					return true
+	return false

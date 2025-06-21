@@ -7,8 +7,6 @@ func _init():
 func process(entity: Entity) -> void:
 		if not entity.has_component_type("PositionComponent"):
 			return
-		if not entity.has_component_type("MovementPathComponent"):
-			return
 		##would use the traversable values for how many steps in the path is moved per tick
 		if not entity.has_component_type("BrainComponent"):
 			return
@@ -19,7 +17,7 @@ func process(entity: Entity) -> void:
 			return
 
 		var pos_comp := entity.get_component_by_type("PositionComponent")
-		var cur_path : Array[Vector2i] = brain_comp.recall("current_path", [])
+		var cur_path : Array = brain_comp.recall("current_path", [])
 
 		if cur_path.is_empty():
 			return

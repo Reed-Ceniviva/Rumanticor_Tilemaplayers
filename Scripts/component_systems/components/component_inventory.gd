@@ -32,6 +32,17 @@ func remove_item(entity: Entity) -> Entity:
 func has_item(entity: Entity) -> bool:
 	return entity in items
 
+func has_item_amount(entity : Entity, amount : float) -> bool:
+	var total = 0
+	for item in items:
+		if item.get_class() == entity.get_class():
+			total += 1
+	if total == amount:
+		return true
+	else:
+		return false
+		
+
 func clear() -> void:
 	items.clear()
 

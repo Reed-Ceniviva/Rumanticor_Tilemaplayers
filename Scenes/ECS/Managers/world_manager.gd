@@ -10,6 +10,7 @@ var vision_system = VisionSystem.new()
 var movement_system = MovementSystem.new()
 var navigation_system = NavigationSystem.new()
 var systems_manager = SystemManager.new()
+var intent_propagator = IntentPropagationSystem.new()
 
 @onready var layer_manager = $Layer_Manager
 @onready var entities_layer = $Entities
@@ -60,8 +61,6 @@ func _physics_process(delta):
 					pos_system.process(child)
 				if child.has_component_type("VisionComponent"):
 					vision_system.process(child)
-				if child.has_component_type("MovementPathComponent"):
-					movement_system.process(child)
 				if child.has_component_type("EquipmentComponent"):
 					print("equippable body: " , child.get_component_by_type("EquipmentComponent").equippable_body)
 				
@@ -77,8 +76,10 @@ func _physics_process(delta):
 							pass
 							#find_tree_system.process(child)
 						"move_to_target":
-							navigation_system.process_entity(child)
-							movement_system.process(child)
+							if brain.knows("current_path") and brain.knows("traverses"):
+								if brain.recall("current_path", []).is_empty():
+									navigation_system.process_entity(child)
+								movement_system.process(child)
 						"equip_item":
 							pass
 							#equipment_system.process(child)

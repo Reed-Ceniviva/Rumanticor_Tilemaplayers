@@ -39,36 +39,33 @@ func _ready():
 	
 	##brain components
 	#create and add vision component (eyes)
-	var vision_comp_class = ComponentRegistry.get_component_class("VisionComponent")
-	if vision_comp_class:
-		add_component(vision_comp_class.new(32))
-	
-	var movement_path_comp_class = ComponentRegistry.get_component_class("MovementPathComponent")
-	if movement_path_comp_class:
-		add_component(movement_path_comp_class.new())
 	
 	var target_ent_comp_class = ComponentRegistry.get_component_class("TargetEntityComponent")
 	if target_ent_comp_class:
 		add_component(target_ent_comp_class.new())
 	
-	var saught_ent_comp_class = ComponentRegistry.get_component_class("SaughtEntityComponent")
-	if saught_ent_comp_class:
-		add_component(saught_ent_comp_class.new())
-
-	var sphere_stats = ComponentRegistry.get_component_class("SphereStatsComponent")
-	if sphere_stats:
-		add_component(sphere_stats.new())
-	
 	##intent based AI
 	var brain_comp_class = ComponentRegistry.get_component_class("BrainComponent")
 	if brain_comp_class:
 		var brain_comp : BrainComponent = brain_comp_class.new()
-		brain_comp.memory["intent"] = "idle"
+		brain_comp.memory["life_goals"] = ["own_home","reproduce"]
+		brain_comp.memory["goal_intent"] = ""
+		brain_comp.memory["intent"] = ""
 		brain_comp.memory["target"] = -1
 		brain_comp.memory["in_sight"] = []
 		brain_comp.memory["sight_range"] = 32
 		brain_comp.memory["current_path"] = []
-		brain_comp.memory["traverses"] = ["ground"]
+		brain_comp.memory["traverses"] = {"ground":1.0}
+		brain_comp.memory["sphere_stats"] = {
+			"strength" : 1.0,
+			"nature": 1.0,
+			"art": 1.0,
+			"social": 1.0,
+			"inspiration":1.0,
+			"fear":1.0,
+			"luck":1.0,
+			"wisdom":1.0
+		}
 		add_component(brain_comp)
 
 

@@ -7,7 +7,7 @@ func _init():
 
 func process(entity: Entity) -> void:
 	if entity.has_component_type("BrainComponent"):
-		var brain : BrainComponent = entity.get_component_by_type("VisionComponent")
+		var brain : BrainComponent = entity.get_component_by_type("BrainComponent")
 		var pos_viewer: Vector2 = entity.get_component_by_type("PositionComponent").pos
 
 		brain.remember("in_sight", [])

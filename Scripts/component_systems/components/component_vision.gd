@@ -15,3 +15,21 @@ func clear_vision():
 func add_visible_entity(entity_id: int):
 	if entity_id not in visible_entities:
 		visible_entities.append(entity_id)
+
+func type_in_sight(entity : Entity) -> bool:
+	for ent_id in visible_entities:
+		if EntityRegistry._entity_store[ent_id].get_class() == entity.get_class():
+			return true
+	return false
+	
+func type_in_range(entity : Entity, range : float = 1.0):
+	if not type_in_range(entity):
+		return false
+	for ent_id in visible_entities:
+		var ent = EntityRegistry._entity_store[ent_id]
+		if ent.get_class() == entity.get_class():
+			var ent_pos = ent.get_component_by_type("PositionComponent").pos
+			if entity.get_component_by_type("PositionComponent").pos.distance_to(ent_pos) <= range:
+				return true
+			else:
+				return false
