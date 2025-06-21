@@ -10,25 +10,23 @@ func _init():
 const DIRS = [Vector2i.LEFT, Vector2i.RIGHT, Vector2i.UP, Vector2i.DOWN]
 
 func process_entity(entity: Entity) -> void:
-	if not entity.has_component_type("CurrentGoalComponent"):
-		return
-
-	var goal : Goal = entity.get_component_by_type("CurrentGoalComponent").goal
-	if goal == null or goal.name != "MoveToTarget":
-		return
+	
 	print("computing navigation")
 	if not entity.has_component_type("PositionComponent"): return
-	if not entity.has_component_type("MobilityComponent"): return
-	if not entity.has_component_type("MovementPathComponent"): return
-	if not entity.has_component_type("TargetEntityComponent"): return
+	if not entity.has_component_type("BrainComponent"): return
+	#if not entity.has_component_type("TargetEntityComponent"): return
 
 	var start = entity.get_component_by_type("PositionComponent").pos
-	var goal_id = entity.get_component_by_type("TargetEntityComponent").target
+	var goal_id = entity.get_component_by_type("BrainComponent").recall("target", -1)
+	
+	if goal_id == -1:
+		return
+	
 	var goal_pos = EntityRegistry._entity_store[goal_id].get_component_by_type("PositionComponent").pos
-	var mobility = entity.get_component_by_type("MobilityComponent").traversable
+	var mobility = entity.get_component_by_type("BrainComponent").recall("traverses", [])
 
 	var path := _find_path(start, goal_pos, mobility)
-	entity.get_component_by_type("MovementPathComponent").curren_path = path
+	entity.get_component_by_type("BrainComponent").remember("current_path", path)
 
 
 

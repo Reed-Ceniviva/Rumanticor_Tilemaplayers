@@ -2,7 +2,6 @@ extends Node
 
 var entity_registry = EntityRegistry
 var component_registry = ComponentRegistry
-var action_registry = ActionRegistry
 var affordance_registry = AffordanceRegistry
 
 var health_system = HealthSystem.new()
@@ -10,9 +9,6 @@ var pos_system = PositionSystem.new()
 var vision_system = VisionSystem.new()
 var movement_system = MovementSystem.new()
 var navigation_system = NavigationSystem.new()
-var goap_planner = GOAPPlanner.new()
-var goal_selection = GoalSelectionSystem.new()
-var goal_generation = GoalGeneratorSystem.new()
 var systems_manager = SystemManager.new()
 
 @onready var layer_manager = $Layer_Manager
@@ -47,19 +43,8 @@ func _physics_process(delta):
 			entities_layer.add_child(worker_ent)
 			entities_layer.add_child(axe_ent)
 			
-			var worker_equi : EquipmentComponent = worker_ent.get_component_by_type("EquipmentComponent")
-			worker_equi.equip_entity(axe_ent)
-			
-			if worker_ent.has_component_type("TargetEntityComponent"):
-				worker_ent.get_component_by_type("TargetEntityComponent").target = axe_ent.entity_id
-			else:
-				print("worker doesnt have target entity component")
-			
-			if worker_ent.has_component_type("SaughtEntityComponent"):
-				worker_ent.get_component_by_type("SaughtEntityComponent").saught = AxeEntity.new()
-			
-			if worker_ent.has_component_type("CurrentPlanComponent"):
-				worker_ent.get_component_by_type("CurrentPlanComponent").plan = ActionRegistry.get_applicable_actions(worker_ent)
+			#var worker_equi : EquipmentComponent = worker_ent.get_component_by_type("EquipmentComponent")
+			#worker_equi.equip_entity(axe_ent)
 		
 		for child in entities_layer.get_children():
 			if child is Entity:
@@ -69,15 +54,6 @@ func _physics_process(delta):
 						print("Target = " ,  EntityRegistry._entity_store[child.get_component_by_type("TargetEntityComponent").target])
 					pass
 					#print(child.get_component_by_type("AvailableActionsComponent").actions)
-				
-				if child.has_component_type("CurrentPlanComponent"):
-					var child_plan : CurrentPlanComponent = child.get_component_by_type("CurrentPlanComponent")
-					if child_plan.plan.is_empty():
-						goap_planner.make_plan(child)
-					else:
-						goap_planner.execute_plan(child)
-				if child.has_component_type("AvailableActionsComponent"):
-					print(child.get_component_by_type("AvailableActionsComponent").actions)
 				if child.has_component_type("HealthComponent"):
 					health_system.process(child)
 				if child.has_component_type("PositionComponent"):
@@ -88,16 +64,26 @@ func _physics_process(delta):
 					movement_system.process(child)
 				if child.has_component_type("EquipmentComponent"):
 					print("equippable body: " , child.get_component_by_type("EquipmentComponent").equippable_body)
-				if child.has_component_type("CurrentGoalComponent"):
-					var goal_comp : CurrentGoalComponent = child.get_component_by_type("CurrentGoalComponent")
-					if goal_comp.goal:
-						if not goal_comp.goal.is_satisfied(child):
+				
+				if child.has_component_type("BrainComponent"):
+					var brain : BrainComponent = child.get_component_by_type("BrainComponent")
+					var intent = brain.recall("intent", "idle")
+					
+					if brain.knows("in_sight"):
+						vision_system.process(child)
+					
+					match intent:
+						"find_tree":
+							pass
+							#find_tree_system.process(child)
+						"move_to_target":
 							navigation_system.process_entity(child)
-						else:
-							goal_selection.process_entity(child)
-					else:
-						child.get_component_by_type("AvailableGoalsComponent").goals = goal_generation.generate_available_goals(child)
-						goal_selection.process_entity(child)
+							movement_system.process(child)
+						"equip_item":
+							pass
+							#equipment_system.process(child)
+						"idle":
+							pass
 		
 
 func place_trees():

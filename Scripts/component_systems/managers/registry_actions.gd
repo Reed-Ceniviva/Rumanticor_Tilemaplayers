@@ -11,7 +11,7 @@ static func initialize():
 	registered_actions.append(FindTreeInSightAction.new())
 	#registered_actions.append(ChopTreeAction.new())
 	registered_actions.append(FindSaughtEntityInSight.new())
-	registered_actions.append(EquipTargetItemAction.new())
+	#registered_actions.append(EquipTargetItemAction.new())
 	registered_actions.append(MoveToTargetAction.new())
 	registered_actions.append(AttackTargetWithEquippedAction.new())
 	registered_actions.append(FindAxeInSightAction.new())

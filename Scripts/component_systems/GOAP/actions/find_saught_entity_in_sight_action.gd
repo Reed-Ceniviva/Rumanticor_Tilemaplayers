@@ -15,7 +15,11 @@ func is_applicable(entity: Entity) -> bool:
 		return false
 	if not entity.has_component_type("TargetEntityComponent"):
 		return false
+	if entity.get_component_by_type("TargetEntityComponent").target == -1:
+		return false
 	if not entity.has_component_type("SaughtEntityComponent"):
+		return false
+	if not entity.get_component_by_type("SaughtEntityComponent").saught:
 		return false
 	return true  # Override
 

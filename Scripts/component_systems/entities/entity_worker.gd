@@ -16,6 +16,7 @@ func _init(init_pos : Vector2i = Vector2i(-1,-1)):
 		add_component(pos_comp_class.new(init_pos))
 
 func _ready():
+	##body components
 	#create and add health component
 	var health_comp_class = ComponentRegistry.get_component_class("HealthComponent")
 	if health_comp_class:
@@ -35,7 +36,8 @@ func _ready():
 	if mobility_comp_class:
 		add_component(mobility_comp_class.new())
 	
-	#brain components
+	
+	##brain components
 	#create and add vision component (eyes)
 	var vision_comp_class = ComponentRegistry.get_component_class("VisionComponent")
 	if vision_comp_class:
@@ -52,30 +54,25 @@ func _ready():
 	var saught_ent_comp_class = ComponentRegistry.get_component_class("SaughtEntityComponent")
 	if saught_ent_comp_class:
 		add_component(saught_ent_comp_class.new())
-		
-	var avail_action_comp_class = ComponentRegistry.get_component_class("AvailableActionsComponent")
-	if avail_action_comp_class:
-		add_component(avail_action_comp_class.new())
-		
-	var avail_goal_comp_class = ComponentRegistry.get_component_class("AvailableGoalssComponent")
-	if avail_goal_comp_class:
-		add_component(avail_goal_comp_class.new())
-
-	var cur_goal_comp_class = ComponentRegistry.get_component_class("CurrentGoalComponent")
-	if cur_goal_comp_class:
-		var cur_goal_comp : CurrentGoalComponent = cur_goal_comp_class.new()
-		cur_goal_comp.goal = TargetItemEquippedGoal.new()
-		add_component(cur_goal_comp)
-	
-	var cur_plan_comp_class = ComponentRegistry.get_component_class("CurrentPlanComponent")
-	if cur_plan_comp_class:
-		add_component(cur_plan_comp_class.new())
 
 	var sphere_stats = ComponentRegistry.get_component_class("SphereStatsComponent")
 	if sphere_stats:
 		add_component(sphere_stats.new())
+	
+	##intent based AI
+	var brain_comp_class = ComponentRegistry.get_component_class("BrainComponent")
+	if brain_comp_class:
+		var brain_comp : BrainComponent = brain_comp_class.new()
+		brain_comp.memory["intent"] = "idle"
+		brain_comp.memory["target"] = -1
+		brain_comp.memory["in_sight"] = []
+		brain_comp.memory["sight_range"] = 32
+		brain_comp.memory["current_path"] = []
+		brain_comp.memory["traverses"] = ["ground"]
+		add_component(brain_comp)
 
-	#play defualt animation
+
+	##play defualt animation
 	worker_animated_sprite_2d.play("default")
 
 func chop():
