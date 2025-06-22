@@ -34,6 +34,8 @@ func equip_entity(entity : Entity) -> bool:
 						if not equipped_equi_comp.accessory:
 							return false
 				equippable_body[key].append(entity)
+				if entity.has_component_type("BrainComponent"):
+					var ent_brain = entity.get_component_by_type("BrainComponent")
 				entity.set_active(false)
 				return true
 		return false
@@ -48,6 +50,29 @@ func remove_equipment(entity : Entity) -> Entity:
 			entity.set_active(true)
 			return entity
 	return null
+
+func remove_if_non_accessory(entity : Entity) -> Entity:
+	
+	#if equippable_body.values().has(entity):
+		#if not entity.get_component_by_type("EquippableComponent").accessory:
+			#equippable_body.values().erase(entity)
+			#entity.set_active(true)
+			#return entity
+	
+	for part in equippable_body:
+		if entity in equippable_body[part]:
+			if not entity.get_component_by_type("EquippableComponent").accessory:
+				equippable_body[part].erase(entity)
+				entity.set_active(true)
+				return entity
+	return null
+
+func remove_all_non_accessories() -> Array:
+	var removed : Array
+	for part in equippable_body:
+		for item in equippable_body[part]:
+			removed.append(remove_if_non_accessory(item))
+	return removed
 
 func remove_body_part_equipment(body_part : String) -> Array[Entity]:
 	var removed = []
@@ -89,7 +114,6 @@ func non_accessory_equipped(part : String = "hand"):
 		#no non-accessory item equpped to part
 		return false
 			
-
 func get_strongest_weapon_equipped_to_part(part : String = "hand") -> Entity:
 	var available_equipment : Array[Entity] = []
 	for body_part in equippable_body.keys():

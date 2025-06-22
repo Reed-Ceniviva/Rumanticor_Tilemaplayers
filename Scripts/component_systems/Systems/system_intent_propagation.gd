@@ -46,5 +46,14 @@ func evaluate_precondition(entity: Entity, precondition: Dictionary) -> bool:
 	var comp = entity.get_component_by_type(comp_type)
 	if not comp.has_method(method):
 		return false
+	
+	for i in range(args.size()):
+		if args[i] == "entity":
+			args[i] = entity
+		elif args[i] == "target":
+			var brain = entity.get_component_by_type("BrainComponent")
+			args[i] = brain.memory.get("target", null)
+
+
 
 	return comp.callv(method, args)

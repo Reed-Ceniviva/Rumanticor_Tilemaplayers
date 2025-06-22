@@ -42,6 +42,10 @@ func forget(key: String) -> void:
 ## returns = bool
 func knows(key: String) -> bool:
 	return memory.has(key)
+	
+
+func knows_not(key: String, not_value : Variant = null) -> bool:
+	return memory.get(key) != not_value
 
 
 ##memory print function for debugging

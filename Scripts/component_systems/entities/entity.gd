@@ -53,5 +53,16 @@ func die():
 		for item in inv_comp.items:
 			var dropped_item = inv_comp.remove_item(item)
 			get_parent().add_child(dropped_item)
-			dropped_item.position = self.position
+			if dropped_item.has_component_type("PositionComponent"):
+				dropped_item.get_component_by_type("PositionComponent").pos = get_component_by_type("PositionComponent").pos
+			else:
+				dropped_item.add_component(get_component_by_type("PositionComponent"))
+	if has_component_type("EquipmentComponent"):
+		var equipment_comp : EquipmentComponent = get_component_by_type("EquipmentComponent")
+		var dropped_equipment = equipment_comp.remove_all_equipment()
+		for dropped_item in dropped_equipment:
+			if dropped_item.has_component_type("PositionComponent"):
+				dropped_item.get_component_by_type("PositionComponent").pos = get_component_by_type("PositionComponent").pos
+			else:
+				dropped_item.add_component(get_component_by_type("PositionComponent"))
 	self.queue_free()

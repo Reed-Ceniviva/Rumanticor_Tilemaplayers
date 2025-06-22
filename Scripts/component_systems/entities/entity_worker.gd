@@ -56,6 +56,8 @@ func _ready():
 		brain_comp.memory["sight_range"] = 32
 		brain_comp.memory["current_path"] = []
 		brain_comp.memory["traverses"] = {"ground":1.0}
+		brain_comp.memory["melee_range"] = 1.0
+		brain_comp.memory["ranged_range"] = 3.0
 		brain_comp.memory["sphere_stats"] = {
 			"strength" : 1.0,
 			"nature": 1.0,

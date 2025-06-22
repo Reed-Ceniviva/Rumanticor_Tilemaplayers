@@ -16,14 +16,14 @@ func add_visible_entity(entity_id: int):
 	if entity_id not in visible_entities:
 		visible_entities.append(entity_id)
 
-func type_in_sight(entity : Entity) -> bool:
+func type_in_sight(ent_type : String) -> bool:
 	for ent_id in visible_entities:
-		if EntityRegistry._entity_store[ent_id].get_class() == entity.get_class():
+		if EntityRegistry._entity_store[ent_id].get_class() == ent_type:
 			return true
 	return false
 	
 func type_in_range(entity : Entity, range : float = 1.0):
-	if not type_in_range(entity):
+	if not type_in_sight(entity.get_class()):
 		return false
 	for ent_id in visible_entities:
 		var ent = EntityRegistry._entity_store[ent_id]

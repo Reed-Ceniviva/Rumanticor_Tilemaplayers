@@ -32,10 +32,10 @@ func remove_item(entity: Entity) -> Entity:
 func has_item(entity: Entity) -> bool:
 	return entity in items
 
-func has_item_amount(entity : Entity, amount : float) -> bool:
+func has_item_amount(ent_type : String, amount : float) -> bool:
 	var total = 0
 	for item in items:
-		if item.get_class() == entity.get_class():
+		if item.get_class() == ent_type:
 			total += 1
 	if total == amount:
 		return true
@@ -48,3 +48,6 @@ func clear() -> void:
 
 func is_full() -> bool:
 	return items.size() >= max_items
+
+func is_not_full() -> bool:
+	return not is_full()

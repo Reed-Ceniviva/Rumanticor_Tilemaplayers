@@ -59,14 +59,10 @@ func _physics_process(delta):
 					health_system.process(child)
 				if child.has_component_type("PositionComponent"):
 					pos_system.process(child)
-				if child.has_component_type("VisionComponent"):
-					vision_system.process(child)
-				if child.has_component_type("EquipmentComponent"):
-					print("equippable body: " , child.get_component_by_type("EquipmentComponent").equippable_body)
-				
 				if child.has_component_type("BrainComponent"):
 					var brain : BrainComponent = child.get_component_by_type("BrainComponent")
-					var intent = brain.recall("intent", "idle")
+					intent_propagator.process(child)
+					var intent = brain.recall("intent", "rest")
 					
 					if brain.knows("in_sight"):
 						vision_system.process(child)
@@ -74,16 +70,28 @@ func _physics_process(delta):
 					match intent:
 						"find_tree":
 							pass
+						"fell_tree":
+							pass
+						"collect_log":
+							pass
+						"build_hut":
+							pass
+						"find_tool":
+							pass
+						"put_tool_down":
+							pass
+						"wander":
+							pass
 							#find_tree_system.process(child)
 						"move_to_target":
 							if brain.knows("current_path") and brain.knows("traverses"):
 								if brain.recall("current_path", []).is_empty():
 									navigation_system.process_entity(child)
 								movement_system.process(child)
-						"equip_item":
+						"equip_target_tool":
 							pass
 							#equipment_system.process(child)
-						"idle":
+						"rest":
 							pass
 		
 
