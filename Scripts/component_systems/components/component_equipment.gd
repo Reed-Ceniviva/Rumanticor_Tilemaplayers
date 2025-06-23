@@ -93,7 +93,7 @@ func has_equipment(entity : Entity) -> bool:
 			return true
 	return false
 
-func non_accessory_equipped(part : String = "hand"):
+func non_accessory_equipped(part : String = "hand") -> bool:
 	var equipment_slots = 0
 	var available_slots = 0
 	for body_part in equippable_body.keys():
@@ -104,9 +104,11 @@ func non_accessory_equipped(part : String = "hand"):
 				if equipment is Entity:
 					if !equipment.get_component_by_type("EquippableComponent").accessory:
 						available_slots -= 1
+					
 				
 			
 		
+	
 	## equipment slot full - non-accessory item equipped to part
 	if available_slots > 0:
 		return true

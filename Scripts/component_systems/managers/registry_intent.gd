@@ -15,45 +15,44 @@ static var blueprints: Dictionary = {}
 
 
 
-func _ready():
+func _init():
 	# Register blueprints here
 	register_blueprint("build_hut", {
 		"preconditions": [
 			#check if the ent has enough logs to build a hut
 			{"component": "InventoryComponent", "check":"has_item_amount","args":["LogEntity",5] }
 			],
-		"fallback_intents": ["collect_logs"]
+		"fallback_intents": ["collect_log"]
 	})
 
 	register_blueprint("collect_log", {
 		"preconditions": [
 			#check if a log is in sight
-			{"component": "VisionComponent", "check":"type_in_sight","args":["LogEntity"] },
+			{"component": "BrainComponent", "check":"log_in_sight","args":[] },
 			#check if there is space in inventory to store a log
 			{"component": "InventoryComponent", "check":"is_not_full", "args":[]},
 			#check if ent is in range to collect a log
-			{"component": "PositionComponent", "check":"is_in_grab_range_of_target", "args":[]}
+			{"component": "PositionComponent", "check":"is_in_grab_range_of_target", "args":["target"]}
 			],
-		"fallback_intents": ["fell_tree", "move_to_target"]
+		"fallback_intents": ["find_log","fell_tree", "move_to_target"]
 	})
 #
 	register_blueprint("fell_tree", {
 		"preconditions": [
 			#check if a tree is in sight
-			{"component": "VisionComponent", "check":"type_in_sight","args":["TreeEntity"] },
+			{"component": "BrainComponent", "check":"tree_in_sight","args":[] },
 			#check if ent has a weapon
 			{"component": "EquipmentComponent", "check":"has_weapon_equipped", "args":[]},
 			#check if ent is in range to use weapon
 			{"component": "PositionComponent", "check":"is_in_melee_range_of_target" ,"args":["entity", "target"]}
 			],
-		"fallback_intents": ["find_tree","move_to_target","find_tool"]
+		"fallback_intents": ["find_tool","find_tree","move_to_target"]
 	})
 
 	register_blueprint("equip_target_tool",{
 		"preconditions":[
-			{"component": "VisionComponent", "check":"type_in_sight","args":["ToolEntity"] },
-			{"component": "BrainComponent", "check":"knows_not", "args":["target", -1]},
-			{"component": "PositionComponent", "check":"is_in_grab_range_of_target", "args":[]},
+			{"component": "BrainComponent", "check":"tool_in_sight","args":[] },
+			{"component": "PositionComponent", "check":"is_in_grab_range_of_target", "args":["target"]},
 			{"component": "EquipmentComponent", "check":"non_accessory_equipped", "args":["hand"]}
 		],
 		"fallback_intents": ["move_to_target", "find_tool", "put_tool_down"]
@@ -61,7 +60,7 @@ func _ready():
 	
 	register_blueprint("find_tool", {
 		"preconditions":[
-			{"component": "VisionComponent", "check":"type_in_sight","args":["ToolEntity"] },
+			{"component": "BrainComponent", "check":"tool_in_sight","args":[] }
 		],
 		"fallback_intents": ["wander"]
 	})
@@ -73,23 +72,34 @@ func _ready():
 
 	register_blueprint("move_to_target", {
 		"preconditions": [
-			{"component": "BrainComponent", "check":"knows_not", "args":["target", -1]},
-			{"component": "BrainComponent", "check":"knows", "args":["traverses"]}
+			{"component": "BrainComponent", "check":"knows", "args": ["target"]},
+			{"component": "BrainComponent", "check":"knows", "args":["traverses"]},
+			{"component": "PositionComponent", "check":"not_at_target_position", "args":["target"]}
 		],
 		"fallback_intents": ["rest"]
 	})
 
 	register_blueprint("find_tree",{
 		"preconditions": [
-				{"component": "VisionComponent", "check":"type_in_sight","args":["TreeEntity"] }
+				{"component": "BrainComponent", "check":"tree_in_sight","args":[] }
 			],
-		"fallback_intents": ["wander"]
+		"fallback_intents": ["find_tool","wander"]
 	})
 	register_blueprint("wander", {
 		"preconditions": [
 			{"component":"BrainComponent", "check":"knows", "args":["traverses"]}
 			],
-		"fallback_intents": ["rest"]  # terminal intent
+		"fallback_intents": []  # terminal intent
+	})
+	register_blueprint("rest", {
+		"preconditions": [],
+		"fallback_intents": []  # terminal intent
+	})
+	register_blueprint("find_log",{
+		"preconditions": [
+				{"component": "BrainComponent", "check":"log_in_sight","args":[] }
+			],
+		"fallback_intents": ["find_tree","wander"]
 	})
 
 static func register_blueprint(intent_name: String, blueprint: Dictionary) -> void:

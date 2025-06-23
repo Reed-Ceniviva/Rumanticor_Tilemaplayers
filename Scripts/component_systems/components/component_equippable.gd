@@ -1,25 +1,29 @@
 extends Component
 class_name EquippableComponent
 
-##part of the body that the equipment can equip to
-var equips_to : String = "hand"
-##if this is an accessory or equipment, ring vs sword
-var accessory : bool = false
-##how affective this equipment is when weilded as a weapon
-var damage_mod : float = 1.0
-##how affective this equipment is at taking an attack
-var defense_mod : float = 1.0
-##how far away the item can be used to attack properly
-var range : float = 1.0
+## Part of the body that the equipment can attach to (e.g. "hand", "head")
+var equips_to: String = "hand"
 
-func _init(init_equips_to : String = equips_to, is_accessory : bool = accessory):
-	accessory = is_accessory
+## Whether this is an accessory (e.g. ring, necklace) or a primary equipment
+var accessory: bool = false
+
+## Weapon effectiveness multiplier
+var damage_mod: float = 1.0
+
+## Defense multiplier when taking damage
+var defense_mod: float = 1.0
+
+## Effective melee or usage range
+var range: float = 1.0
+
+func _init(init_equips_to: String = "hand", init_is_accessory: bool = false):
+	accessory = init_is_accessory
 	equips_to = init_equips_to
 	component_name = "EquippableComponent"
 	super._init()
 
-func get_is_accessory():
+func get_is_accessory() -> bool:
 	return accessory
 
-func set_is_accessory(set_to : bool):
+func set_is_accessory(set_to: bool) -> void:
 	accessory = set_to

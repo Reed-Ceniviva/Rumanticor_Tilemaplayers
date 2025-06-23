@@ -10,9 +10,10 @@ var vision_system = VisionSystem.new()
 var movement_system = MovementSystem.new()
 var navigation_system = NavigationSystem.new()
 var systems_manager = SystemManager.new()
+var damage_system = DamageSystem.new()
 var intent_propagator = IntentPropagationSystem.new()
 
-@onready var layer_manager = $Layer_Manager
+@onready var layer_manager : layer_manager = $Layer_Manager
 @onready var entities_layer = $Entities
 
 var map_matrix : Dictionary[Vector2i,Array]
@@ -36,6 +37,7 @@ func _physics_process(delta):
 		if layer_manager and map_matrix.is_empty():
 			print("getting map and calling place trees")
 			map_matrix = layer_manager.get_map()
+			navigation_system.terrain_map = map_matrix
 			pos_system.groundTM = layer_manager.tm_layers["ground"]
 			place_trees()
 			var worker_ent = EntityRegistry.instantiate_entity("WorkerEntity", [layer_manager.tm_layers["ground"].get_used_cells().min()])
@@ -64,36 +66,94 @@ func _physics_process(delta):
 					intent_propagator.process(child)
 					var intent = brain.recall("intent", "rest")
 					
+					print("intent: " , intent)
+					
 					if brain.knows("in_sight"):
 						vision_system.process(child)
+					if brain.knows("current_path"):
+						movement_system.process(child)
 					
 					match intent:
 						"find_tree":
-							pass
+							print("finding tree")
+							for vis_ent_id in brain.recall("in_sight", []):
+								var vis_ent = EntityRegistry._entity_store[vis_ent_id]
+								if vis_ent.has_tag("tree"):
+									brain.remember("target", vis_ent_id)
+									brain.remember("intent", "move_to_target")
+							
+							
 						"fell_tree":
-							pass
+							print("felling tree")
+							var target_ent : Entity = EntityRegistry._entity_store[brain.recall("target", -1)]
+							print(target_ent)
+							var tree_health : HealthComponent =	target_ent.get_component_by_type("HealthComponent")
+							damage_system.process(child)
+							var damage_output = brain.recall("melee_damage", 1.0)
+							tree_health.take_damage(damage_output)
+							
 						"collect_log":
-							pass
+							print("collecting log")
+							var inv_comp : InventoryComponent = child.get_component_by_type("InventoryComponent")
+							var target_ent : Entity = EntityRegistry._entity_store[brain.recall("target", -1)]
+							inv_comp.add_item(target_ent)
+							
 						"build_hut":
-							pass
+							print("building hut")
+							var pos_comp : PositionComponent = child.get_component_by_type("PositionComponent")
+							var rand_neighbor = layer_manager.tm_layers["ground"].get_surrounding_cells(pos_comp.pos).pick_random()
+							entities_layer.add_chhild(EntityRegistry.instantiate_entity("HutEntity", rand_neighbor))
+							
 						"find_tool":
-							pass
+							print("finding tool")
+							for vis_ent_id in brain.recall("in_sight", []):
+								var vis_ent = EntityRegistry._entity_store[vis_ent_id]
+								if vis_ent.has_component_type("EquippableComponent"):
+									if not vis_ent.get_component_by_type("EquippableComponent").accessory:
+										brain.remember("target", vis_ent_id)
+										brain.remember("intent","equip_target_tool")
+										break
+							
 						"put_tool_down":
-							pass
+							print("putting down tools")
+							var equi_comp : EquipmentComponent = child.get_component_by_type("EquipmentComponent")
+							equi_comp.remove_all_non_accessories()
+							
 						"wander":
-							pass
-							#find_tree_system.process(child)
+							print("wandering")
+							var pos_comp : PositionComponent = child.get_component_by_type("PositionComponent")
+							var rand_neighbor = layer_manager.tm_layers["ground"].get_surrounding_cells(pos_comp.pos).pick_random()
+							brain.remember("target", -1)
+							brain.remember("target_location", rand_neighbor)
+							navigation_system.process_entity(child)
+							#print("child path: " , child.get_component_by_type("BrainComponent").memory["current_path"])
+							
 						"move_to_target":
+							print("Moving to Target")
 							if brain.knows("current_path") and brain.knows("traverses"):
 								if brain.recall("current_path", []).is_empty():
 									navigation_system.process_entity(child)
-								movement_system.process(child)
+								
 						"equip_target_tool":
+							print("Equipping Target Tool")
+							var equi_comp : EquipmentComponent = child.get_component_by_type("EquipmentComponent")
+							var target_ent : Entity = EntityRegistry._entity_store[brain.recall("target", -1)]
+							equi_comp.equip_entity(target_ent)
 							pass
-							#equipment_system.process(child)
+							
 						"rest":
+							print("resting")
 							pass
-		
+						
+						"find_log":
+							print("finding log")
+							for vis_ent_id in brain.recall("in_sight", []):
+								var vis_ent = EntityRegistry._entity_store[vis_ent_id]
+								if vis_ent.has_component_type("ResourceComponent"):
+									if vis_ent.get_component_by_type("ResourceComponent").type == "wood":
+										brain.remember("target", vis_ent_id)
+										brain.remember("intent","move_to_target")
+										break
 
 func place_trees():
 	for pos in map_matrix:

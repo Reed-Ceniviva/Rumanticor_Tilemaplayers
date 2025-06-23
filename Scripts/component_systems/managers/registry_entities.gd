@@ -1,7 +1,7 @@
 extends Node
 class_name EntityRegistry
 
-static var entity_uids: Dictionary = {
+static var entity_uids: Dictionary[String,Resource] = {
 	"LogEntity" : preload("uid://dk4fpumc7rmbv"),
 	"TreeEntity" : preload("uid://tukn3gx6b3qm"),
 	"WorkerEntity": preload("uid://cpek715cejdle"),

@@ -20,6 +20,9 @@ func _ready():
 			inv_comp.add_item(EntityRegistry.instantiate_entity("LogEntity"))
 		add_component(inv_comp)
 	animated_sprite_2d.play("default" + str(randi()%3 + 1))
+	var wood_comp = ComponentRegistry.get_component_class("ResourceComponent")
+	if wood_comp:
+		add_component(wood_comp.new("wood"))
 	
 	
 func die():

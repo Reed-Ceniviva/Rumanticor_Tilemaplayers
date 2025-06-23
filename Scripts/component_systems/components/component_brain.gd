@@ -44,11 +44,55 @@ func knows(key: String) -> bool:
 	return memory.has(key)
 	
 
-func knows_not(key: String, not_value : Variant = null) -> bool:
-	return memory.get(key) != not_value
-
 
 ##memory print function for debugging
 func debug_memory():
 	for key in memory.keys():
 		print(key, " : ", memory[key])
+
+func equippable_in_sight() -> bool:
+	if not knows("in_sight"):
+		return false
+	for ent_id in recall("in_sight", []):
+		var vis_ent : Entity = EntityRegistry._entity_store[ent_id]
+		if vis_ent == null:
+			continue
+		if vis_ent.has_component_type("EquippableComponent"):
+			return true
+	return false
+
+func tool_in_sight() -> bool:
+	if not knows("in_sight"):
+		return false
+	for ent_id in recall("in_sight", []):
+		var vis_ent : Entity = EntityRegistry._entity_store[ent_id]
+		if vis_ent == null:
+			continue
+		if vis_ent.has_component_type("EquippableComponent"):
+			if not vis_ent.get_component_by_type("EquippableComponent").accessory:
+				return true
+	return false
+
+func tree_in_sight() -> bool:
+	if not knows("in_sight"):
+		return false
+	for ent_id in recall("in_sight", []):
+		var vis_ent : Entity = EntityRegistry._entity_store[ent_id]
+		if vis_ent == null:
+			continue
+		if vis_ent.has_component_type("ResourceComponent"):
+			if vis_ent.has_tag("tree"):
+				return true
+	return false
+	
+func log_in_sight() -> bool:
+	if not knows("in_sight"):
+		return false
+	for ent_id in recall("in_sight", []):
+		var vis_ent : Entity = EntityRegistry._entity_store[ent_id]
+		if vis_ent == null:
+			continue
+		if vis_ent.has_component_type("ResourceComponent"):
+			if vis_ent.has_tag("log"):
+				return true
+	return false

@@ -18,7 +18,9 @@ func add_visible_entity(entity_id: int):
 
 func type_in_sight(ent_type : String) -> bool:
 	for ent_id in visible_entities:
-		if EntityRegistry._entity_store[ent_id].get_class() == ent_type:
+		var vis_ent_type = EntityRegistry._entity_store[ent_id].get_class()
+		print("comparing: ", vis_ent_type, " | to: ", ent_type)
+		if vis_ent_type == ent_type:
 			return true
 	return false
 	
@@ -30,6 +32,5 @@ func type_in_range(entity : Entity, range : float = 1.0):
 		if ent.get_class() == entity.get_class():
 			var ent_pos = ent.get_component_by_type("PositionComponent").pos
 			if entity.get_component_by_type("PositionComponent").pos.distance_to(ent_pos) <= range:
-				return true
-			else:
-				return false
+				return ent_id
+	return false

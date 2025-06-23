@@ -90,7 +90,7 @@ var tree_line = sea_level + treeline_offset
 var snow_line = tree_line + snowline_offset
 
 
-var tm_layers : Dictionary[String, TileMapLayer]
+static var tm_layers : Dictionary[String, TileMapLayer]
 var layer_quadtrees : Dictionary[String, quad_tree_node]
 var map : Dictionary[Vector2i,Array]
 
@@ -142,9 +142,9 @@ func make_map():
 			new_map[pos].append(layer)
 
 			# Bounds check before accessing elevation_matrix
-			if pos.x >= 0 and pos.x < elevation_matrix.size():
-				if pos.y >= 0 and pos.y < elevation_matrix[pos.x].size():
-					new_map[pos].append(elevation_matrix[pos.x][pos.y])
+			#if pos.x >= 0 and pos.x < elevation_matrix.size():
+				#if pos.y >= 0 and pos.y < elevation_matrix[pos.x].size():
+					#new_map[pos].append(elevation_matrix[pos.x][pos.y])
 	map = new_map
 
 
