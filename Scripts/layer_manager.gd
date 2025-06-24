@@ -82,6 +82,8 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 @export var max_lake_size : int = 100
 ##maximum elevation difference to include in a local minima
 @export var max_elev_varience : float = 33.0
+
+@export var gen_seed : int
  
 #variables derived from world parameters
 var shore_line = sea_level - beach_offset
@@ -122,6 +124,74 @@ func _ready():
 func _process(delta):
 	pass
 
+
+func generate_zoomed_map(selected_tiles: Array[Vector2i]):
+	if selected_tiles.is_empty():
+		print("No tiles selected for zoom.")
+		return
+
+	var zoom_factor := 32
+
+	var bounds := get_bounds_from_selection(selected_tiles)
+	var zoomed_size := Vector2i(bounds.size.x * zoom_factor, bounds.size.y * zoom_factor)
+
+	# Recalculate offset for fine detail, based on the original tile offset
+	var new_offset := Vector2(bounds.position.x * zoom_factor, bounds.position.y * zoom_factor)
+
+	# Recalculate scale for finer detail
+	var new_scale = scale / float(zoom_factor)
+
+	# Generate the zoomed-in elevation matrix using the original seed
+	var zoomed_matrix = generate_perlin_matrix(zoomed_size.x, zoomed_size.y, new_scale, new_offset, gen_seed)
+
+	# Example: paint the matrix into a temporary TileMap (reusing your existing tile painting logic)
+	var zoom_container := Node2D.new()
+	zoom_container.name = "ZoomedMap"
+	add_child(zoom_container)
+	for layer in tm_layers:
+		if layer == "cliffs":
+			continue
+		# Create a new TileMapLayer for terrain
+		var tilemap := TileMapLayer.new()
+		tilemap.name = str("Zoomed",layer)
+		tilemap.tile_set = tm_layers[layer].tile_set
+		zoom_container.add_child(tilemap)
+
+		# Paint zoomed terrain based on elevation thresholds
+		for y in range(zoomed_size.y):
+			for x in range(zoomed_size.x):
+				var elev = zoomed_matrix[y][x]
+				var atlas_pos := Vector2i()
+
+				if elev < shore_line:
+					atlas_pos = WATER_TILE_ATLAS_POS
+				elif elev < beach_line:
+					atlas_pos = BEACH_TILE_ATLAS_POS
+				elif elev < tree_line:
+					atlas_pos = GRASS_TILE_ATLAS_POS
+				elif elev < snow_line:
+					atlas_pos = MOUNTAIN_TILE_ATLAS_POS
+				else:
+					atlas_pos = SNOW_TILE_ATLAS_POS
+
+				tilemap.set_cell(Vector2i(x, y), GRASS_SOURCE_ID, atlas_pos)
+		zoom_container.add_child(tilemap)
+
+
+func get_bounds_from_selection(selection: Array[Vector2i]) -> Rect2i:
+	var min_x = INF
+	var min_y = INF
+	var max_x = -INF
+	var max_y = -INF
+	for pos in selection:
+		min_x = min(min_x, pos.x)
+		min_y = min(min_y, pos.y)
+		max_x = max(max_x, pos.x)
+		max_y = max(max_y, pos.y)
+	return Rect2i(min_x, min_y, max_x - min_x + 1, max_y - min_y + 1)
+
+
+
 ## Return the elevation matrix used for world gen
 ##
 ##Returns the 2D Array used to store the elevation values of the tile locations of the generated map
@@ -153,11 +223,16 @@ func get_map() -> Dictionary[Vector2i,Array]:
 	return map
 
 ## generate the elevation matrix based on perlin noise
-func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2) -> Array:
+func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2 , seed : int = 0) -> Array:
 	print("generating perlin matrix for elevations")
 	var matrix = []
 	var noise = FastNoiseLite.new()
-	noise.seed = randi()  # Random seed for variety
+	if seed == 0:
+		gen_seed = randi()
+		noise.seed = gen_seed  # Random seed for variety
+	else:
+		gen_seed = seed
+		noise.seed = gen_seed
 	noise.noise_type = FastNoiseLite.TYPE_PERLIN
 	noise.fractal_lacunarity = lacunarity
 	noise.fractal_gain = persistance
@@ -275,7 +350,6 @@ func fill_ground_layers(elevation_matrix):
 	var ground = tm_layers["ground"]
 	var water = tm_layers["water"]
 	var shore = tm_layers["shore"]
-	var trees = tm_layers["trees"]
 	var mountains = tm_layers["mountains"]
 	var mountain_cliff_pos = []
 	for i in range(world_x):
@@ -496,7 +570,6 @@ func paint_lakes(max_lake_size : int = 50, elevation_threshold : float = 10.0  ,
 	var global_minima := find_minima(elevation_matrix, max_lake_size,2)
 	var local_minima := find_local_minima(elevation_matrix, elevation_threshold)
 	var ground_cells = tm_layers["ground"].get_used_cells()
-	var tree_pos = tm_layers["trees"].get_used_cells()
 	var mountain_pos = tm_layers["mountains"].get_used_cells()
 
 	for seed in global_minima:
@@ -530,8 +603,6 @@ func paint_lakes(max_lake_size : int = 50, elevation_threshold : float = 10.0  ,
 				if mountain_pos.has(tile_pos):
 					continue
 				tm_layers["water"].set_cell(tile_pos, WATER_SOURCE_ID, WATER_TILE_ATLAS_POS)
-				if tree_pos.has(tile_pos):
-					tm_layers["trees"].set_cell(tile_pos)
 				if ground_cells.has(tile_pos):
 					tm_layers["ground"].set_cell(tile_pos)
 

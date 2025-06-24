@@ -1,7 +1,10 @@
-[gd_scene load_steps=2 format=3 uid="uid://v0ym835y7gf7"]
+[gd_scene load_steps=3 format=3 uid="uid://v0ym835y7gf7"]
 
 [ext_resource type="PackedScene" uid="uid://buaonr7qjcjv1" path="res://Scenes/layer_manager.tscn" id="1_a02cp"]
+[ext_resource type="PackedScene" uid="uid://dgg4u1ntsbdyv" path="res://Scenes/selection_manager.tscn" id="2_go701"]
 
 [node name="World" type="Node2D"]
 
 [node name="Layer_Manager" parent="." instance=ExtResource("1_a02cp")]
+
+[node name="Selection_Manager" parent="." instance=ExtResource("2_go701")]

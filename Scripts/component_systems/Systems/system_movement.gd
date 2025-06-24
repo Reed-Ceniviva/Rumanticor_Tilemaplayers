@@ -7,7 +7,7 @@ func _init():
 	required_components = ["PositionComponent", "MovementPathComponent"]
 
 func process(entity: Entity) -> void:
-		print("processing movement")
+		#print("processing movement")
 		if not entity.has_component_type("PositionComponent"):
 			print("entity has no position")
 			return
@@ -41,7 +41,7 @@ func process(entity: Entity) -> void:
 		#brain_comp.remember("current_path", cur_path)
 
 		if cur_path.is_empty():
-			print("path is empty")
+			#print("path is empty")
 			return
 			
 		

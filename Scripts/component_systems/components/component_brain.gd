@@ -99,7 +99,7 @@ func log_in_sight() -> bool:
 	
 func target_is_tree() -> bool:
 	if knows("target"):
-		var target_ent = EntityRegistry._entity_store[recall("target", -1)]
+		var target_ent = EntityRegistry._entity_store[recall("target_entity_id", -1)]
 		if target_ent is TreeEntity:
 			return true
 		else:

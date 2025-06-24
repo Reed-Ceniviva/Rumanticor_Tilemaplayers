@@ -31,46 +31,47 @@ func _ready():
 	var equipment_comp_class = ComponentRegistry.get_component_class("EquipmentComponent")
 	if equipment_comp_class:
 		add_component(equipment_comp_class.new())
-		
-	var mobility_comp_class = ComponentRegistry.get_component_class("MobilityComponent")
-	if mobility_comp_class:
-		add_component(mobility_comp_class.new())
-	var vision_comp_class = ComponentRegistry.get_component_class("VisionComponent")
-	if vision_comp_class:
-		add_component(vision_comp_class.new(32))
 	
-	##brain components
-	#create and add vision component (eyes)
-	
-	var target_ent_comp_class = ComponentRegistry.get_component_class("TargetEntityComponent")
-	if target_ent_comp_class:
-		add_component(target_ent_comp_class.new())
+	var sphere_stats_class = ComponentRegistry.get_component_class("SphereStatsComponent")
+	if sphere_stats_class:
+		add_component(sphere_stats_class.new())
 	
 	##intent based AI
 	var brain_comp_class = ComponentRegistry.get_component_class("BrainComponent")
 	if brain_comp_class:
 		var brain_comp : BrainComponent = brain_comp_class.new()
-		brain_comp.memory["life_goals"] = ["build_hut"]
-		brain_comp.memory["goal_intent"] = "build_hut"
-		brain_comp.memory["intent"] = "build_hut"
-		brain_comp.memory["target"] = -1
+		#depricated WFC AI memories
+		#brain_comp.memory["life_goals"] = ["build_hut"]
+		#brain_comp.memory["goal_intent"] = "build_hut"
+		#brain_comp.memory["intent"] = "build_hut"
+		
+		#object permanance
+		brain_comp.memory["target_entity_id"] = -1
+		brain_comp.memory["target_location"] = Vector2i.ZERO
+		brain_comp.memory["current_path"] = []
+		
+		#vision
 		brain_comp.memory["in_sight"] = []
 		brain_comp.memory["sight_range"] = 32
-		brain_comp.memory["current_path"] = []
+		#brain_comp.memory["visibility"] = 12 #every twelve tiles halves visibility
+		
+		#mobility
 		brain_comp.memory["traverses"] = {"ground":1.0}
 		brain_comp.memory["melee_damage"] = 1.0
 		brain_comp.memory["melee_range"] = 1.0
-		brain_comp.memory["ranged_range"] = 3.0
-		brain_comp.memory["sphere_stats"] = {
-			"strength" : 1.0,
-			"nature": 1.0,
-			"art": 1.0,
-			"social": 1.0,
-			"inspiration":1.0,
-			"fear":1.0,
-			"luck":1.0,
-			"wisdom":1.0
-		}
+		brain_comp.memory["ranged_range"] = 0.0
+		
+		#the sphere stats are not a product of an entities brain or memories so it should not be held here
+		#brain_comp.memory["sphere_stats"] = {
+			#"strength" : 1.0,
+			#"nature": 1.0,
+			#"art": 1.0,
+			#"social": 1.0,
+			#"inspiration":1.0,
+			#"fear":1.0,
+			#"luck":1.0,
+			#"wisdom":1.0
+		#}
 		add_component(brain_comp)
 
 

@@ -1,0 +1,6 @@
+[gd_scene load_steps=2 format=3 uid="uid://cql3bptaqgv8b"]
+
+[ext_resource type="Script" uid="uid://325p2tqkkrrm" path="res://Scenes/selection_manager.gd" id="1_uhbnh"]
+
+[node name="ColorRect" type="ColorRect"]
+script = ExtResource("1_uhbnh")
