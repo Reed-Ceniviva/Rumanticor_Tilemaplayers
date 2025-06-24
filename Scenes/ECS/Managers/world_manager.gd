@@ -91,6 +91,8 @@ func _physics_process(delta):
 							damage_system.process(child)
 							var damage_output = brain.recall("melee_damage", 1.0)
 							tree_health.take_damage(damage_output)
+							if child is WorkerEntity:
+								child.chop()
 							
 						"collect_log":
 							print("collecting log")
@@ -139,6 +141,7 @@ func _physics_process(delta):
 							var equi_comp : EquipmentComponent = child.get_component_by_type("EquipmentComponent")
 							var target_ent : Entity = EntityRegistry._entity_store[brain.recall("target", -1)]
 							equi_comp.equip_entity(target_ent)
+							brain.remember("intent","rest")
 							pass
 							
 						"rest":

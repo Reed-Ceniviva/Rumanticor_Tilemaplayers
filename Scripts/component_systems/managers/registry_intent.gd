@@ -43,6 +43,9 @@ func _init():
 			{"component": "BrainComponent", "check":"tree_in_sight","args":[] },
 			#check if ent has a weapon
 			{"component": "EquipmentComponent", "check":"has_weapon_equipped", "args":[]},
+			#check if the current target is a tree 
+			{"component":"BrainComponent", "check":"target_is_tree", "args":[]},
+			
 			#check if ent is in range to use weapon
 			{"component": "PositionComponent", "check":"is_in_melee_range_of_target" ,"args":["entity", "target"]}
 			],

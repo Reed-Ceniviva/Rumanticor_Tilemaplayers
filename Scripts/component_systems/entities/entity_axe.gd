@@ -11,5 +11,7 @@ func _ready():
 	equippable_comp.damage_mod = 10.0
 	equippable_comp.defense_mod = 5.0
 	equippable_comp.range = 2.0
+	equippable_comp.accessory = false
 	add_component(equippable_comp)
 	add_tag("axe")
+	add_tag("tool")
