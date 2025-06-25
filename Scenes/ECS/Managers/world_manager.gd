@@ -82,4 +82,7 @@ func _on_color_rect_area_selected():
 		selected_pos.slice(0,400)
 		return
 	layer_manager.generate_zoomed_map(selected_pos)
+	for layer in layer_manager.get_children():
+		if layer is TileMapLayer:
+			layer.visible = false
 	pass # Replace with function body.

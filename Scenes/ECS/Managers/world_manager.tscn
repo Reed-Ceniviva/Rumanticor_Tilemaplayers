@@ -8,6 +8,8 @@
 script = ExtResource("1_3pref")
 
 [node name="Layer_Manager" parent="." instance=ExtResource("2_ysl4i")]
+world_x = 320
+world_y = 320
 
 [node name="Entities" type="Node" parent="."]
 

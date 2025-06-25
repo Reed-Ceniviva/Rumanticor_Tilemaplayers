@@ -84,6 +84,7 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 @export var max_elev_varience : float = 33.0
 
 @export var gen_seed : int
+@export var zoom_factor : int = 32
  
 #variables derived from world parameters
 var shore_line = sea_level - beach_offset
@@ -109,7 +110,7 @@ func _init(init_is_child_map : bool = false):
 
 func _ready():
 	if not is_child_map:
-		elevation_matrix = generate_perlin_matrix(world_x, world_y, scale, offset)
+		elevation_matrix = generate_perlin_matrix(world_x, world_y, scale , offset)
 		for child in get_children():
 			if child is TileMapLayer:
 				tm_layers[child.name.to_lower()] = child
@@ -137,37 +138,39 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 		print("No tiles selected for zoom.")
 		return
 
-	var zoom_factor := 32
-
 	var bounds := get_bounds_from_selection(selected_tiles)
-	var zoomed_size := Vector2i(bounds.size.x * zoom_factor, bounds.size.y * zoom_factor)
-
-	# Recalculate offset for fine detail, based on the original tile offset
-	var new_offset := Vector2(bounds.position.x, bounds.position.y)
-
-
-	# Recalculate scale for finer detail
+	var zoomed_size := bounds.size * zoom_factor
 	var new_scale = scale / float(zoom_factor)
 
+	# Use offset in tile units; for zoomed detail, we offset sub-tile level
+	var world_offset := Vector2(bounds.position)  # in tiles
+	#world_offset *= (1.0 / zoom_factor)  # convert to sub-tiles for higher precision
+
 	var zoom_container : layer_manager = layer_manager.new(true)
+	# Step 1: Combine original offset (in tiles) with bounds (also in tiles)
+	var true_origin = Vector2(offset) + Vector2(bounds.position)
 
-	var origin = Vector2(bounds.position.x, bounds.position.y)
-	var zoom_scale = scale / zoom_factor
-	
+	# Step 2: Scale it for zoom-level (convert tile origin to sub-tile origin)
+	var sub_tile_offset = true_origin * zoom_factor
+
+	# Step 3: Set scale for fine detail
+	var zoom_scale = scale / float(zoom_factor)
+
+	# Step 4: Generate matrix
 	zoom_container.elevation_matrix = generate_perlin_matrix(
-	zoomed_size.x,
-	zoomed_size.y,
-	scale,
-	origin,
-	gen_seed,
-	zoom_factor
-)
-	var zoomed_matrix = zoom_container.elevation_matrix
+		zoomed_size.x,
+		zoomed_size.y,
+		zoom_scale,
+		sub_tile_offset,
+		gen_seed,
+		zoom_factor
+	)
 
-	# Example: paint the matrix into a temporary TileMap (reusing your existing tile painting logic)
-	
+
+	var zoomed_matrix = zoom_container.elevation_matrix
 	zoom_container.name = "ZoomedMap"
-	var zoomed_layers : Dictionary[String,TileMapLayer] = {}
+
+	var zoomed_layers : Dictionary[String, TileMapLayer] = {}
 	for name in tm_layers.keys():
 		var original_layer := tm_layers[name]
 		var new_layer := TileMapLayer.new()
@@ -175,40 +178,45 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 		new_layer.tile_set = original_layer.tile_set
 		zoom_container.add_child(new_layer)
 		zoomed_layers[name] = new_layer
-	
-	
-	
+
 	add_child(zoom_container)
+
 	for y in range(zoomed_size.y):
 		for x in range(zoomed_size.x):
 			var elev = zoomed_matrix[y][x]
 			var layer_name := ""
 			var atlas_pos := Vector2i()
+			var source_id := 0
 
 			if elev < shore_line:
 				layer_name = "water"
 				atlas_pos = WATER_TILE_ATLAS_POS
+				source_id = WATER_SOURCE_ID
 			elif elev < beach_line:
 				layer_name = "shore"
 				atlas_pos = BEACH_TILE_ATLAS_POS
+				source_id = SHORE_SOURCE_ID
 			elif elev < tree_line:
 				layer_name = "ground"
 				atlas_pos = GRASS_TILE_ATLAS_POS
+				source_id = GRASS_SOURCE_ID
 			elif elev < snow_line:
 				layer_name = "mountains"
 				atlas_pos = MOUNTAIN_TILE_ATLAS_POS
+				source_id = MOUNTAIN_SOURCE_ID
 			else:
 				layer_name = "snow"
 				atlas_pos = SNOW_TILE_ATLAS_POS
+				source_id = SNOW_SOURCE_ID
 
-			zoomed_layers[layer_name].set_cell(Vector2i(x, y), GRASS_SOURCE_ID, atlas_pos)
-		
-	
+			zoomed_layers[layer_name].set_cell(Vector2i( x,y), source_id, atlas_pos)
+
 	zoom_container.set_tm_layers(zoomed_layers)
-	#zoom_container.paint_lakes(max_lake_size*scale,max_elev_varience)
+	zoom_container.paint_lakes(max_lake_size * scale, max_elev_varience)
 	zoom_container.fill_water_cliffs()
 	zoom_container.round_water_cliffs()
 	zoom_container.fill_mountain_cliffs()
+
 
 
 func get_tm_layers():
@@ -227,6 +235,8 @@ func get_bounds_from_selection(selection: Array[Vector2i]) -> Rect2i:
 		min_y = min(min_y, pos.y)
 		max_x = max(max_x, pos.x)
 		max_y = max(max_y, pos.y)
+	var return_rect := Rect2i(min_x, min_y, max_x - min_x + 1, max_y - min_y + 1)
+	print(return_rect)
 	return Rect2i(min_x, min_y, max_x - min_x + 1, max_y - min_y + 1)
 
 
@@ -263,35 +273,35 @@ func get_map() -> Dictionary[Vector2i,Array]:
 
 ## generate the elevation matrix based on perlin noise
 func generate_perlin_matrix(
-	x: int,
-	y: int,
+	width: int,
+	height: int,
 	scale: float,
-	world_origin: Vector2, # in tile units
+	world_origin: Vector2,
 	seed: int = 0,
 	zoom_factor: int = 1
-) -> Array:
+	) -> Array:
 	var matrix = []
 	var noise = FastNoiseLite.new()
-	var gen_seed = seed if seed != 0 else randi()
+	gen_seed = seed if seed != 0 else randi()
 	noise.seed = gen_seed
 	noise.noise_type = FastNoiseLite.TYPE_PERLIN
 	noise.fractal_lacunarity = lacunarity
 	noise.fractal_gain = persistance
 	noise.fractal_octaves = octaves
 
-	for i in range(y):
+	for y in range(height):
 		var row = []
-		for j in range(x):
-			# Use sub-tile coordinates in world space
-			var world_x = (world_origin.x + float(j) / zoom_factor) * scale
-			var world_y = (world_origin.y + float(i) / zoom_factor) * scale
+		for x in range(width):
+			var world_x = (world_origin.x + float(x)) * scale
+			var world_y = (world_origin.y + float(y)) * scale
 			var perlin_value = noise.get_noise_2d(world_x, world_y)
 			var scaled_value = lerp(0, elevation_range, (perlin_value + 1.0) / 2.0)
 			row.append(scaled_value)
 		matrix.append(row)
-
 	matrix_created.emit()
 	return matrix
+
+
 
 
 

@@ -11,6 +11,17 @@
 [ext_resource type="Texture2D" uid="uid://bx080a4td2pmt" path="res://Assets/Sprites/MiniWorldSprites/Ground/MountainCliffs.png" id="9_461vt"]
 [ext_resource type="Texture2D" uid="uid://dykp0duh7bnkk" path="res://Assets/Sprites/MiniWorldSprites/Ground/Water-Cliffs-Rivers.png" id="10_3jqb2"]
 
+[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nut35"]
+texture = ExtResource("2_f5k6d")
+0:0/0 = 0
+1:0/0 = 0
+2:0/0 = 0
+3:0/0 = 0
+4:0/0 = 0
+
+[sub_resource type="TileSet" id="TileSet_5v1tr"]
+sources/0 = SubResource("TileSetAtlasSource_nut35")
+
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_461vt"]
 texture = ExtResource("2_f5k6d")
 0:0/0 = 0
@@ -178,17 +189,6 @@ texture = ExtResource("6_3jqb2")
 
 [sub_resource type="TileSet" id="TileSet_7si61"]
 sources/0 = SubResource("TileSetAtlasSource_2i5oj")
-
-[sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_nut35"]
-texture = ExtResource("2_f5k6d")
-0:0/0 = 0
-1:0/0 = 0
-2:0/0 = 0
-3:0/0 = 0
-4:0/0 = 0
-
-[sub_resource type="TileSet" id="TileSet_5v1tr"]
-sources/0 = SubResource("TileSetAtlasSource_nut35")
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_3l582"]
 texture = ExtResource("7_24hkg")
@@ -478,7 +478,15 @@ sources/3 = SubResource("TileSetAtlasSource_7si61")
 
 [node name="Layer_Manager" type="Node"]
 script = ExtResource("1_pfwod")
+world_x = 320
+world_y = 320
+scale = 0.71
+persistance = 2.4
+octaves = 5.46
 max_lake_size = 50
+
+[node name="water" type="TileMapLayer" parent="."]
+tile_set = SubResource("TileSet_5v1tr")
 
 [node name="shore" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_0fj1v")
@@ -488,9 +496,6 @@ tile_set = SubResource("TileSet_8j60k")
 
 [node name="mountains" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_7si61")
-
-[node name="water" type="TileMapLayer" parent="."]
-tile_set = SubResource("TileSet_5v1tr")
 
 [node name="cliffs" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_ikia7")
