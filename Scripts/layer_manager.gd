@@ -151,8 +151,17 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 
 	var zoom_container : layer_manager = layer_manager.new(true)
 
-	# Generate the zoomed-in elevation matrix using the original seed
-	zoom_container.elevation_matrix = zoom_container.generate_perlin_matrix(zoomed_size.x, zoomed_size.y, new_scale, new_offset, gen_seed)
+	var origin = Vector2(bounds.position.x, bounds.position.y)
+	var zoom_scale = scale / zoom_factor
+	
+	zoom_container.elevation_matrix = generate_perlin_matrix(
+	zoomed_size.x,
+	zoomed_size.y,
+	scale,
+	origin,
+	gen_seed,
+	zoom_factor
+)
 	var zoomed_matrix = zoom_container.elevation_matrix
 
 	# Example: paint the matrix into a temporary TileMap (reusing your existing tile painting logic)
@@ -253,32 +262,38 @@ func get_map() -> Dictionary[Vector2i,Array]:
 	return map
 
 ## generate the elevation matrix based on perlin noise
-func generate_perlin_matrix(x: int, y: int, scale: float, offset: Vector2 , seed : int = 0) -> Array:
-	print("generating perlin matrix for elevations")
+func generate_perlin_matrix(
+	x: int,
+	y: int,
+	scale: float,
+	world_origin: Vector2, # in tile units
+	seed: int = 0,
+	zoom_factor: int = 1
+) -> Array:
 	var matrix = []
 	var noise = FastNoiseLite.new()
-	if seed == 0:
-		gen_seed = randi()
-		noise.seed = gen_seed  # Random seed for variety
-	else:
-		gen_seed = seed
-		noise.seed = gen_seed
+	var gen_seed = seed if seed != 0 else randi()
+	noise.seed = gen_seed
 	noise.noise_type = FastNoiseLite.TYPE_PERLIN
 	noise.fractal_lacunarity = lacunarity
 	noise.fractal_gain = persistance
 	noise.fractal_octaves = octaves
+
 	for i in range(y):
 		var row = []
 		for j in range(x):
-			# Generate Perlin noise value for each point
-			var perlin_value = noise.get_noise_2d((j+offset.x) * scale, (i+offset.y) * scale)
-			# Scale and shift the Perlin noise value to the desired range [-35000, 30000]
+			# Use sub-tile coordinates in world space
+			var world_x = (world_origin.x + float(j) / zoom_factor) * scale
+			var world_y = (world_origin.y + float(i) / zoom_factor) * scale
+			var perlin_value = noise.get_noise_2d(world_x, world_y)
 			var scaled_value = lerp(0, elevation_range, (perlin_value + 1.0) / 2.0)
 			row.append(scaled_value)
 		matrix.append(row)
-	#print(matrix)
+
 	matrix_created.emit()
 	return matrix
+
+
 
 ## fill cliff layer cells with appropriete tile information based on ground and water layer information
 func fill_water_cliffs():
