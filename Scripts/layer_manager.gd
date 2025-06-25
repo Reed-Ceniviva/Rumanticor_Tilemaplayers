@@ -92,7 +92,7 @@ var tree_line = sea_level + treeline_offset
 var snow_line = tree_line + snowline_offset
 
 
-static var tm_layers : Dictionary[String, TileMapLayer]
+var tm_layers : Dictionary[String, TileMapLayer]
 var layer_quadtrees : Dictionary[String, quad_tree_node]
 var map : Dictionary[Vector2i,Array]
 
@@ -101,25 +101,32 @@ var elevation_matrix = [] : get = get_elevation_matrix
 signal matrix_created
 signal world_created
 
+var is_child_map : bool 
+
+
+func _init(init_is_child_map : bool = false):
+	is_child_map = init_is_child_map
+
 func _ready():
-	elevation_matrix = generate_perlin_matrix(world_x, world_y, scale, offset)
-	for child in get_children():
-		if child is TileMapLayer:
-			tm_layers[child.name.to_lower()] = child
-			if child.get_child(0) is TileMapLayer:
-				for sub_child in child.get_children():
-					tm_layers[sub_child.name.to_lower()] = sub_child
-	fill_ground_layers(elevation_matrix)
-	paint_lakes(max_lake_size,max_elev_varience)
-	fill_water_cliffs()
-	round_water_cliffs()
-	fill_mountain_cliffs()
-	#build_traversable_tilemap()
-	for layer in tm_layers:
-		pass
-		#layer_quadtrees[layer] = build_tml_quadtree(tm_layers[layer])
-	make_map()
-	world_created.emit()
+	if not is_child_map:
+		elevation_matrix = generate_perlin_matrix(world_x, world_y, scale, offset)
+		for child in get_children():
+			if child is TileMapLayer:
+				tm_layers[child.name.to_lower()] = child
+				if child.get_child(0) is TileMapLayer:
+					for sub_child in child.get_children():
+						tm_layers[sub_child.name.to_lower()] = sub_child
+		fill_ground_layers(elevation_matrix)
+		paint_lakes(max_lake_size,max_elev_varience)
+		fill_water_cliffs()
+		round_water_cliffs()
+		fill_mountain_cliffs()
+		#build_traversable_tilemap()
+		for layer in tm_layers:
+			pass
+			#layer_quadtrees[layer] = build_tml_quadtree(tm_layers[layer])
+		make_map()
+		world_created.emit()
 
 func _process(delta):
 	pass
@@ -136,47 +143,70 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 	var zoomed_size := Vector2i(bounds.size.x * zoom_factor, bounds.size.y * zoom_factor)
 
 	# Recalculate offset for fine detail, based on the original tile offset
-	var new_offset := Vector2(bounds.position.x * zoom_factor, bounds.position.y * zoom_factor)
+	var new_offset := Vector2(bounds.position.x, bounds.position.y)
+
 
 	# Recalculate scale for finer detail
 	var new_scale = scale / float(zoom_factor)
 
+	var zoom_container : layer_manager = layer_manager.new(true)
+
 	# Generate the zoomed-in elevation matrix using the original seed
-	var zoomed_matrix = generate_perlin_matrix(zoomed_size.x, zoomed_size.y, new_scale, new_offset, gen_seed)
+	zoom_container.elevation_matrix = zoom_container.generate_perlin_matrix(zoomed_size.x, zoomed_size.y, new_scale, new_offset, gen_seed)
+	var zoomed_matrix = zoom_container.elevation_matrix
 
 	# Example: paint the matrix into a temporary TileMap (reusing your existing tile painting logic)
-	var zoom_container := Node2D.new()
+	
 	zoom_container.name = "ZoomedMap"
+	var zoomed_layers : Dictionary[String,TileMapLayer] = {}
+	for name in tm_layers.keys():
+		var original_layer := tm_layers[name]
+		var new_layer := TileMapLayer.new()
+		new_layer.name = name
+		new_layer.tile_set = original_layer.tile_set
+		zoom_container.add_child(new_layer)
+		zoomed_layers[name] = new_layer
+	
+	
+	
 	add_child(zoom_container)
-	for layer in tm_layers:
-		if layer == "cliffs":
-			continue
-		# Create a new TileMapLayer for terrain
-		var tilemap := TileMapLayer.new()
-		tilemap.name = str("Zoomed",layer)
-		tilemap.tile_set = tm_layers[layer].tile_set
-		zoom_container.add_child(tilemap)
+	for y in range(zoomed_size.y):
+		for x in range(zoomed_size.x):
+			var elev = zoomed_matrix[y][x]
+			var layer_name := ""
+			var atlas_pos := Vector2i()
 
-		# Paint zoomed terrain based on elevation thresholds
-		for y in range(zoomed_size.y):
-			for x in range(zoomed_size.x):
-				var elev = zoomed_matrix[y][x]
-				var atlas_pos := Vector2i()
+			if elev < shore_line:
+				layer_name = "water"
+				atlas_pos = WATER_TILE_ATLAS_POS
+			elif elev < beach_line:
+				layer_name = "shore"
+				atlas_pos = BEACH_TILE_ATLAS_POS
+			elif elev < tree_line:
+				layer_name = "ground"
+				atlas_pos = GRASS_TILE_ATLAS_POS
+			elif elev < snow_line:
+				layer_name = "mountains"
+				atlas_pos = MOUNTAIN_TILE_ATLAS_POS
+			else:
+				layer_name = "snow"
+				atlas_pos = SNOW_TILE_ATLAS_POS
 
-				if elev < shore_line:
-					atlas_pos = WATER_TILE_ATLAS_POS
-				elif elev < beach_line:
-					atlas_pos = BEACH_TILE_ATLAS_POS
-				elif elev < tree_line:
-					atlas_pos = GRASS_TILE_ATLAS_POS
-				elif elev < snow_line:
-					atlas_pos = MOUNTAIN_TILE_ATLAS_POS
-				else:
-					atlas_pos = SNOW_TILE_ATLAS_POS
+			zoomed_layers[layer_name].set_cell(Vector2i(x, y), GRASS_SOURCE_ID, atlas_pos)
+		
+	
+	zoom_container.set_tm_layers(zoomed_layers)
+	#zoom_container.paint_lakes(max_lake_size*scale,max_elev_varience)
+	zoom_container.fill_water_cliffs()
+	zoom_container.round_water_cliffs()
+	zoom_container.fill_mountain_cliffs()
 
-				tilemap.set_cell(Vector2i(x, y), GRASS_SOURCE_ID, atlas_pos)
-		zoom_container.add_child(tilemap)
 
+func get_tm_layers():
+	return tm_layers
+
+func set_tm_layers(new_layers : Dictionary[String,TileMapLayer]):
+	tm_layers = new_layers
 
 func get_bounds_from_selection(selection: Array[Vector2i]) -> Rect2i:
 	var min_x = INF

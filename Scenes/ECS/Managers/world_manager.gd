@@ -76,6 +76,10 @@ func place_trees():
 
 func _on_color_rect_area_selected():
 	print("area selection recieved by world manager")
-	var selected_pos = color_rect.selected_tiles
+	var selected_pos : Array = color_rect.selected_tiles
+	if selected_pos.size() > 400:
+		#too many tiles selected
+		selected_pos.slice(0,400)
+		return
 	layer_manager.generate_zoomed_map(selected_pos)
 	pass # Replace with function body.
