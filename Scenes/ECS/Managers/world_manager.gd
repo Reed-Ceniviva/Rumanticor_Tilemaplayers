@@ -16,6 +16,7 @@ var intent_propagator = IntentPropagationSystem.new()
 @onready var layer_manager : layer_manager = $Layer_Manager
 @onready var entities_layer = $Entities
 @onready var color_rect = $ColorRect
+var fortress_mode : FortressMode = FortressMode.new()
 
 var map_matrix : Dictionary[Vector2i,Array]
 
@@ -81,6 +82,8 @@ func _on_color_rect_area_selected():
 		#too many tiles selected
 		selected_pos = selected_pos.slice(0,400)
 	layer_manager.generate_zoomed_map(selected_pos)
+	fortress_mode.add_child(layer_manager.zoom_container)
+	get_parent().add_child(fortress_mode)
 	for layer in layer_manager.get_children():
 		if layer is TileMapLayer:
 			layer.visible = false

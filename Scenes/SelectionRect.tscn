@@ -2,5 +2,5 @@
 
 [ext_resource type="Script" uid="uid://325p2tqkkrrm" path="res://Scenes/selection_manager.gd" id="1_uhbnh"]
 
-[node name="ColorRect" type="ColorRect"]
+[node name="SelectionColorRect" type="ColorRect"]
 script = ExtResource("1_uhbnh")

@@ -85,6 +85,7 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 
 @export var gen_seed : int
 @export var zoom_factor : int = 32
+var zoom_container : layer_manager
  
 #variables derived from world parameters
 var shore_line = sea_level - beach_offset
@@ -146,7 +147,7 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 	var world_offset := Vector2(bounds.position)  # in tiles
 	#world_offset *= (1.0 / zoom_factor)  # convert to sub-tiles for higher precision
 
-	var zoom_container : layer_manager = layer_manager.new(true)
+	zoom_container = layer_manager.new(true)
 	# Step 1: Combine original offset (in tiles) with bounds (also in tiles)
 	var true_origin = Vector2(offset) + Vector2(bounds.position)
 
@@ -179,7 +180,7 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 		zoom_container.add_child(new_layer)
 		zoomed_layers[name] = new_layer
 
-	add_child(zoom_container)
+	#add_child(zoom_container)
 
 	for y in range(zoomed_size.y):
 		for x in range(zoomed_size.x):
