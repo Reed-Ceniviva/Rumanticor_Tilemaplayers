@@ -79,10 +79,10 @@ func _on_color_rect_area_selected():
 	var selected_pos : Array = color_rect.selected_tiles
 	if selected_pos.size() > 400:
 		#too many tiles selected
-		selected_pos.slice(0,400)
-		return
+		selected_pos = selected_pos.slice(0,400)
 	layer_manager.generate_zoomed_map(selected_pos)
 	for layer in layer_manager.get_children():
 		if layer is TileMapLayer:
 			layer.visible = false
-	pass # Replace with function body.
+	color_rect.visible = false
+	entities_layer.visible = false

@@ -205,11 +205,11 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 				atlas_pos = MOUNTAIN_TILE_ATLAS_POS
 				source_id = MOUNTAIN_SOURCE_ID
 			else:
-				layer_name = "snow"
+				layer_name = "mountains"
 				atlas_pos = SNOW_TILE_ATLAS_POS
 				source_id = SNOW_SOURCE_ID
 
-			zoomed_layers[layer_name].set_cell(Vector2i( x,y), source_id, atlas_pos)
+			zoomed_layers[layer_name].set_cell(Vector2i(zoomed_size.y - 1 - y, x ), source_id, atlas_pos)
 
 	zoom_container.set_tm_layers(zoomed_layers)
 	zoom_container.paint_lakes(max_lake_size * scale, max_elev_varience)
@@ -235,9 +235,9 @@ func get_bounds_from_selection(selection: Array[Vector2i]) -> Rect2i:
 		min_y = min(min_y, pos.y)
 		max_x = max(max_x, pos.x)
 		max_y = max(max_y, pos.y)
-	var return_rect := Rect2i(min_x, min_y, max_x - min_x + 1, max_y - min_y + 1)
+	var return_rect := Rect2i(min_y, min_x, max_y - min_y + 1, max_x - min_x + 1)
 	print(return_rect)
-	return Rect2i(min_x, min_y, max_x - min_x + 1, max_y - min_y + 1)
+	return Rect2i(min_y, min_x, max_y - min_y + 1, max_x - min_x + 1)
 
 
 
