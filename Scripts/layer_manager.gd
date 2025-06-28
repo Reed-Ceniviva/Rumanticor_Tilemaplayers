@@ -84,7 +84,7 @@ const ROADS_LRT_INT_ATLAS_POS = Vector2i(0,2)
 @export var max_elev_varience : float = 33.0
 
 @export var gen_seed : int
-@export var zoom_factor : int = 32
+@export var zoom_factor : int = 16
 var zoom_container : layer_manager
  
 #variables derived from world parameters
@@ -141,7 +141,6 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 
 	var bounds := get_bounds_from_selection(selected_tiles)
 	var zoomed_size := bounds.size * zoom_factor
-	var new_scale = scale / float(zoom_factor)
 
 	# Use offset in tile units; for zoomed detail, we offset sub-tile level
 	var world_offset := Vector2(bounds.position)  # in tiles
@@ -153,6 +152,7 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 
 	# Step 2: Scale it for zoom-level (convert tile origin to sub-tile origin)
 	var sub_tile_offset = true_origin * zoom_factor
+	var world_origin = (Vector2i(offset) + bounds.position) * scale
 
 	# Step 3: Set scale for fine detail
 	var zoom_scale = scale / float(zoom_factor)
@@ -162,7 +162,7 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 		zoomed_size.x,
 		zoomed_size.y,
 		zoom_scale,
-		sub_tile_offset,
+		world_origin,
 		gen_seed,
 		zoom_factor
 	)
@@ -210,13 +210,14 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 				atlas_pos = SNOW_TILE_ATLAS_POS
 				source_id = SNOW_SOURCE_ID
 
-			zoomed_layers[layer_name].set_cell(Vector2i(zoomed_size.y - 1 - y, x ), source_id, atlas_pos)
+			zoomed_layers[layer_name].set_cell(Vector2i(y,x ), source_id, atlas_pos)
 
 	zoom_container.set_tm_layers(zoomed_layers)
 	zoom_container.paint_lakes(max_lake_size * scale, max_elev_varience)
 	zoom_container.fill_water_cliffs()
 	zoom_container.round_water_cliffs()
 	zoom_container.fill_mountain_cliffs()
+	zoom_container.add_random_trees()
 
 
 
@@ -236,9 +237,9 @@ func get_bounds_from_selection(selection: Array[Vector2i]) -> Rect2i:
 		min_y = min(min_y, pos.y)
 		max_x = max(max_x, pos.x)
 		max_y = max(max_y, pos.y)
-	var return_rect := Rect2i(min_y, min_x, max_y - min_y + 1, max_x - min_x + 1)
+	var return_rect := Rect2i(min_y, min_x, max_y, max_x)
 	print(return_rect)
-	return Rect2i(min_y, min_x, max_y - min_y + 1, max_x - min_x + 1)
+	return return_rect
 
 
 
@@ -266,6 +267,22 @@ func make_map():
 				#if pos.y >= 0 and pos.y < elevation_matrix[pos.x].size():
 					#new_map[pos].append(elevation_matrix[pos.x][pos.y])
 	map = new_map
+
+
+func add_random_trees():
+	print("adding trees")
+	
+	if map.is_empty():
+		print("map is empty")
+		make_map()
+	
+	for pos in map:
+		if map[pos].has("ground"):
+			if randi() % 100 < 1:
+				var tree_ent = EntityRegistry.instantiate_entity("TreeEntity", [pos])
+				tm_layers["entities"].add_child(tree_ent)
+		#else:
+			#print("non valid position")
 
 
 ## returns the map dictionary generated after world gen

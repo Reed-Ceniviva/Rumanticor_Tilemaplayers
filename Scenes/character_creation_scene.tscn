@@ -1,0 +1,167 @@
+[gd_scene load_steps=3 format=3 uid="uid://cs4bs2yb24n2l"]
+
+[ext_resource type="Theme" uid="uid://ddyndqd18yvb6" path="res://Scenes/new_theme.tres" id="1_1r1x1"]
+
+[sub_resource type="Theme" id="Theme_6yfu1"]
+
+[node name="Character_Creation_Scene" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("1_1r1x1")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="CanvasLayer"]
+offset_left = 45.0
+offset_top = 38.0
+offset_right = 1107.0
+offset_bottom = 598.0
+theme = SubResource("Theme_6yfu1")
+
+[node name="Name_Margin_Container" type="MarginContainer" parent="CanvasLayer/Panel"]
+offset_left = 22.0
+offset_top = 21.0
+offset_right = 358.0
+offset_bottom = 61.0
+theme_override_constants/margin_left = 2
+theme_override_constants/margin_top = 2
+theme_override_constants/margin_right = 2
+theme_override_constants/margin_bottom = 2
+
+[node name="Panel2" type="Panel" parent="CanvasLayer/Panel/Name_Margin_Container"]
+layout_mode = 2
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/Panel/Name_Margin_Container/Panel2"]
+layout_mode = 2
+offset_left = 2.0
+offset_top = 2.0
+offset_right = 334.0
+offset_bottom = 38.0
+columns = 2
+
+[node name="Label" type="Label" parent="CanvasLayer/Panel/Name_Margin_Container/Panel2/GridContainer"]
+layout_mode = 2
+text = "Name:"
+
+[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Panel/Name_Margin_Container/Panel2/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+placeholder_text = "Armok"
+max_length = 26
+expand_to_text_length = true
+
+[node name="Sphere_Stats_Margin_Container" type="MarginContainer" parent="CanvasLayer/Panel"]
+layout_mode = 0
+offset_left = 25.0
+offset_top = 71.0
+offset_right = 365.0
+offset_bottom = 525.0
+theme_override_constants/margin_left = 5
+theme_override_constants/margin_top = 5
+theme_override_constants/margin_right = 5
+theme_override_constants/margin_bottom = 5
+
+[node name="Panel" type="Panel" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container"]
+layout_mode = 2
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel"]
+layout_mode = 0
+offset_left = 9.0
+offset_top = 10.0
+offset_right = 322.0
+offset_bottom = 436.0
+
+[node name="Strength_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Strength"
+horizontal_alignment = 1
+
+[node name="Strength_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+
+[node name="Nature_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Nature"
+horizontal_alignment = 1
+
+[node name="Nature_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+
+[node name="Art_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Art"
+horizontal_alignment = 1
+
+[node name="Art_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+
+[node name="Social_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Social"
+horizontal_alignment = 1
+
+[node name="Social_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+
+[node name="Inspo_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Inspiration"
+horizontal_alignment = 1
+
+[node name="Inspo_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+
+[node name="Luck_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Luck"
+horizontal_alignment = 1
+
+[node name="Luck_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 10.0
+value = 1.0
+
+[node name="Wisdom_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Wisdom"
+horizontal_alignment = 1
+
+[node name="Wisdom_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+min_value = 1.0
+max_value = 10.0
+value = 1.0

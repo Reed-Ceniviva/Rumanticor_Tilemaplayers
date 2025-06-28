@@ -480,9 +480,6 @@ sources/3 = SubResource("TileSetAtlasSource_7si61")
 script = ExtResource("1_pfwod")
 world_x = 320
 world_y = 320
-scale = 0.71
-persistance = 2.4
-octaves = 5.46
 max_lake_size = 50
 
 [node name="water" type="TileMapLayer" parent="."]
@@ -499,5 +496,7 @@ tile_set = SubResource("TileSet_7si61")
 
 [node name="cliffs" type="TileMapLayer" parent="."]
 tile_set = SubResource("TileSet_ikia7")
+
+[node name="entities" type="TileMapLayer" parent="."]
 
 [connection signal="matrix_created" from="." to="." method="_on_matrix_created"]

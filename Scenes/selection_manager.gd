@@ -1,4 +1,5 @@
 extends ColorRect
+class_name SelectionRect
 
 @export var tile_size := 16
 @onready var camera := get_viewport().get_camera_2d()
@@ -11,16 +12,23 @@ var selected_tiles : Array[Vector2i] = []
 signal area_selected(selected_tiles: Array[Vector2i])
 
 func _unhandled_input(event):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_RIGHT:
-		if event.pressed:
-			is_selecting = true
-			selection_start = world_to_map(get_global_mouse_position())
-			selection_end = selection_start
-		else:
-			is_selecting = false
-			process_selection()
+	if event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_RIGHT:
+			var world_pos = camera.get_screen_center_position() + (event.position - get_viewport_rect().size / 2)
+			var tile_pos = world_to_map(world_pos)
+			
+			if event.pressed:
+				is_selecting = true
+				selection_start = tile_pos
+				selection_end = tile_pos
+			else:
+				is_selecting = false
+				process_selection()
 	elif event is InputEventMouseMotion and is_selecting:
-		selection_end = world_to_map(get_global_mouse_position())
+		var world_pos = camera.get_screen_center_position() + (event.position - get_viewport_rect().size / 2)
+		selection_end = world_to_map(world_pos)
+
+
 
 func world_to_map(world_pos: Vector2) -> Vector2i:
 	return Vector2i(floor(world_pos.x / tile_size), floor(world_pos.y / tile_size))

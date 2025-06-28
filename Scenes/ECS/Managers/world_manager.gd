@@ -13,10 +13,11 @@ var navigation_system = NavigationSystem.new()
 var damage_system = DamageSystem.new()
 var intent_propagator = IntentPropagationSystem.new()
 
+@onready var ui = $UI
 @onready var layer_manager : layer_manager = $Layer_Manager
 @onready var entities_layer = $Entities
-@onready var color_rect = $ColorRect
-var fortress_mode : FortressMode = FortressMode.new()
+var color_rect
+var fortress_mode_scene = preload("uid://cdaktcc5ef28t")
 
 var map_matrix : Dictionary[Vector2i,Array]
 
@@ -36,12 +37,15 @@ func _physics_process(delta):
 			map_matrix = layer_manager.get_map()
 			navigation_system.terrain_map = map_matrix
 			pos_system.groundTM = layer_manager.tm_layers["ground"]
+			color_rect = SelectionRect.new()
+			add_child(color_rect)
+			color_rect.area_selected.connect(_on_color_rect_area_selected)
 			place_trees()
 			var worker_ent = EntityRegistry.instantiate_entity("WorkerEntity", [layer_manager.tm_layers["ground"].get_used_cells().min()])
 			var axe_ent = EntityRegistry.instantiate_entity("AxeEntity",[layer_manager.tm_layers["ground"].get_used_cells().min() + Vector2i.RIGHT])
 			
-			entities_layer.add_child(worker_ent)
-			entities_layer.add_child(axe_ent)
+			#entities_layer.add_child(worker_ent)
+			#entities_layer.add_child(axe_ent)
 			
 			#var worker_equi : EquipmentComponent = worker_ent.get_component_by_type("EquipmentComponent")
 			#worker_equi.equip_entity(axe_ent)
@@ -77,15 +81,20 @@ func place_trees():
 
 func _on_color_rect_area_selected():
 	print("area selection recieved by world manager")
+	var fortress_mode = fortress_mode_scene.instantiate()
+	get_parent().add_child(fortress_mode)
 	var selected_pos : Array = color_rect.selected_tiles
 	if selected_pos.size() > 400:
 		#too many tiles selected
 		selected_pos = selected_pos.slice(0,400)
 	layer_manager.generate_zoomed_map(selected_pos)
 	fortress_mode.add_child(layer_manager.zoom_container)
-	get_parent().add_child(fortress_mode)
 	for layer in layer_manager.get_children():
 		if layer is TileMapLayer:
 			layer.visible = false
-	color_rect.visible = false
+	color_rect.queue_free()
 	entities_layer.visible = false
+
+
+func _on_button_pressed():
+	ui.get_child(0).visible = false
