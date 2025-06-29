@@ -23,6 +23,7 @@ offset_bottom = 598.0
 theme = SubResource("Theme_6yfu1")
 
 [node name="Name_Margin_Container" type="MarginContainer" parent="CanvasLayer/Panel"]
+layout_mode = 0
 offset_left = 22.0
 offset_top = 21.0
 offset_right = 358.0

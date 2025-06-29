@@ -13,11 +13,12 @@ var navigation_system = NavigationSystem.new()
 var damage_system = DamageSystem.new()
 var intent_propagator = IntentPropagationSystem.new()
 
+@onready var camera_2d = $"../Camera2D"
 @onready var ui = $UI
 @onready var layer_manager : layer_manager = $Layer_Manager
 @onready var entities_layer = $Entities
-var color_rect
 var fortress_mode_scene = preload("uid://cdaktcc5ef28t")
+@onready var color_rect : SelectionRect = $UI/SelectionColorRect
 
 var map_matrix : Dictionary[Vector2i,Array]
 
@@ -37,12 +38,10 @@ func _physics_process(delta):
 			map_matrix = layer_manager.get_map()
 			navigation_system.terrain_map = map_matrix
 			pos_system.groundTM = layer_manager.tm_layers["ground"]
-			color_rect = SelectionRect.new()
-			add_child(color_rect)
 			color_rect.area_selected.connect(_on_color_rect_area_selected)
 			place_trees()
-			var worker_ent = EntityRegistry.instantiate_entity("WorkerEntity", [layer_manager.tm_layers["ground"].get_used_cells().min()])
-			var axe_ent = EntityRegistry.instantiate_entity("AxeEntity",[layer_manager.tm_layers["ground"].get_used_cells().min() + Vector2i.RIGHT])
+			#var worker_ent = EntityRegistry.instantiate_entity("WorkerEntity", [layer_manager.tm_layers["ground"].get_used_cells().min()])
+			#var axe_ent = EntityRegistry.instantiate_entity("AxeEntity",[layer_manager.tm_layers["ground"].get_used_cells().min() + Vector2i.RIGHT])
 			
 			#entities_layer.add_child(worker_ent)
 			#entities_layer.add_child(axe_ent)

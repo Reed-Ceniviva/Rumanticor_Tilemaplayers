@@ -1,7 +1,8 @@
-[gd_scene load_steps=4 format=3 uid="uid://ck330weafqg7o"]
+[gd_scene load_steps=5 format=3 uid="uid://ck330weafqg7o"]
 
 [ext_resource type="Script" uid="uid://c7ihg2dsayw28" path="res://Scenes/ECS/Managers/world_manager.gd" id="1_3pref"]
 [ext_resource type="PackedScene" uid="uid://buaonr7qjcjv1" path="res://Scenes/layer_manager.tscn" id="2_ysl4i"]
+[ext_resource type="PackedScene" uid="uid://cql3bptaqgv8b" path="res://Scenes/SelectionRect.tscn" id="3_kcmbr"]
 
 [sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ysl4i"]
 
@@ -15,8 +16,6 @@ script = ExtResource("1_3pref")
 [node name="UI" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
 
 [node name="CanvasLayer" type="CanvasLayer" parent="UI"]
 
@@ -72,5 +71,8 @@ layout_mode = 2
 layout_mode = 2
 size_flags_horizontal = 6
 text = "Begin"
+
+[node name="SelectionColorRect" parent="UI" instance=ExtResource("3_kcmbr")]
+layout_mode = 0
 
 [connection signal="pressed" from="UI/CanvasLayer/Panel/GridContainer/Button" to="." method="_on_button_pressed"]

@@ -145,14 +145,19 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 	# Use offset in tile units; for zoomed detail, we offset sub-tile level
 	var world_offset := Vector2(bounds.position)  # in tiles
 	#world_offset *= (1.0 / zoom_factor)  # convert to sub-tiles for higher precision
+	var camera_2d = get_parent().get_parent().get_child(0)
+	var camera_pos_in_world = camera_2d.global_position / camera_2d.zoom
+	var camera_tile_offset = Vector2i(floor(camera_pos_in_world.x / 16), floor(camera_pos_in_world.y / 16))
+
+	var world_origin_tiles = Vector2i(offset) + Vector2i(bounds.position) + camera_tile_offset
+	
 
 	zoom_container = layer_manager.new(true)
 	# Step 1: Combine original offset (in tiles) with bounds (also in tiles)
 	var true_origin = Vector2(offset) + Vector2(bounds.position)
-
 	# Step 2: Scale it for zoom-level (convert tile origin to sub-tile origin)
 	var sub_tile_offset = true_origin * zoom_factor
-	var world_origin = (Vector2i(offset) + bounds.position) * scale
+	var world_origin = (Vector2i(offset) + bounds.position)
 
 	# Step 3: Set scale for fine detail
 	var zoom_scale = scale / float(zoom_factor)
@@ -162,7 +167,7 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 		zoomed_size.x,
 		zoomed_size.y,
 		zoom_scale,
-		world_origin,
+		world_origin_tiles,
 		gen_seed,
 		zoom_factor
 	)
@@ -182,8 +187,8 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 
 	#add_child(zoom_container)
 
-	for y in range(zoomed_size.y):
-		for x in range(zoomed_size.x):
+	for x in range(zoomed_size.x):
+		for y in range(zoomed_size.y):
 			var elev = zoomed_matrix[y][x]
 			var layer_name := ""
 			var atlas_pos := Vector2i()
@@ -210,7 +215,7 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 				atlas_pos = SNOW_TILE_ATLAS_POS
 				source_id = SNOW_SOURCE_ID
 
-			zoomed_layers[layer_name].set_cell(Vector2i(y,x ), source_id, atlas_pos)
+			zoomed_layers[layer_name].set_cell(Vector2i(x,y), source_id, atlas_pos)
 
 	zoom_container.set_tm_layers(zoomed_layers)
 	zoom_container.paint_lakes(max_lake_size * scale, max_elev_varience)
@@ -237,9 +242,16 @@ func get_bounds_from_selection(selection: Array[Vector2i]) -> Rect2i:
 		min_y = min(min_y, pos.y)
 		max_x = max(max_x, pos.x)
 		max_y = max(max_y, pos.y)
-	var return_rect := Rect2i(min_y, min_x, max_y, max_x)
-	print(return_rect)
+	var return_rect := Rect2i(
+		min_x,
+		min_y,
+		max_x - min_x + 1,
+		max_y - min_y + 1
+	)
+	print("Corrected bounds rect: ", return_rect)
 	return return_rect
+
+
 
 
 
