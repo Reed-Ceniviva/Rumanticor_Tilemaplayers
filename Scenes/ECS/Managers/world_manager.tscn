@@ -1,10 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://ck330weafqg7o"]
+[gd_scene load_steps=4 format=3 uid="uid://ck330weafqg7o"]
 
 [ext_resource type="Script" uid="uid://c7ihg2dsayw28" path="res://Scenes/ECS/Managers/world_manager.gd" id="1_3pref"]
 [ext_resource type="PackedScene" uid="uid://buaonr7qjcjv1" path="res://Scenes/layer_manager.tscn" id="2_ysl4i"]
-[ext_resource type="PackedScene" uid="uid://cql3bptaqgv8b" path="res://Scenes/SelectionRect.tscn" id="3_kcmbr"]
-
-[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ysl4i"]
+[ext_resource type="PackedScene" uid="uid://0k65gbu0mgue" path="res://Scenes/game_start_ui.tscn" id="3_kcmbr"]
 
 [node name="World_Manager" type="Node"]
 script = ExtResource("1_3pref")
@@ -13,66 +11,8 @@ script = ExtResource("1_3pref")
 
 [node name="Entities" type="Node2D" parent="."]
 
-[node name="UI" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 0
+[node name="Game_Start_UI" parent="." instance=ExtResource("3_kcmbr")]
 
-[node name="CanvasLayer" type="CanvasLayer" parent="UI"]
+[connection signal="pressed" from="Game_Start_UI/CanvasLayer/Panel/GridContainer/Button" to="." method="_on_button_pressed"]
 
-[node name="Panel" type="Panel" parent="UI/CanvasLayer"]
-material = SubResource("CanvasItemMaterial_ysl4i")
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -219.0
-offset_top = -163.0
-offset_right = 219.0
-offset_bottom = 163.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="GridContainer" type="GridContainer" parent="UI/CanvasLayer/Panel"]
-layout_mode = 1
-anchors_preset = 8
-anchor_left = 0.5
-anchor_top = 0.5
-anchor_right = 0.5
-anchor_bottom = 0.5
-offset_left = -20.0
-offset_top = -20.0
-offset_right = 20.0
-offset_bottom = 20.0
-grow_horizontal = 2
-grow_vertical = 2
-
-[node name="Label1" type="Label" parent="UI/CanvasLayer/Panel/GridContainer"]
-layout_mode = 2
-size_flags_horizontal = 6
-size_flags_vertical = 2
-text = "Select Your Starting area"
-
-[node name="Space1" type="Label" parent="UI/CanvasLayer/Panel/GridContainer"]
-layout_mode = 2
-
-[node name="Label2" type="Label" parent="UI/CanvasLayer/Panel/GridContainer"]
-layout_mode = 2
-size_flags_horizontal = 3
-size_flags_vertical = 3
-text = "Left_Click + Drag to Navigate
-Right_Click + Drag to Select"
-horizontal_alignment = 1
-
-[node name="Space2" type="Label" parent="UI/CanvasLayer/Panel/GridContainer"]
-layout_mode = 2
-
-[node name="Button" type="Button" parent="UI/CanvasLayer/Panel/GridContainer"]
-layout_mode = 2
-size_flags_horizontal = 6
-text = "Begin"
-
-[node name="SelectionColorRect" parent="UI" instance=ExtResource("3_kcmbr")]
-layout_mode = 0
-
-[connection signal="pressed" from="UI/CanvasLayer/Panel/GridContainer/Button" to="." method="_on_button_pressed"]
+[editable path="Game_Start_UI"]

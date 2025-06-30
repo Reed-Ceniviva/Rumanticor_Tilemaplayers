@@ -146,10 +146,11 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 	var world_offset := Vector2(bounds.position)  # in tiles
 	#world_offset *= (1.0 / zoom_factor)  # convert to sub-tiles for higher precision
 	var camera_2d = get_parent().get_parent().get_child(0)
-	var camera_pos_in_world = camera_2d.global_position / camera_2d.zoom
-	var camera_tile_offset = Vector2i(floor(camera_pos_in_world.x / 16), floor(camera_pos_in_world.y / 16))
+	var camera_pos_in_world = (camera_2d.global_position / camera_2d.zoom )
+	var camera_tile_offset = Vector2i(floor(camera_pos_in_world.x / 16), floor(camera_pos_in_world.y / 16)) 
 
-	var world_origin_tiles = Vector2i(offset) + Vector2i(bounds.position) + camera_tile_offset
+	var world_origin_tiles = Vector2i(offset) + Vector2i(bounds.position)
+	var world_origin_world = (Vector2(world_origin_tiles)) * zoom_factor
 	
 
 	zoom_container = layer_manager.new(true)
@@ -167,7 +168,7 @@ func generate_zoomed_map(selected_tiles: Array[Vector2i]):
 		zoomed_size.x,
 		zoomed_size.y,
 		zoom_scale,
-		world_origin_tiles,
+		world_origin_world,
 		gen_seed,
 		zoom_factor
 	)
@@ -307,12 +308,13 @@ func generate_perlin_matrix(
 	height: int,
 	scale: float,
 	world_origin: Vector2,
-	seed: int = 0,
+	seed: int = 1429583528,
 	zoom_factor: int = 1
 	) -> Array:
 	var matrix = []
 	var noise = FastNoiseLite.new()
 	gen_seed = seed if seed != 0 else randi()
+	print("seed: " , gen_seed)
 	noise.seed = gen_seed
 	noise.noise_type = FastNoiseLite.TYPE_PERLIN
 	noise.fractal_lacunarity = lacunarity

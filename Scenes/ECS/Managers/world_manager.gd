@@ -14,11 +14,11 @@ var damage_system = DamageSystem.new()
 var intent_propagator = IntentPropagationSystem.new()
 
 @onready var camera_2d = $"../Camera2D"
-@onready var ui = $UI
+@onready var ui = $Game_Start_UI
 @onready var layer_manager : layer_manager = $Layer_Manager
 @onready var entities_layer = $Entities
 var fortress_mode_scene = preload("uid://cdaktcc5ef28t")
-@onready var color_rect : SelectionRect = $UI/SelectionColorRect
+@onready var color_rect = $"../Camera2D/SelectionNode"
 
 var map_matrix : Dictionary[Vector2i,Array]
 
@@ -38,7 +38,7 @@ func _physics_process(delta):
 			map_matrix = layer_manager.get_map()
 			navigation_system.terrain_map = map_matrix
 			pos_system.groundTM = layer_manager.tm_layers["ground"]
-			color_rect.area_selected.connect(_on_color_rect_area_selected)
+			color_rect.area_selected.connect(_on_selection_node_area_selected)
 			place_trees()
 			#var worker_ent = EntityRegistry.instantiate_entity("WorkerEntity", [layer_manager.tm_layers["ground"].get_used_cells().min()])
 			#var axe_ent = EntityRegistry.instantiate_entity("AxeEntity",[layer_manager.tm_layers["ground"].get_used_cells().min() + Vector2i.RIGHT])
@@ -77,8 +77,11 @@ func place_trees():
 				entities_layer.add_child(tree_ent)
 		
 
+func _on_button_pressed():
+	ui.get_child(0).visible = false
 
-func _on_color_rect_area_selected():
+
+func _on_selection_node_area_selected(selected_tiles):
 	print("area selection recieved by world manager")
 	var fortress_mode = fortress_mode_scene.instantiate()
 	get_parent().add_child(fortress_mode)
@@ -93,7 +96,3 @@ func _on_color_rect_area_selected():
 			layer.visible = false
 	color_rect.queue_free()
 	entities_layer.visible = false
-
-
-func _on_button_pressed():
-	ui.get_child(0).visible = false

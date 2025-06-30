@@ -2,21 +2,18 @@
 
 [ext_resource type="PackedScene" uid="uid://ll1gtb5o4xf3" path="res://Scenes/camera_controller.tscn" id="1_qxrlw"]
 [ext_resource type="Script" uid="uid://cx13k8lh24st6" path="res://Scripts/game.gd" id="1_wrm1d"]
-[ext_resource type="PackedScene" uid="uid://csrf67wpf2nmp" path="res://Scenes/selection_node.tscn" id="3_3dryh"]
+[ext_resource type="PackedScene" uid="uid://0k65gbu0mgue" path="res://Scenes/game_start_ui.tscn" id="3_3dryh"]
 [ext_resource type="PackedScene" uid="uid://ck330weafqg7o" path="res://Scenes/ECS/Managers/world_manager.tscn" id="4_wowpa"]
 
 [node name="Game" type="Node2D"]
 script = ExtResource("1_wrm1d")
 
 [node name="Camera2D" parent="." instance=ExtResource("1_qxrlw")]
-position = Vector2(576, 324)
 
-[node name="SelectionNode" parent="Camera2D" instance=ExtResource("3_3dryh")]
-z_index = 1
+[node name="Game_Start_UI" parent="Camera2D" instance=ExtResource("3_3dryh")]
 
 [node name="World_Manager" parent="." instance=ExtResource("4_wowpa")]
 
-[connection signal="area_selected" from="Camera2D/SelectionNode" to="World_Manager" method="_on_selection_node_area_selected"]
+[connection signal="area_selected" from="Camera2D/Game_Start_UI/SelectionColorRect" to="World_Manager" method="_on_selection_color_rect_area_selected"]
 
-[editable path="World_Manager"]
-[editable path="World_Manager/Game_Start_UI"]
+[editable path="Camera2D/Game_Start_UI"]

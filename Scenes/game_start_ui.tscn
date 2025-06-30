@@ -1,0 +1,62 @@
+[gd_scene load_steps=2 format=3 uid="uid://0k65gbu0mgue"]
+
+[sub_resource type="CanvasItemMaterial" id="CanvasItemMaterial_ysl4i"]
+
+[node name="Game_Start_UI" type="Control"]
+layout_mode = 3
+anchors_preset = 0
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Panel" type="Panel" parent="CanvasLayer"]
+material = SubResource("CanvasItemMaterial_ysl4i")
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -219.0
+offset_top = -163.0
+offset_right = 219.0
+offset_bottom = 163.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -20.0
+offset_top = -20.0
+offset_right = 20.0
+offset_bottom = 20.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Label1" type="Label" parent="CanvasLayer/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 6
+size_flags_vertical = 2
+text = "Select Your Starting area"
+
+[node name="Space1" type="Label" parent="CanvasLayer/Panel/GridContainer"]
+layout_mode = 2
+
+[node name="Label2" type="Label" parent="CanvasLayer/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+text = "Left_Click + Drag to Navigate
+Right_Click + Drag to Select"
+horizontal_alignment = 1
+
+[node name="Space2" type="Label" parent="CanvasLayer/Panel/GridContainer"]
+layout_mode = 2
+
+[node name="Button" type="Button" parent="CanvasLayer/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 6
+text = "Begin"
