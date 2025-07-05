@@ -7,17 +7,19 @@ func _init(init_pos : Vector2i = Vector2i(-1,-1)):
 	var pos_comp_class = ComponentRegistry.get_component_class("PositionComponent")
 	if pos_comp_class:
 		add_component(pos_comp_class.new(init_pos))
+	add_tag("tree")
 
 func _ready():
 	var health_comp_class = ComponentRegistry.get_component_class("HealthComponent")
 	if health_comp_class:
 		add_component(health_comp_class.new(30,30))
-	add_tag("tree")
 	var inv_comp_class = ComponentRegistry.get_component_class("InventoryComponent")
 	if inv_comp_class:
 		var inv_comp : InventoryComponent = inv_comp_class.new(3)
 		for i in randi()%4:
-			inv_comp.add_item(EntityRegistry.instantiate_entity("LogEntity"))
+			var log_ent = EntityRegistry.instantiate_entity("LogEntity")
+			get_parent().add_child(log_ent)
+			inv_comp.add_item(log_ent)
 		add_component(inv_comp)
 	animated_sprite_2d.play("default" + str(randi()%3 + 1))
 	var wood_comp = ComponentRegistry.get_component_class("ResourceComponent")

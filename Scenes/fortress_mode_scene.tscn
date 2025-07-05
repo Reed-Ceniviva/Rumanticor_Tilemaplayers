@@ -26,7 +26,7 @@ theme_override_constants/margin_bottom = 5
 [node name="GridContainer" type="GridContainer" parent="CanvasLayer/Panel/MarginContainer"]
 layout_mode = 2
 
-[node name="TextureButton" type="TextureButton" parent="CanvasLayer/Panel/MarginContainer/GridContainer"]
+[node name="Create_Character_TextureButton" type="TextureButton" parent="CanvasLayer/Panel/MarginContainer/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -55,4 +55,4 @@ layout_mode = 2
 text = "Create Your First Character"
 
 [connection signal="child_order_changed" from="." to="." method="_on_child_order_changed"]
-[connection signal="pressed" from="CanvasLayer/Panel/MarginContainer/GridContainer/TextureButton" to="." method="_on_texture_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Panel/MarginContainer/GridContainer/Create_Character_TextureButton" to="." method="_on_texture_button_pressed"]

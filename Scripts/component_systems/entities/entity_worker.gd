@@ -32,6 +32,15 @@ func _ready():
 	if equipment_comp_class:
 		add_component(equipment_comp_class.new())
 	
+	#create and add age component
+	var age_comp_class = ComponentRegistry.get_component_class("AgeComponent")
+	if age_comp_class:
+		add_component(age_comp_class.new())
+	
+	var body_comp_class = ComponentRegistry.get_component_class("BodyComponent")
+	if body_comp_class:
+		add_component(body_comp_class.new())
+	
 	var sphere_stats_class = ComponentRegistry.get_component_class("SphereStatsComponent")
 	if sphere_stats_class:
 		add_component(sphere_stats_class.new())
@@ -40,12 +49,11 @@ func _ready():
 	var brain_comp_class = ComponentRegistry.get_component_class("BrainComponent")
 	if brain_comp_class:
 		var brain_comp : BrainComponent = brain_comp_class.new()
-		#depricated WFC AI memories
-		#brain_comp.memory["life_goals"] = ["build_hut"]
-		#brain_comp.memory["goal_intent"] = "build_hut"
-		#brain_comp.memory["intent"] = "build_hut"
+		#intent based AI
+		brain_comp.memory["intent"] = "collect wood"
 		
 		#object permanance
+		brain_comp.memory["target_entity"]
 		brain_comp.memory["target_entity_id"] = -1
 		brain_comp.memory["target_location"] = Vector2i.ZERO
 		brain_comp.memory["current_path"] = []
@@ -61,17 +69,6 @@ func _ready():
 		brain_comp.memory["melee_range"] = 1.0
 		brain_comp.memory["ranged_range"] = 0.0
 		
-		#the sphere stats are not a product of an entities brain or memories so it should not be held here
-		#brain_comp.memory["sphere_stats"] = {
-			#"strength" : 1.0,
-			#"nature": 1.0,
-			#"art": 1.0,
-			#"social": 1.0,
-			#"inspiration":1.0,
-			#"fear":1.0,
-			#"luck":1.0,
-			#"wisdom":1.0
-		#}
 		add_component(brain_comp)
 
 

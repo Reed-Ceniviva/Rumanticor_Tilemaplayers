@@ -18,7 +18,9 @@ static var _registry: Dictionary[String,Script] = {
 	"SphereStatsComponent":preload("uid://r422yy3037dt"),
 	"StructureComponent":preload("uid://bkr7iapxy6tqt"),
 	"HousedComponent":preload("uid://e8ic8q67w4oc"),
-	"BrainComponent":preload("uid://cfak2idcjuy4o")
+	"BrainComponent":preload("uid://cfak2idcjuy4o"),
+	"AgeComponent":preload("uid://ceo83rcg8flvr"),
+	"BodyComponent":preload("uid://devhx6e1dkhb3")
 }
 
 static func register_component(name: String, class_ref: Script) -> void:

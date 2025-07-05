@@ -1,7 +1,8 @@
-[gd_scene load_steps=5 format=3 uid="uid://cs4bs2yb24n2l"]
+[gd_scene load_steps=6 format=3 uid="uid://cs4bs2yb24n2l"]
 
 [ext_resource type="Theme" uid="uid://ddyndqd18yvb6" path="res://Scenes/new_theme.tres" id="1_1r1x1"]
 [ext_resource type="Script" uid="uid://ce8h2cdnuupyg" path="res://Scenes/spheres_display_margin_container.gd" id="2_ejh4x"]
+[ext_resource type="Script" uid="uid://bmos4d3viuoxa" path="res://Scenes/character_creation_scene.gd" id="2_yfd3h"]
 [ext_resource type="Script" uid="uid://cx4u0y2qslmx8" path="res://Scenes/circle_panel.gd" id="3_yfd3h"]
 
 [sub_resource type="Theme" id="Theme_6yfu1"]
@@ -14,6 +15,7 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 theme = ExtResource("1_1r1x1")
+script = ExtResource("2_yfd3h")
 
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
@@ -51,7 +53,7 @@ layout_mode = 2
 text = "Name:"
 vertical_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Panel/Name_Margin_Container/Panel2/GridContainer"]
+[node name="Name_LineEdit" type="LineEdit" parent="CanvasLayer/Panel/Name_Margin_Container/Panel2/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Armok"
@@ -82,7 +84,7 @@ offset_bottom = 351.0
 [node name="Strength_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Strength"
+text = "Strength: 0"
 horizontal_alignment = 1
 
 [node name="Strength_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
@@ -95,7 +97,7 @@ value = 1.0
 [node name="Nature_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Nature"
+text = "Nature: 0"
 horizontal_alignment = 1
 
 [node name="Nature_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
@@ -108,7 +110,7 @@ value = 1.0
 [node name="Art_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Art"
+text = "Art: 0"
 horizontal_alignment = 1
 
 [node name="Art_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
@@ -121,7 +123,7 @@ value = 1.0
 [node name="Social_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Social"
+text = "Social: 0"
 horizontal_alignment = 1
 
 [node name="Social_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
@@ -134,7 +136,7 @@ value = 1.0
 [node name="Inspo_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Inspiration"
+text = "Inspiration: 0"
 horizontal_alignment = 1
 
 [node name="Inspo_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
@@ -147,7 +149,7 @@ value = 1.0
 [node name="Luck_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Luck"
+text = "Luck: 0"
 horizontal_alignment = 1
 
 [node name="Luck_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
@@ -160,7 +162,7 @@ value = 1.0
 [node name="Wisdom_Label" type="Label" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
-text = "Wisdom"
+text = "Wisdom: 0"
 horizontal_alignment = 1
 
 [node name="Wisdom_HSlider" type="HSlider" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer"]
@@ -178,19 +180,19 @@ offset_right = 322.0
 offset_bottom = 436.0
 columns = 3
 
-[node name="Button" type="Button" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer2"]
+[node name="Human_Button" type="Button" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Human"
 
-[node name="Button2" type="Button" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer2"]
+[node name="Dwarf_Button" type="Button" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
 text = "Dwarf"
 
-[node name="Button3" type="Button" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer2"]
+[node name="Elf_Button" type="Button" parent="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer2"]
 layout_mode = 2
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -224,6 +226,9 @@ horizontal_alignment = 1
 
 [node name="Weight_HSlider" type="HSlider" parent="CanvasLayer/Panel/Height_Weight_Margin_Container/Panel/VBoxContainer"]
 layout_mode = 2
+min_value = 40.0
+max_value = 140.0
+value = 70.0
 
 [node name="Weight_Label" type="Label" parent="CanvasLayer/Panel/Height_Weight_Margin_Container/Panel/VBoxContainer"]
 layout_mode = 2
@@ -242,7 +247,9 @@ horizontal_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 1
 size_flags_vertical = 3
-value = 1.0
+min_value = 110.0
+max_value = 215.0
+value = 167.0
 
 [node name="Height_Label" type="Label" parent="CanvasLayer/Panel/Height_Weight_Margin_Container/Panel/VBoxContainer"]
 layout_mode = 2
@@ -292,7 +299,7 @@ layout_mode = 2
 text = "Age:"
 vertical_alignment = 1
 
-[node name="LineEdit" type="LineEdit" parent="CanvasLayer/Panel/Age_Margin_Container/Panel/HBoxContainer"]
+[node name="Age_LineEdit" type="LineEdit" parent="CanvasLayer/Panel/Age_Margin_Container/Panel/HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "18"
@@ -325,3 +332,18 @@ vertical_alignment = 1
 layout_mode = 2
 size_flags_horizontal = 3
 placeholder_text = "Minimalism"
+
+[node name="Submit_Button" type="Button" parent="CanvasLayer/Panel"]
+layout_mode = 0
+offset_left = 901.0
+offset_top = 524.0
+offset_right = 1041.0
+offset_bottom = 555.0
+text = "Create Character"
+
+[connection signal="text_changed" from="CanvasLayer/Panel/Name_Margin_Container/Panel2/GridContainer/Name_LineEdit" to="." method="_on_name_line_edit_text_changed"]
+[connection signal="pressed" from="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer2/Human_Button" to="." method="_on_human_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer2/Dwarf_Button" to="." method="_on_dwarf_button_pressed"]
+[connection signal="pressed" from="CanvasLayer/Panel/Sphere_Stats_Margin_Container/Panel/GridContainer2/Elf_Button" to="." method="_on_elf_button_pressed"]
+[connection signal="text_changed" from="CanvasLayer/Panel/Age_Margin_Container/Panel/HBoxContainer/Age_LineEdit" to="." method="_on_age_line_edit_text_changed"]
+[connection signal="pressed" from="CanvasLayer/Panel/Submit_Button" to="." method="_on_submit_button_pressed"]

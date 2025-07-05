@@ -19,3 +19,18 @@ func take_damage(amount: int) -> void:
 
 func heal(amount: int) -> void:
 	current_health = min(current_health + amount, max_health)
+
+func set_max_health(new_max_health : int):
+	max_health = new_max_health
+	if current_health > max_health:
+		current_health = max_health
+		
+	
+func change_max_health(max_health_change : int):
+	if max_health - max_health_change <= 0:
+		max_health = 1
+		current_health = 1
+	else:
+		max_health = max_health_change
+		if current_health > max_health:
+			current_health = max_health

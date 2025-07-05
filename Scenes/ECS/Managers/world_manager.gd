@@ -11,7 +11,6 @@ var vision_system = VisionSystem.new()
 var movement_system = MovementSystem.new()
 var navigation_system = NavigationSystem.new()
 var damage_system = DamageSystem.new()
-var intent_propagator = IntentPropagationSystem.new()
 
 @onready var camera_2d = $"../Camera2D"
 @onready var ui = $Game_Start_UI

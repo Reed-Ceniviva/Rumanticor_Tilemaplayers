@@ -3,6 +3,7 @@ class_name BrainComponent
 
 var memory : Dictionary = {}
 
+
 func _init():
 	component_name = "BrainComponent"
 	super._init()

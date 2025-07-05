@@ -1,0 +1,147 @@
+[gd_scene load_steps=2 format=3 uid="uid://6hqooighp3w8"]
+
+[ext_resource type="Script" uid="uid://q80uep6ppmvg" path="res://character_info_box.gd" id="1_qcq8v"]
+
+[node name="Character_Info_Box" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_right = -803.0
+offset_bottom = -437.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_qcq8v")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
+offset_left = 3.0
+offset_top = 4.0
+offset_right = 344.0
+offset_bottom = 207.0
+
+[node name="Panel" type="Panel" parent="CanvasLayer/MarginContainer"]
+layout_mode = 2
+
+[node name="GridContainer" type="GridContainer" parent="CanvasLayer/MarginContainer/Panel"]
+layout_mode = 0
+offset_left = 3.0
+offset_top = 3.0
+offset_right = 338.0
+offset_bottom = 199.0
+columns = 2
+
+[node name="Name_Label" type="Label" parent="CanvasLayer/MarginContainer/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Name:"
+
+[node name="Activity_Label" type="Label" parent="CanvasLayer/MarginContainer/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "Activity:"
+
+[node name="Wesnail_Sliders_HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MarginContainer/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Wis_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+max_value = 10.0
+editable = false
+scrollable = false
+
+[node name="Extro_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+max_value = 10.0
+
+[node name="Strength_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+max_value = 10.0
+
+[node name="Nature_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+max_value = 10.0
+
+[node name="Art_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+max_value = 10.0
+
+[node name="Inspo_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+max_value = 10.0
+
+[node name="Luck_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 2
+max_value = 10.0
+
+[node name="Thoughts_TextEdit" type="TextEdit" parent="CanvasLayer/MarginContainer/Panel/GridContainer"]
+layout_mode = 2
+placeholder_text = "Thoughts"
+indent_wrapped_lines = true
+
+[node name="Wesnail_Title_HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MarginContainer/Panel/GridContainer"]
+layout_mode = 2
+
+[node name="Wisdom_Label" type="Label" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Title_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "W"
+horizontal_alignment = 1
+
+[node name="Extro_Label" type="Label" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Title_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "E"
+horizontal_alignment = 1
+
+[node name="Strength_Label" type="Label" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Title_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "S"
+horizontal_alignment = 1
+
+[node name="Nature_Label" type="Label" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Title_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "N"
+horizontal_alignment = 1
+
+[node name="Art_Label" type="Label" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Title_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "A"
+horizontal_alignment = 1
+
+[node name="Inspo_Label" type="Label" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Title_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "I"
+horizontal_alignment = 1
+
+[node name="Luck_Label" type="Label" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Title_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+text = "L"
+horizontal_alignment = 1
+
+[node name="HP_HBoxContainer" type="HBoxContainer" parent="CanvasLayer/MarginContainer/Panel/GridContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="HP_Title_Label" type="Label" parent="CanvasLayer/MarginContainer/Panel/GridContainer/HP_HBoxContainer"]
+layout_mode = 2
+text = "HP"
+
+[node name="HP_HSlider" type="HSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/HP_HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3

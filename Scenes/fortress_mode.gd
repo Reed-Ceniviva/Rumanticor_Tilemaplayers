@@ -7,10 +7,21 @@ var tick_duration = 0.33
 
 var health_system = HealthSystem.new()
 var pos_system = PositionSystem.new()
+
+var vision_system = VisionSystem.new()
+var movement_system = MovementSystem.new()
+var damage_system = DamageSystem.new()
+
+
 var entities_layer
 
+const CHARACTER_CREATION_SCENE = preload("res://Scenes/character_creation_scene.tscn")
+const WORKER_ENTITY = preload("res://Scenes/ECS/Entities/worker_entity.tscn")
+
 func _on_texture_button_pressed():
-	pass # Replace with function body.
+	var char_creation = CHARACTER_CREATION_SCENE.instantiate()
+	char_creation.connect("char_submitted",new_char)
+	add_child(char_creation)
 
 func _physics_process(delta):
 	if fortress_layer_manager == null:
@@ -34,14 +45,38 @@ func _physics_process(delta):
 				if child.has_component_type("PositionComponent"):
 					#print("calling position system")
 					pos_system.process(child)
-				#if child.has_component_type("BrainComponent"):
-					#var brain : BrainComponent = child.get_component_by_type("BrainComponent")
-					#intent_propagator.process(child)
-					#var intent = brain.recall("intent", "rest")
-					#
-					#print("intent: " , intent)
-					#
-					#if brain.knows("in_sight"):
-						#vision_system.process(child)
-					#if brain.knows("current_path"):
-						#movement_system.process(child)
+				if child.has_component_type("BrainComponent"):
+					var brain : BrainComponent = child.get_component_by_type("BrainComponent")
+					if brain.knows("intent"):
+						pass
+					if brain.knows("in_sight"):
+						vision_system.process(child)
+					if brain.knows("current_path"):
+						movement_system.process(child)
+					
+
+
+func new_char(stats : Dictionary):
+	#create new worker
+	var starting_pos = fortress_layer_manager.tm_layers["ground"].get_used_cells().min()
+	var new_worker : WorkerEntity = EntityRegistry.instantiate_entity("WorkerEntity", [starting_pos])
+	fortress_layer_manager.tm_layers["entities"].add_child(new_worker)
+	#assign the worker their sphere stats
+	var sphere_stats : SphereStatsComponent = new_worker.get_component_by_type("SphereStatsComponent")
+	for sphere in sphere_stats.stats.keys():
+		if stats.keys().has(sphere):
+			sphere_stats.stats[sphere] = stats[sphere]
+		
+	#assign age
+	var age_comp : AgeComponent = new_worker.get_component_by_type("AgeComponent")
+	age_comp.age = stats["age"]
+	
+	#assign height and weight
+	var body_comp : BodyComponent = new_worker.get_component_by_type("BodyComponent")
+	body_comp.height = stats["height"]
+	body_comp.weight = stats["weight"]
+	
+	var brain_comp : BrainComponent = new_worker.get_component_by_type("BrainComponent")
+	brain_comp.remember("name", stats["name"])
+	
+	
