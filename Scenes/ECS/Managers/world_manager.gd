@@ -57,7 +57,6 @@ func _physics_process(delta):
 					pos_system.process(child)
 				if child.has_component_type("BrainComponent"):
 					var brain : BrainComponent = child.get_component_by_type("BrainComponent")
-					intent_propagator.process(child)
 					var intent = brain.recall("intent", "rest")
 					
 					print("intent: " , intent)

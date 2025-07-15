@@ -2,7 +2,7 @@ extends Entity
 class_name WorkerEntity
 
 @onready var worker_animated_sprite_2d : AnimatedSprite2D = $defualt_worker_animated_sprite_2d
-
+@onready var char_select_color_rect = $char_select_ColorRect
 # Life Goals
 # shelter, food, water - well being
 # safety
@@ -50,10 +50,10 @@ func _ready():
 	if brain_comp_class:
 		var brain_comp : BrainComponent = brain_comp_class.new()
 		#intent based AI
-		brain_comp.memory["intent"] = "collect wood"
+		brain_comp.memory["intent"] = "wonder"
 		
 		#object permanance
-		brain_comp.memory["target_entity"]
+		brain_comp.memory["target_entity"] = null
 		brain_comp.memory["target_entity_id"] = -1
 		brain_comp.memory["target_location"] = Vector2i.ZERO
 		brain_comp.memory["current_path"] = []
@@ -64,7 +64,7 @@ func _ready():
 		#brain_comp.memory["visibility"] = 12 #every twelve tiles halves visibility
 		
 		#mobility
-		brain_comp.memory["traverses"] = {"ground":1.0}
+		brain_comp.memory["traverses"] = {"ground":1.0, "shore":1.0}
 		brain_comp.memory["melee_damage"] = 1.0
 		brain_comp.memory["melee_range"] = 1.0
 		brain_comp.memory["ranged_range"] = 0.0

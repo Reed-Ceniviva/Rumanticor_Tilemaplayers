@@ -7,8 +7,10 @@ layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_right = -803.0
-offset_bottom = -437.0
+offset_left = 2.0
+offset_top = 3.0
+offset_right = -801.0
+offset_bottom = -434.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_qcq8v")
@@ -16,10 +18,10 @@ script = ExtResource("1_qcq8v")
 [node name="CanvasLayer" type="CanvasLayer" parent="."]
 
 [node name="MarginContainer" type="MarginContainer" parent="CanvasLayer"]
-offset_left = 3.0
-offset_top = 4.0
-offset_right = 344.0
-offset_bottom = 207.0
+offset_left = 5.0
+offset_top = 7.0
+offset_right = 346.0
+offset_bottom = 210.0
 
 [node name="Panel" type="Panel" parent="CanvasLayer/MarginContainer"]
 layout_mode = 2
@@ -58,31 +60,43 @@ scrollable = false
 layout_mode = 2
 size_flags_horizontal = 2
 max_value = 10.0
+editable = false
+scrollable = false
 
 [node name="Strength_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
 max_value = 10.0
+editable = false
+scrollable = false
 
 [node name="Nature_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
 max_value = 10.0
+editable = false
+scrollable = false
 
 [node name="Art_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
 max_value = 10.0
+editable = false
+scrollable = false
 
 [node name="Inspo_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
 max_value = 10.0
+editable = false
+scrollable = false
 
 [node name="Luck_VSlider" type="VSlider" parent="CanvasLayer/MarginContainer/Panel/GridContainer/Wesnail_Sliders_HBoxContainer"]
 layout_mode = 2
 size_flags_horizontal = 2
 max_value = 10.0
+editable = false
+scrollable = false
 
 [node name="Thoughts_TextEdit" type="TextEdit" parent="CanvasLayer/MarginContainer/Panel/GridContainer"]
 layout_mode = 2

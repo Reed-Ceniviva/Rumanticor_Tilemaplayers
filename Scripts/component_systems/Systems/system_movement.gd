@@ -45,6 +45,7 @@ func process(entity: Entity) -> void:
 			return
 			
 		
+		#skips starting pos until the last position
 		var next_pos
 		if cur_path.size() == 1:
 			next_pos = cur_path[0]
@@ -53,6 +54,6 @@ func process(entity: Entity) -> void:
 
 		# You could insert movement validation logic here if needed (e.g., check terrain passability)
 
-		# Instantly move to next tile
+		# Instantly move to next tile and update current path
 		pos_comp.pos = next_pos
 		brain_comp.remember("current_path", cur_path.slice(1))

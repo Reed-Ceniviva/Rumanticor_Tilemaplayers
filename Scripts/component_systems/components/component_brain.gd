@@ -97,13 +97,3 @@ func log_in_sight() -> bool:
 			if vis_ent.has_tag("log"):
 				return true
 	return false
-	
-func target_is_tree() -> bool:
-	if knows("target"):
-		var target_ent = EntityRegistry._entity_store[recall("target_entity_id", -1)]
-		if target_ent is TreeEntity:
-			return true
-		else:
-			return false
-	else:
-		return false

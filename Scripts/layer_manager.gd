@@ -124,11 +124,10 @@ func _ready():
 		round_water_cliffs()
 		fill_mountain_cliffs()
 		#build_traversable_tilemap()
-		for layer in tm_layers:
-			pass
-			#layer_quadtrees[layer] = build_tml_quadtree(tm_layers[layer])
 		make_map()
 		world_created.emit()
+	for layer in tm_layers:
+		layer_quadtrees[layer] = build_tml_quadtree(tm_layers[layer])
 
 func _process(delta):
 	pass
@@ -300,6 +299,8 @@ func add_random_trees():
 
 ## returns the map dictionary generated after world gen
 func get_map() -> Dictionary[Vector2i,Array]:
+	if map.is_empty():
+		make_map()
 	return map
 
 ## generate the elevation matrix based on perlin noise

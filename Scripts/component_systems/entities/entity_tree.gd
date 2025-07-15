@@ -18,7 +18,7 @@ func _ready():
 		var inv_comp : InventoryComponent = inv_comp_class.new(3)
 		for i in randi()%4:
 			var log_ent = EntityRegistry.instantiate_entity("LogEntity")
-			get_parent().add_child(log_ent)
+			get_parent().add_child.call_deferred(log_ent)
 			inv_comp.add_item(log_ent)
 		add_component(inv_comp)
 	animated_sprite_2d.play("default" + str(randi()%3 + 1))

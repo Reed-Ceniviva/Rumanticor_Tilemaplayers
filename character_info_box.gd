@@ -1,4 +1,5 @@
 extends Control
+class_name CharacterInfoBox
 
 @onready var name_label = $CanvasLayer/MarginContainer/Panel/GridContainer/Name_Label
 
@@ -16,9 +17,17 @@ extends Control
 
 @onready var hp_h_slider = $CanvasLayer/MarginContainer/Panel/GridContainer/HP_HBoxContainer/HP_HSlider
 
+var info_box_ready = false
 
+func _ready():
+	info_box_ready = true
+	position = position + get_parent().position
+	
 
-func _init(character : Entity):
+func setup(character : Entity):
+	if not info_box_ready:
+		print("info box not ready")
+		return
 	if character.has_component_type("SphereStatsComponent"):
 		var sphere_stats_comp : SphereStatsComponent = character.get_component_by_type("SphereStatsComponent")
 		var sphere_stats = sphere_stats_comp.stats
@@ -29,14 +38,20 @@ func _init(character : Entity):
 		art_v_slider.value = sphere_stats["Art"]
 		inspo_v_slider.value = sphere_stats["Inspiration"]
 		luck_v_slider.value = sphere_stats["Luck"]
+	else:
+		print("no sphere stats to display")
 	
 	if character.has_component_type("HealthComponent"):
 		var health_comp : HealthComponent = character.get_component_by_type("HealthComponent")
 		hp_h_slider.value = health_comp.current_health
+	else:
+		print("no health to display")
 	
 	if character.has_component_type("BrainComponent"):
 		var brain_comp : BrainComponent = character.get_component_by_type("BrainComponent")
 		if brain_comp.knows("name"):
-			name_label.text = brain_comp.recall("name", "unknown")
-		
-	
+			name_label.text = str("Name: ",brain_comp.recall("name", "Unknown"))
+		if brain_comp.knows("intent"):
+			activity_label.text = str("Activity: ",brain_comp.recall("intent", "None"))
+	else:
+		print("no brain to get info from")

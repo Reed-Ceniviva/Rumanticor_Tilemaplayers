@@ -66,13 +66,13 @@ func _on_submit_button_pressed():
 		"species": species,
 		"height" : height_v_slider.value,
 		"weight" : weight_h_slider.value,
-		"strength": strength_h_slider.value,
-		"nature": nature_h_slider.value,
-		"art": art_h_slider.value,
-		"social":social_h_slider.value,
-		"inspo":inspo_h_slider.value,
-		"luck":luck_h_slider.value,
-		"wisdom":wisdom_h_slider.value
+		"Strength": strength_h_slider.value,
+		"Nature": nature_h_slider.value,
+		"Art": art_h_slider.value,
+		"Social":social_h_slider.value,
+		"Inspiration":inspo_h_slider.value,
+		"Luck":luck_h_slider.value,
+		"Wisdom":wisdom_h_slider.value
 	})
 	self.queue_free()
 

@@ -6,7 +6,6 @@
 
 [node name="World_Manager" type="Node"]
 script = ExtResource("1_3pref")
-tick_duration = null
 
 [node name="Layer_Manager" parent="." instance=ExtResource("2_ysl4i")]
 

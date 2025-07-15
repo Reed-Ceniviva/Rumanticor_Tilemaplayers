@@ -2,7 +2,8 @@ extends System
 class_name DamageSystem
 
 func process(entity: Entity) -> void:
-	if not entity.has_component_type("BrainComponent") or not entity.has_component_type("EquipmentComponent"):
+	##remove equipment requirement, just make it a sub check
+	if not entity.has_component_type("SphereStatsComponent") or not entity.has_component_type("EquipmentComponent"):
 		return
 
 	var brain: BrainComponent = entity.get_component_by_type("BrainComponent")

@@ -28,7 +28,12 @@ func process_entity(entity: Entity) -> void:
 	else:
 		goal_pos = EntityRegistry._entity_store[goal_id].get_component_by_type("PositionComponent").pos
 	var mobility = entity.get_component_by_type("BrainComponent").recall("traverses", {"ground":1.0})
-
+	
+	var brain : BrainComponent = entity.get_component_by_type("BrainComponent")
+	var cur_path = brain.recall("current_path")
+	
+	if cur_path.has(goal_pos):
+		return
 	var path := _find_path(start, goal_pos, mobility)
 	entity.get_component_by_type("BrainComponent").remember("current_path", path)
 
@@ -56,7 +61,7 @@ func _find_path(start: Vector2i, goal: Vector2i, mobility: Dictionary) -> Array:
 		for dir in DIRS:
 			var neighbor = current + dir
 			if not terrain_map.has(neighbor):
-				#print("non-valid position to navigate to")
+				print("non-valid position to navigate to")
 				continue
 
 			var layers = terrain_map[neighbor]
