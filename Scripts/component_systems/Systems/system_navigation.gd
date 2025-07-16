@@ -17,7 +17,7 @@ func process_entity(entity: Entity) -> void:
 	#if not entity.has_component_type("TargetEntityComponent"): return
 
 	var start = entity.get_component_by_type("PositionComponent").pos
-	var goal_id = entity.get_component_by_type("BrainComponent").recall("target", -1)
+	var goal_id = entity.get_component_by_type("BrainComponent").recall("target_entity_id", -1)
 	var goal_loc = entity.get_component_by_type("BrainComponent").recall("target_location", Vector2i.ZERO)
 	var goal_pos
 	if goal_id == -1:

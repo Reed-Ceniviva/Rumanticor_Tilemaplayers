@@ -20,7 +20,7 @@ func add_item(entity: Entity) -> bool:
 			max_items += 1
 	return true
 
-func remove_item(entity: Entity) -> Entity:
+func remove_entity(entity: Entity) -> Entity:
 	if entity in items:
 		items.erase(entity)
 		entity.set_active(true)
@@ -29,8 +29,21 @@ func remove_item(entity: Entity) -> Entity:
 		return entity
 	return null
 
-func has_item(entity: Entity) -> bool:
+func has_entity(entity: Entity) -> bool:
 	return entity in items
+	
+func has_tagged_item(tag : String) -> Entity:
+	for item in items:
+		if item.has_tag(tag):
+			return item
+	return null
+
+func num_of_contained_tagged_items(tag: String) ->int:
+	var count : int = 0
+	for item in items:
+		if item.has_tag(tag):
+			count = count + 1
+	return count
 
 func has_item_amount(ent_type : String, amount : float) -> bool:
 	var total = 0

@@ -1,0 +1,7 @@
+[gd_scene load_steps=2 format=3 uid="uid://d308kkafpqawr"]
+
+[ext_resource type="Script" uid="uid://bdtk8metlq0lj" path="res://Scripts/component_systems/entities/entity_log_pile.gd" id="1_kyq08"]
+
+[node name="log_pile_entity" type="Node2D"]
+script = ExtResource("1_kyq08")
+entity_id = null

@@ -14,7 +14,7 @@ var damage_system = DamageSystem.new()
 var navigation_system = NavigationSystem.new()
 
 
-var entities_layer
+var entities_layer : TileMapLayer
 
 const CHARACTER_CREATION_SCENE = preload("res://Scenes/character_creation_scene.tscn")
 const WORKER_ENTITY = preload("res://Scenes/ECS/Entities/worker_entity.tscn")
@@ -52,6 +52,26 @@ func _physics_process(delta):
 						if brain.knows("intent"):
 							if brain.recall("intent", "") == "collect_wood":
 								pass
+							if brain.recall("intent", "") == "make_wood_pile":
+								var creator_inv : InventoryComponent = child.get_component_by_type("InventoryComponent")
+								var has_log = creator_inv.has_item_with_tag("log")
+								if has_log != null:
+									creator_inv.remove_item(has_log)
+									var creator_pos = child.get_component_by_type("PositionComponent").pos
+									var init_log = has_log
+									var wood_pile_ent = EntityRegistry.instantiate_entity("LogPileEntity", [creator_pos + Vector2i.RIGHT])
+									entities_layer.add_child(wood_pile_ent)
+								
+							if brain.recall("intent", "") == "find_wood":
+								pass
+							if brain.recall("intent", "") == "fell_tree":
+								pass
+							if brain.recall("intent", "") == "find_tree_in_sight":
+								var ent_in_sight = brain.recall("in_sight", [])
+								for ent_id in ent_in_sight:
+									if EntityRegistry._entity_store[ent_id] is TreeEntity:
+										brain.remember("target_entity_id", ent_id)
+								print("no tree in sight")
 							if brain.recall("intent", "") == "wonder":
 								print("intent is wonder")
 								brain.remember("target_location", child.get_component_by_type("PositionComponent").pos + [Vector2i.UP, Vector2i.DOWN, Vector2i.RIGHT, Vector2i.LEFT].pick_random())
