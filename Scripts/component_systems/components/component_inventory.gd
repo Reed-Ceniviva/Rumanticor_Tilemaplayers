@@ -32,6 +32,50 @@ func remove_entity(entity: Entity) -> Entity:
 func has_entity(entity: Entity) -> bool:
 	return entity in items
 	
+func get_item_with_components(comps : Array[Component]) -> Entity:
+	var comp_count = comps.size()
+	for item in items:
+		for comp in comps:
+			if item.has_component_type(comp.component_name):
+				comp_count = comp_count - 1
+				if comp_count == 0:
+					return item
+	return null
+
+func get_items_with_components(comps : Array[Component]) -> Array:
+	var ents = []
+	var comp_count = comps.size()
+	for item in items:
+		for comp in comps:
+			if item.has_component_type(comp.component_name):
+				comp_count = comp_count - 1
+				if comp_count == 0:
+					ents.append(item)
+	return ents
+
+func get_item_with_matching_comp(comp : Component) -> Entity:
+	for item in items:
+		if item.has_component_type(comp.component_name):
+			if item.get_component_by_type(comp.component_name) == comp:
+				return item
+			
+		
+	return null
+	
+func get_items_with_matching_comps(comps : Array[Component]) -> Array:
+	var comp_count = comps.size()
+	var ents = []
+	for item in items:
+		for comp in comps:
+			if item.has_component_type(comp.component_name):
+				if item.get_component_by_type(comp.component_name) == comp:
+					comp_count = comp_count - 1
+					if comp_count == 0:
+						ents.append(item)
+			
+		
+	return ents
+
 func has_tagged_item(tag : String) -> Entity:
 	for item in items:
 		if item.has_tag(tag):

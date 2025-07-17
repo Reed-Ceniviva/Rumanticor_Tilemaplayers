@@ -16,6 +16,11 @@ func _init():
 func remember(key: String, value: Variant) -> void:
 	memory[key] = value
 
+func intent_changed(new_intent : String) -> void:
+	memory["last_intent"] = memory["intent"]
+	memory["intent"] = new_intent
+	
+
 
 ##returns the value stored at memory key, takes a default value in case a return is required
 ##

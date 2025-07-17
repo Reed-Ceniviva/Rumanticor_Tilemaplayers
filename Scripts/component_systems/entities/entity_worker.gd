@@ -14,6 +14,7 @@ func _init(init_pos : Vector2i = Vector2i(-1,-1)):
 	var pos_comp_class = ComponentRegistry.get_component_class("PositionComponent")
 	if pos_comp_class:
 		add_component(pos_comp_class.new(init_pos))
+	add_tag("worker")
 
 func _ready():
 	##body components
@@ -50,7 +51,7 @@ func _ready():
 	if brain_comp_class:
 		var brain_comp : BrainComponent = brain_comp_class.new()
 		#intent based AI
-		brain_comp.memory["intent"] = "wonder"
+		brain_comp.memory["intent"] = "equip_axe"
 		
 		#object permanance
 		brain_comp.memory["target_entity"] = null

@@ -15,6 +15,28 @@ func get_component_by_type(component_type: String) -> Component:
 func has_component_type(component_type: String) -> bool:
 	return components.has(component_type)
 
+func has_component_types(component_types: Array[String]) -> bool:
+	for comp_type in component_types:
+		if not components.has(comp_type):
+			return false
+	return true
+
+func has_matching_component(comp : Component) -> bool:
+	if has_component_type(comp.component_name):
+		var check = get_component_by_type(comp.component_name)
+		if check == comp:
+			return true
+		
+	return false
+
+func has_matching_component_value(comp_type : String, var_check : String ,value) -> bool:
+	if has_component_type(comp_type):
+		var check = get_component_by_type(comp_type)
+		if check.get(var_check) == value:
+			return true
+		
+	return false
+
 func remove_component_type(component_type: String) -> void:
 	components.erase(component_type)
 

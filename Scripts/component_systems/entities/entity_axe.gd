@@ -14,4 +14,3 @@ func _ready():
 	equippable_comp.accessory = false
 	add_component(equippable_comp)
 	add_tag("axe")
-	add_tag("tool")
