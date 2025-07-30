@@ -20,7 +20,7 @@ func process_entity(entity: Entity) -> void:
 	var goal_id = entity.get_component_by_type("BrainComponent").recall("target_entity_id", -1)
 	var goal_loc = entity.get_component_by_type("BrainComponent").recall("target_location", Vector2i.ZERO)
 	var goal_pos
-	if goal_id == -1:
+	if goal_id == -1 or not EntityRegistry._entity_store.has(goal_id):
 		if goal_loc == Vector2i.ZERO:
 			return
 		else:

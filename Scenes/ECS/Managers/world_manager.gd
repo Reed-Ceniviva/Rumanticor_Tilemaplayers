@@ -38,7 +38,7 @@ func _physics_process(delta):
 			navigation_system.terrain_map = map_matrix
 			pos_system.groundTM = layer_manager.tm_layers["ground"]
 			color_rect.area_selected.connect(_on_selection_node_area_selected)
-			place_trees()
+			#place_trees()
 			#var worker_ent = EntityRegistry.instantiate_entity("WorkerEntity", [layer_manager.tm_layers["ground"].get_used_cells().min()])
 			#var axe_ent = EntityRegistry.instantiate_entity("AxeEntity",[layer_manager.tm_layers["ground"].get_used_cells().min() + Vector2i.RIGHT])
 			

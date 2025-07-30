@@ -11,9 +11,9 @@ func process(entity: Entity) -> void:
 
 	# Fetch strength stat from brain's sphere_stats
 	var strength := 1.0  # Default fallback
-	if brain.memory.has("sphere_stats") and brain.memory["sphere_stats"].has("strength"):
-		strength = brain.memory["sphere_stats"]["strength"]
-
+	if entity.has_component_type("SphereStatsComponent"):
+		var sphere_comp : SphereStatsComponent = entity.get_component_by_type("SphereStatsComponent")
+		strength = sphere_comp.stats.get("Strength")
 	var weapon_damage := 0.0
 	var weapon: Entity = equip.get_strongest_equipped_weapon()
 	if weapon and weapon.has_component_type("EquippableComponent"):
@@ -25,4 +25,4 @@ func process(entity: Entity) -> void:
 	var total_damage := strength * weapon_damage
 	brain.memory["melee_damage"] = total_damage
 
-	print("Entity", entity.name, "→ strength:", strength, ", weapon_mod:", weapon_damage, ", total damage:", total_damage)
+	print("Entity", entity.name, "→ Strength:", strength, ", weapon_mod:", weapon_damage, ", total damage:", total_damage)

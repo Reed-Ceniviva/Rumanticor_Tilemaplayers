@@ -51,6 +51,9 @@ func _physics_process(delta):
 						var brain : BrainComponent = child.get_component_by_type("BrainComponent")
 						if brain.knows("intent"):
 							if brain.recall("intent", "") == "collect_wood":
+								if not EntityRegistry._entity_store.has(brain.recall("target_entity_id",-1)):
+									brain.intent_changed("find_wood")
+									break
 								var target_wood = EntityRegistry._entity_store[brain.recall("target_entity_id",0)]
 								if target_wood.has_matching_component_value("ResourceComponent","type","wood"):
 									var wood_pos : Vector2i = target_wood.get_component_by_type("PositionComponent").pos
@@ -71,14 +74,13 @@ func _physics_process(delta):
 								else:
 									print("target entity is not a wood resource")
 									brain.intent_changed("find_wood")
-								
 							if brain.recall("intent", "") == "store_wood":
 								pass
 							if brain.recall("intent", "") == "make_wood_pile":
 								var creator_inv : InventoryComponent = child.get_component_by_type("InventoryComponent")
-								var has_log = creator_inv.get_item_with_matching_comp(ResourceComponent.new("wood"))
+								var has_log = creator_inv.get_item_with_components([ResourceComponent.new("wood")])
 								if has_log != null:
-									creator_inv.remove_item(has_log)
+									creator_inv.remove_entity(has_log)
 									var creator_pos = child.get_component_by_type("PositionComponent").pos
 									var init_log = has_log
 									var log_pile_pos = creator_pos + Vector2i.RIGHT
@@ -88,12 +90,12 @@ func _physics_process(delta):
 								else:
 									print("no log in the entities inventory")
 									brain.intent_changed("find_wood")
-								
 							if brain.recall("intent", "") == "find_wood":
+								vision_system.process(child)
 								var ent_in_sight =  brain.recall("in_sight",[])
 								for ent_id in ent_in_sight:
 									var ent = EntityRegistry._entity_store[ent_id]
-									if ent.has_matching_component_value("Resource","type","wood"):
+									if ent.has_matching_component_value("ResourceComponent","type","wood"):
 										if ent is LogEntity:
 											brain.remember("target_entity_id", ent_id)
 											brain.intent_changed("move_to_target")
@@ -102,8 +104,10 @@ func _physics_process(delta):
 											print("entity not LogEntity")
 									else:
 										print("entity doesn't have resource component of type wood")
-								print("no wood found")
-								brain.intent_changed("find_tree")
+								
+								if brain.recall("intent", "find_wood") == "find_wood":
+									print("no wood found")
+									brain.intent_changed("find_tree_in_sight")
 							if brain.recall("intent", "") == "find_axe":
 								var ent_in_sight =  brain.recall("in_sight",[])
 								for ent_id in ent_in_sight:
@@ -113,10 +117,15 @@ func _physics_process(delta):
 										break
 									else:
 										print("ent in sight not AxeEntity")
-								print("no axe in sight")
-								brain.intent_changed("wonder")
+								if brain.recall("intent", "find_axe") == "find_axe":
+									print("no axe in sight")
+									brain.intent_changed("wonder")
 							if brain.recall("intent", "") == "equip_axe":
-								var target_axe = EntityRegistry._entity_store[brain.recall("target_entity_id", 0)]
+								var target_id = brain.recall("target_entity_id", 0)
+								if target_id == -1:
+									brain.intent_changed("find_axe")
+									continue
+								var target_axe = EntityRegistry._entity_store[target_id]
 								var axe_pos : Vector2i = target_axe.get_component_by_type("PositionComponent").pos
 								if axe_pos.distance_to(child.get_component_by_type("PositionComponent").pos) < 2:
 									var equi_comp : EquipmentComponent = child.get_component_by_type("EquipmentComponent")
@@ -128,42 +137,59 @@ func _physics_process(delta):
 									print("axe not in distance to equip")
 									brain.intent_changed("find_axe")
 							if brain.recall("intent", "") == "fell_tree":
+								if not EntityRegistry._entity_store.has(brain.recall("target_entity_id",-1)):
+									print("target tree no longer exists")
+									brain.intent_changed("collect_wood")
+									break
 								var target_tree = EntityRegistry._entity_store[brain.recall("target_entity_id", 0)]
+								if not target_tree:
+									print("target tree no longer exists")
+									brain.intent_changed("collect_wood")
+									break
 								if target_tree is TreeEntity:
 									var tree_pos : Vector2i = target_tree.get_component_by_type("PositionComponent").pos
 									if tree_pos.distance_to(child.get_component_by_type("PositionComponent").pos) < 2:
 										damage_system.process(child)
 										var tree_health : HealthComponent = target_tree.get_component_by_type("HealthComponent")
 										tree_health.take_damage(brain.recall("melee_damage"))
+										if tree_health.current_health == 0:
+											brain.intent_changed("collect_wood")
 									else:
 										print("not close enough to a tree to fell it")
+										brain.intent_changed("move_to_target")
 									
 								else:
 									print("target entity id does not match to a TreeEntity in the entity store")
-										
+									brain.intent_changed("find_tree_in_sight")
 							if brain.recall("intent", "") == "find_tree_in_sight":
 								var ent_in_sight = brain.recall("in_sight", [])
 								for ent_id in ent_in_sight:
 									if EntityRegistry._entity_store[ent_id] is TreeEntity:
 										brain.remember("target_entity_id", ent_id)
+										brain.intent_changed("move_to_target")
 										break
-										
-								print("no tree in sight")
+								if brain.recall("intent","find_tree_in_sight") == "find_tree_in_sight":
+									print("no tree in sight")
+									brain.intent_changed("wonder")
 							if brain.recall("intent", "") == "move_to_target":
 								var cur_path = brain.recall("current_path")
 								if cur_path.is_empty():
 									navigation_system.process_entity(child)
+									var new_cur_path = brain.recall("current_path",[])
+									if new_cur_path.size() == 1 and new_cur_path[0] == child.get_component_by_type("PositionComponent").pos:
+										brain.remember("current_path",[])
 							if brain.recall("intent", "") == "wonder":
 								print("intent is wonder")
 								brain.remember("target_location", child.get_component_by_type("PositionComponent").pos + [Vector2i.UP, Vector2i.DOWN, Vector2i.RIGHT, Vector2i.LEFT].pick_random())
 								navigation_system.process_entity(child)
-						if brain.knows("in_sight"):
+								brain.intent_changed(brain.recall("last_intent","wonder"))
+						if brain.knows("in_sight") and child.has_component_type("VisionComponent"):
 							vision_system.process(child)
 						if brain.knows("current_path"):
 							if not brain.recall("current_path", []).is_empty():
 								movement_system.process(child)
 							else:
-								if brain.recall("last_intent", "wonder") == "find_tree_in_sight":
+								if brain.recall("last_intent", "wonder") == "find_tree_in_sight" or brain.recall("last_intent", "wonder") == "fell_tree":
 									brain.intent_changed("fell_tree")
 								if brain.recall("last_intent", "wonder") == "find_axe":
 									brain.intent_changed("equip_axe")
@@ -177,7 +203,9 @@ func new_char(stats : Dictionary):
 	#create new worker
 	var starting_pos = fortress_layer_manager.tm_layers["ground"].get_used_cells().min()
 	var new_worker : WorkerEntity = EntityRegistry.instantiate_entity("WorkerEntity", [starting_pos])
+	var new_axe : AxeEntity = EntityRegistry.instantiate_entity("AxeEntity", [fortress_layer_manager.get_non_empty_cells_in_radius("ground",starting_pos,18).pick_random()])
 	fortress_layer_manager.tm_layers["entities"].add_child(new_worker)
+	entities_layer.add_child(new_axe)
 	#assign the worker their sphere stats
 	var sphere_stats : SphereStatsComponent = new_worker.get_component_by_type("SphereStatsComponent")
 	for sphere in sphere_stats.stats.keys():

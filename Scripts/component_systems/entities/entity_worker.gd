@@ -23,6 +23,10 @@ func _ready():
 	if health_comp_class:
 		add_component(health_comp_class.new(100,100))
 	
+	var vision_comp_class = ComponentRegistry.get_component_class("VisionComponent")
+	if vision_comp_class:
+		add_component(vision_comp_class.new(32))
+	
 	#create and add inventory component (hands)
 	var inv_comp_class = ComponentRegistry.get_component_class("InventoryComponent")
 	if inv_comp_class:
@@ -52,6 +56,7 @@ func _ready():
 		var brain_comp : BrainComponent = brain_comp_class.new()
 		#intent based AI
 		brain_comp.memory["intent"] = "equip_axe"
+		brain_comp.memory["last_intent"] = "wonder"
 		
 		#object permanance
 		brain_comp.memory["target_entity"] = null

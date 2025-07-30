@@ -15,10 +15,10 @@ func _on_mouse_exited():
 		if child is CharacterInfoBox:
 			child.queue_free()
 
-func _unhandled_input(event):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed:
-			
-		else:
-
-		selection_end = world_to_map(event.position)
+#func _unhandled_input(event):
+	#if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		#if event.pressed:
+			#
+		#else:
+#
+		#selection_end = world_to_map(event.position)

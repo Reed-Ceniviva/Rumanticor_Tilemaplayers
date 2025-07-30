@@ -24,8 +24,12 @@ static func instantiate_entity(name_entity: String, init_args: Array = []) -> En
 		return null
 
 	var packed_scene: PackedScene = entity_uids[name_entity]
-	var entity: Entity = packed_scene.instantiate()
+	var entity = packed_scene.instantiate()
 
+	if not entity is Entity:
+		print(name_entity, ": Entity not being created as an entity class")
+		return
+	
 	entity.entity_id = generate_entity_id()
 	_entity_store[entity.entity_id] = entity
 

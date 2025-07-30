@@ -49,11 +49,13 @@ func process(entity: Entity) -> void:
 		var next_pos
 		if cur_path.size() == 1:
 			next_pos = cur_path[0]
+			brain_comp.remember("current_path", [])
 		else:
 			next_pos = cur_path[1]
+			brain_comp.remember("current_path", cur_path.slice(1))
 
 		# You could insert movement validation logic here if needed (e.g., check terrain passability)
 
 		# Instantly move to next tile and update current path
 		pos_comp.pos = next_pos
-		brain_comp.remember("current_path", cur_path.slice(1))
+		
