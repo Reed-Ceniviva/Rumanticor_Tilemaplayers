@@ -75,11 +75,15 @@ func _physics_process(delta):
 									print("target entity is not a wood resource")
 									brain.intent_changed("find_wood")
 							if brain.recall("intent", "") == "store_wood":
-								pass
+								if brain.knows("log_pile_loc"):
+									brain.remember("target_loc", brain.recall("log_pile_loc", Vector2i(0,0)))
 							if brain.recall("intent", "") == "make_wood_pile":
 								var creator_inv : InventoryComponent = child.get_component_by_type("InventoryComponent")
 								var has_log = creator_inv.get_item_with_components([ResourceComponent.new("wood")])
-								if has_log != null:
+								var has_log_pile = brain.knows("log_pile_loc")
+								if has_log_pile and has_log != null:
+									brain.intent_changed("store_wood")
+								elif has_log != null:
 									creator_inv.remove_entity(has_log)
 									var creator_pos = child.get_component_by_type("PositionComponent").pos
 									var init_log = has_log
